@@ -51,11 +51,14 @@ PRs must satisfy:
 
 - `flutter-analyze`
 - `flutter-format`
-- `flutter-test`
 - `promotion-guard`
 - 1 approval
 - resolved conversations
 - up-to-date branch
+
+`flutter-test` is not a GitHub merge gate in this repository. Run local or
+targeted tests when the change needs them, but do not require that job in branch
+protection.
 
 If CI is still running, report the run URL and current status instead of
 claiming success.

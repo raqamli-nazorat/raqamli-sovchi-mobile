@@ -25,8 +25,10 @@ Har bir PR quyidagi quality gatedan o'tishi kerak:
 
 - `flutter analyze`
 - `dart format --set-exit-if-changed .`
-- `flutter test`
 - `promotion-guard`
+
+`flutter test` GitHub required check emas. Testlar lokal yoki alohida targeted
+CI sifatida kerakli change uchun yuritiladi, lekin merge gate qilinmaydi.
 
 PR merge bo'lishidan oldin:
 
