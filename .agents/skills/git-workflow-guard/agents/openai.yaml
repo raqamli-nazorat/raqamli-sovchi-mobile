@@ -1,0 +1,4 @@
+interface:
+  display_name: "Git Workflow Guard"
+  short_description: "Guard repo Git and PR workflow rules"
+  default_prompt: "Use $git-workflow-guard to handle repo Git, branch, PR, or protection changes safely."

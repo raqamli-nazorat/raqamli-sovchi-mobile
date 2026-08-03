@@ -16,6 +16,8 @@ protected branchlarga kiradi.
 - Release promotion faqat `dev`dan `prod`ga PR orqali qilinadi.
 - Production snapshot faqat `prod`dan `main`ga PR orqali qilinadi.
 - `dev`, `prod`, `main`ga direct push qilinmaydi.
+- Agentlar ham shu qoidaga bo'ysunadi: protected branchda lokal commit
+  qoldirmaydi, scoped branch ochadi va PR orqali ishlaydi.
 
 ## PR Talablari
 
@@ -33,6 +35,23 @@ PR merge bo'lishidan oldin:
 - barcha review conversationlar resolve qilinadi;
 - required checks pass bo'ladi;
 - branch base bilan up to date bo'ladi.
+
+## Agent Ish Tartibi
+
+Agent Git bilan ishlashdan oldin `AGENTS.md` va ushbu faylni o'qiydi.
+
+- Ishni `dev`dan boshlaydi: `git fetch origin`, keyin `origin/dev`dan scoped
+  branch yaratadi.
+- Branch nomi ish turini bildiradi: `feature/*`, `fix/*`, yoki `chore/*`.
+- Stage qilishdan oldin `git status --short` va `git diff` bilan faqat kerakli
+  fayllar tanlanganini tekshiradi.
+- Commit xabari qisqa, aniq va imperative bo'ladi.
+- Protected branchlarga direct push qilmaydi.
+- PR base default holatda `dev`; release uchun faqat `dev -> prod`, production
+  snapshot uchun faqat `prod -> main`.
+- Branch protection, collaborator, default branch yoki merge settings o'zgarishi
+  faqat user aniq so'raganda qilinadi.
+- User so'ramasa, admin/protection sozlamalari o'zgartirilmaydi.
 
 ## Merge Huquqi
 

@@ -10,6 +10,15 @@ rules into other files unless the user explicitly asks for a summary. If this
 file and the architecture spec conflict, follow the architecture spec and report
 the conflict.
 
+Before making any Git, branch, commit, push, pull request, merge, release, or
+repository protection change, read and follow:
+
+- `doc/GIT_WORKFLOW.md`
+
+That file is the source of truth for this repository's Git workflow. Do not push
+directly to `dev`, `prod`, or `main`. Use feature/fix/chore branches and pull
+requests according to the documented promotion path.
+
 ## Project Skills
 
 Project-specific skills live under `.agents/skills/`. Use them when the task
@@ -21,6 +30,8 @@ matches their purpose:
   security, UI organization, and testing rules.
 - `$api-client-builder`: add Dio API integrations, data sources, repositories,
   DTO models, mappers, typed failures, and network tests.
+- `$git-workflow-guard`: handle Git, branch, PR, merge, release, collaborator,
+  and repository protection work according to `doc/GIT_WORKFLOW.md`.
 
 ## Core Rules
 
@@ -96,6 +107,8 @@ matches their purpose:
 - Prefer existing project patterns over new abstractions.
 - Keep changes scoped to the requested feature or fix.
 - Do not refactor unrelated code.
+- For repository changes, work from `dev` on a scoped branch such as
+  `feature/*`, `fix/*`, or `chore/*`; merge only through PR.
 - Do not add a dependency without checking the dependency policy in
   `doc/ARCHITECTURE_TECHNICAL_SPEC.md`.
 - If the user requests something that conflicts with the architecture spec,
