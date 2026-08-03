@@ -7,6 +7,8 @@ import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../features/auth/presentation/pages/home_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/otp_page.dart';
+import '../../features/auth/presentation/pages/pin_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import 'route_names.dart';
 
@@ -26,13 +28,28 @@ final class AppRouter {
       final location = state.matchedLocation;
       final onSplash = location == RouteNames.splash;
       final onLogin = location == RouteNames.login;
+      final onOtp = location == RouteNames.otp;
+      final onPin =
+          location == RouteNames.pinCreate || location == RouteNames.pinUnlock;
 
       if (status == AuthStatus.initial || status == AuthStatus.loading) {
         return onSplash ? null : RouteNames.splash;
       }
 
       if (status == AuthStatus.authenticated) {
-        return onSplash || onLogin ? RouteNames.home : null;
+        return onSplash || onLogin || onOtp || onPin ? RouteNames.home : null;
+      }
+
+      if (status == AuthStatus.otpPending) {
+        return onOtp ? null : RouteNames.otp;
+      }
+
+      if (status == AuthStatus.pinSetupRequired) {
+        return location == RouteNames.pinCreate ? null : RouteNames.pinCreate;
+      }
+
+      if (status == AuthStatus.pinLocked) {
+        return location == RouteNames.pinUnlock ? null : RouteNames.pinUnlock;
       }
 
       return onLogin ? null : RouteNames.login;
@@ -45,6 +62,18 @@ final class AppRouter {
       GoRoute(
         path: RouteNames.login,
         builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: RouteNames.otp,
+        builder: (context, state) => const OtpPage(),
+      ),
+      GoRoute(
+        path: RouteNames.pinCreate,
+        builder: (context, state) => const PinPage(mode: PinPageMode.create),
+      ),
+      GoRoute(
+        path: RouteNames.pinUnlock,
+        builder: (context, state) => const PinPage(mode: PinPageMode.unlock),
       ),
       GoRoute(
         path: RouteNames.home,

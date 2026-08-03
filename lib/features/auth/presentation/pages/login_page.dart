@@ -1,62 +1,205 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../app/theme/app_colors.dart';
+import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../../../../core/ui/widgets/app_button.dart';
-import '../../../../core/ui/widgets/app_error_view.dart';
+import '../../../../app/theme/app_typography.dart';
+import '../../../../core/errors/failure.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../widgets/auth_logo.dart';
+import '../widgets/auth_primary_button.dart';
+import '../widgets/auth_social_button.dart';
 
-class LoginPage extends StatelessWidget {
+final class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+final class _LoginPageState extends State<LoginPage> {
+  final _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  String get _phoneNumber {
+    final digits = _phoneController.text.replaceAll(RegExp(r'\D'), '');
+    return '+998${digits.replaceFirst(RegExp(r'^998'), '')}';
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.xl),
-          child: Center(
-            child: SingleChildScrollView(
-              child: BlocBuilder<AuthBloc, AuthState>(
-                builder: (context, state) {
-                  final isLoading = state.status == AuthStatus.loading;
-
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        l10n.loginTitle,
-                        style: Theme.of(context).textTheme.titleLarge,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.xl,
+            AppSpacing.lg,
+            AppSpacing.xl,
+            AppSpacing.lg,
+          ),
+          child: BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              final isLoading = state.status == AuthStatus.loading;
+              final isInvalid = state.failure?.type == FailureType.validation;
+              return SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const AuthLogo(),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(l10n.loginHeadline, style: AppTypography.pageTitle),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      l10n.loginSubtitle,
+                      style: AppTypography.caption.copyWith(
+                        fontWeight: FontWeight.w400,
                       ),
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(l10n.loginSubtitle),
-                      if (state.failure != null) ...[
-                        const SizedBox(height: AppSpacing.lg),
-                        AppErrorView(
-                          message: l10n.failureMessage(state.failure!.type),
-                          onRetry: () => context.read<AuthBloc>().add(
-                            const AuthSignInRequested(),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    Text(
+                      l10n.phoneLabel,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.text,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    TextField(
+                      controller: _phoneController,
+                      onChanged: (_) => setState(() {}),
+                      keyboardType: TextInputType.phone,
+                      maxLength: 9,
+                      decoration: InputDecoration(
+                        counterText: '',
+                        hintText: '90 123 45 67',
+                        hintStyle: AppTypography.body.copyWith(
+                          color: AppColors.placeholder,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        prefixText: '+998  ',
+                        prefixStyle: AppTypography.body.copyWith(
+                          color: AppColors.placeholder,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        errorText: isInvalid ? l10n.phoneError : null,
+                        filled: true,
+                        fillColor: Colors.white,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg,
+                          vertical: 14,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: const BorderSide(color: AppColors.border),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          borderSide: const BorderSide(
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AuthPrimaryButton(
+                      label: l10n.continueLabel,
+                      isLoading: isLoading,
+                      enabled:
+                          _phoneController.text
+                              .replaceAll(RegExp(r'\D'), '')
+                              .length >=
+                          9,
+                      onPressed: () => context.read<AuthBloc>().add(
+                        AuthPhoneSubmitted(_phoneNumber),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.xl),
+                    Row(
+                      children: [
+                        const Expanded(child: Divider(color: AppColors.border)),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.md,
+                          ),
+                          child: Text(
+                            l10n.orLabel,
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                        const Expanded(child: Divider(color: AppColors.border)),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      children: [
+                        AuthSocialButton(
+                          label: 'Telegram',
+                          asset: 'assets/auth/telegram.png',
+                          onPressed: () => context.read<AuthBloc>().add(
+                            const AuthTelegramSignInRequested(),
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        AuthSocialButton(
+                          label: 'Google',
+                          asset: 'assets/auth/google.png',
+                          onPressed: () => context.read<AuthBloc>().add(
+                            const AuthGoogleSignInRequested(),
                           ),
                         ),
                       ],
-                      const SizedBox(height: AppSpacing.xl),
-                      AppButton(
-                        label: l10n.signInAsDemo,
-                        isLoading: isLoading,
-                        onPressed: () => context.read<AuthBloc>().add(
-                          const AuthSignInRequested(),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          'assets/auth/info.png',
+                          width: 15,
+                          height: 15,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Expanded(
+                          child: Text(
+                            l10n.loginNote,
+                            style: AppTypography.caption.copyWith(
+                              fontSize: 11,
+                              height: 17 / 11,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (state.failure != null && !isInvalid) ...[
+                      const SizedBox(height: AppSpacing.lg),
+                      Text(
+                        l10n.failureMessage(state.failure!.type),
+                        style: AppTypography.caption.copyWith(
+                          color: Colors.red,
                         ),
                       ),
                     ],
-                  );
-                },
-              ),
-            ),
+                  ],
+                ),
+              );
+            },
           ),
         ),
       ),

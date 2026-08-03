@@ -7,6 +7,7 @@ enum FailureType {
   forbidden,
   notFound,
   validation,
+  unsupported,
   server,
   unknown,
 }
@@ -25,6 +26,8 @@ final class Failure extends Equatable {
   const Failure.notFound() : this(type: FailureType.notFound);
 
   const Failure.validation() : this(type: FailureType.validation);
+
+  const Failure.unsupported() : this(type: FailureType.unsupported);
 
   const Failure.server({int? statusCode})
     : this(type: FailureType.server, statusCode: statusCode);

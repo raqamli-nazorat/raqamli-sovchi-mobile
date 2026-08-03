@@ -1,22 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:raqamli_sovchi/core/errors/either.dart';
-import 'package:raqamli_sovchi/core/errors/failure.dart';
 import 'package:raqamli_sovchi/core/security/token_store.dart';
-import 'package:raqamli_sovchi/features/auth/data/data_sources/mock_auth_data_source.dart';
+import 'package:raqamli_sovchi/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:raqamli_sovchi/features/auth/data/repositories/auth_repository_impl.dart';
 
 void main() {
-  test('mock repository maps data model to domain session', () async {
+  test('temporary repository maps OTP session to domain session', () async {
     final repository = AuthRepositoryImpl(
-      MockAuthDataSource(_MemoryTokenStore()),
+      TemporaryAuthDataSource(_MemoryTokenStore()),
     );
 
-    final result = await repository.signIn();
+    await repository.requestPhoneOtp('+998901234567');
+    final result = await repository.verifyPhoneOtp(
+      phoneNumber: '+998901234567',
+      otp: '1234',
+    );
 
-    expect(result, isA<Right<Failure, dynamic>>());
     expect(
       result.fold((_) => null, (session) => session.displayName),
-      'Demo User',
+      'Raqamli Sovchi',
     );
   });
 }

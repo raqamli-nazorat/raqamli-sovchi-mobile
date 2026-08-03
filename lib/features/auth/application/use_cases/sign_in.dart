@@ -8,7 +8,5 @@ final class SignInUseCase {
 
   final AuthRepository _repository;
 
-  Future<Either<Failure, Session>> call() {
-    return _repository.signIn();
-  }
+  Future<Either<Failure, Session>> call() => _repository.signInWithGoogle();
 }

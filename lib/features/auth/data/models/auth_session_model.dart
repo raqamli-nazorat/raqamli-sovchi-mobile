@@ -7,32 +7,46 @@ final class AuthSessionModel extends Equatable {
     required this.userId,
     required this.displayName,
     required this.accessToken,
+    this.refreshToken,
+    this.phoneNumber,
+    this.isVerified = false,
   });
 
   factory AuthSessionModel.fromJson(Map<String, dynamic> json) {
     return AuthSessionModel(
-      userId: json['user_id'] as String,
-      displayName: json['display_name'] as String,
-      accessToken: json['access_token'] as String,
+      userId: (json['user_id'] ?? json['id'] ?? 'unknown').toString(),
+      displayName: (json['display_name'] ?? json['full_name'] ?? 'User')
+          .toString(),
+      accessToken: (json['access'] ?? json['access_token'] ?? '').toString(),
+      refreshToken: (json['refresh'] ?? json['refresh_token'])?.toString(),
+      phoneNumber: json['phone_number']?.toString(),
+      isVerified: json['is_verified'] == true,
     );
   }
 
   final String userId;
   final String displayName;
   final String accessToken;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'user_id': userId,
-      'display_name': displayName,
-      'access_token': accessToken,
-    };
-  }
+  final String? refreshToken;
+  final String? phoneNumber;
+  final bool isVerified;
 
   Session toEntity() {
-    return Session(userId: userId, displayName: displayName);
+    return Session(
+      userId: userId,
+      displayName: displayName,
+      phoneNumber: phoneNumber,
+      isVerified: isVerified,
+    );
   }
 
   @override
-  List<Object?> get props => [userId, displayName, accessToken];
+  List<Object?> get props => [
+    userId,
+    displayName,
+    accessToken,
+    refreshToken,
+    phoneNumber,
+    isVerified,
+  ];
 }
