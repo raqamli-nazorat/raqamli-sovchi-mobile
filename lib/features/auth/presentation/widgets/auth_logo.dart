@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_typography.dart';
+import '../../../../gen/assets.gen.dart';
 
 final class AuthLogo extends StatelessWidget {
   const AuthLogo({this.onPrimary = false, this.large = false, super.key});
@@ -16,8 +17,7 @@ final class AuthLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          'assets/auth/logo.png',
+        Assets.icons.icLogo.svg(
           width: large ? 38 : 32,
           height: large ? 38 : 32,
         ),

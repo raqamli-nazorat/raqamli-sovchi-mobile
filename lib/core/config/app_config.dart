@@ -24,8 +24,10 @@ abstract final class AppConfig {
 
   static AppFlavor get flavor => AppFlavor.fromValue(flavorValue);
 
-  static const useTemporaryAuthAdapter = bool.fromEnvironment(
-    'USE_TEMP_AUTH',
-    defaultValue: false,
-  );
+  static bool get useTemporaryAuthAdapter {
+    if (const bool.hasEnvironment('USE_TEMP_AUTH')) {
+      return const bool.fromEnvironment('USE_TEMP_AUTH');
+    }
+    return flavor != AppFlavor.prod;
+  }
 }

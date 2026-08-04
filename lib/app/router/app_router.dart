@@ -32,9 +32,11 @@ final class AppRouter {
       final onPin =
           location == RouteNames.pinCreate || location == RouteNames.pinUnlock;
 
-      if (status == AuthStatus.initial || status == AuthStatus.loading) {
+      if (status == AuthStatus.initial) {
         return onSplash ? null : RouteNames.splash;
       }
+
+      if (status == AuthStatus.loading) return null;
 
       if (status == AuthStatus.authenticated) {
         return onSplash || onLogin || onOtp || onPin ? RouteNames.home : null;
@@ -42,6 +44,10 @@ final class AppRouter {
 
       if (status == AuthStatus.otpPending) {
         return onOtp ? null : RouteNames.otp;
+      }
+
+      if (status == AuthStatus.telegramPending) {
+        return onLogin ? null : RouteNames.login;
       }
 
       if (status == AuthStatus.pinSetupRequired) {

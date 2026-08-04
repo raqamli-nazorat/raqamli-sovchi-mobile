@@ -5,14 +5,19 @@ import '../../../../core/errors/exception_mapper.dart';
 import '../../../../core/errors/failure.dart';
 import '../../domain/entities/current_user.dart';
 import '../../domain/entities/session.dart';
+import '../../domain/entities/telegram_auth_session.dart';
+import '../../domain/entities/telegram_auth_status.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/auth_data_source.dart';
+import '../data_sources/telegram_auth_data_source.dart';
 import '../models/auth_session_model.dart';
 
 final class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._dataSource);
+  const AuthRepositoryImpl(this._dataSource, {TelegramAuthDataSource? telegram})
+    : _telegram = telegram;
 
   final AuthDataSource _dataSource;
+  final TelegramAuthDataSource? _telegram;
 
   @override
   Future<Either<Failure, Session?>> restoreSession() async {
@@ -87,8 +92,53 @@ final class AuthRepositoryImpl implements AuthRepository {
   );
 
   @override
-  Future<Either<Failure, Session>> signInWithTelegram() =>
-      _sessionCall(() => _dataSource.signInWithTelegram());
+  Future<Either<Failure, TelegramAuthSession>>
+  createTelegramAuthSession() async {
+    try {
+      final telegram = _telegram;
+      if (telegram == null) {
+        throw const AuthContractException(
+          'Telegram auth data source is not configured.',
+        );
+      }
+      return Right<Failure, TelegramAuthSession>(
+        (await telegram.createSession()).toEntity(),
+      );
+    } on DioException catch (error) {
+      return Left<Failure, TelegramAuthSession>(mapDioException(error));
+    } on AuthContractException {
+      return const Left<Failure, TelegramAuthSession>(Failure.unsupported());
+    } on Object catch (error) {
+      return Left<Failure, TelegramAuthSession>(
+        Failure.unknown(technicalReason: error.toString()),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, TelegramAuthStatus>> getTelegramAuthSessionStatus(
+    String sessionId,
+  ) async {
+    try {
+      final telegram = _telegram;
+      if (telegram == null) {
+        throw const AuthContractException(
+          'Telegram auth data source is not configured.',
+        );
+      }
+      return Right<Failure, TelegramAuthStatus>(
+        (await telegram.getSessionStatus(sessionId)).toEntity(),
+      );
+    } on DioException catch (error) {
+      return Left<Failure, TelegramAuthStatus>(mapDioException(error));
+    } on AuthContractException {
+      return const Left<Failure, TelegramAuthStatus>(Failure.unsupported());
+    } on Object catch (error) {
+      return Left<Failure, TelegramAuthStatus>(
+        Failure.unknown(technicalReason: error.toString()),
+      );
+    }
+  }
 
   Future<Either<Failure, Session>> _sessionCall(
     Future<AuthSessionModel> Function() call,

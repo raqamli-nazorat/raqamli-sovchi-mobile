@@ -4,25 +4,26 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
+import '../../../../gen/assets.gen.dart';
 
 final class AuthSocialButton extends StatelessWidget {
   const AuthSocialButton({
     required this.label,
-    required this.asset,
+    required this.icon,
     required this.onPressed,
     super.key,
   });
 
   final String label;
-  final String asset;
-  final VoidCallback onPressed;
+  final SvgGenImage icon;
+  final VoidCallback? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: OutlinedButton.icon(
         onPressed: onPressed,
-        icon: Image.asset(asset, width: 20, height: 20),
+        icon: icon.svg(width: 20, height: 20),
         label: Text(
           label,
           style: AppTypography.body.copyWith(

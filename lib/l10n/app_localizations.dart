@@ -66,6 +66,9 @@ final class AppLocalizations {
       : 'Foundation keyingi feature uchun tayyor.';
   String get logout => _isEnglish ? 'Log out' : 'Chiqish';
   String get retry => _isEnglish ? 'Retry' : 'Qayta urinish';
+  String get telegramWaiting => _isEnglish
+      ? 'Confirm your phone number in Telegram, then return here.'
+      : 'Telegramda telefon raqamingizni tasdiqlang, keyin ilovaga qayting.';
 
   String failureMessage(FailureType type) {
     return switch (type) {

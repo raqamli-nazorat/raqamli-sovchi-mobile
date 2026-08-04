@@ -4,18 +4,21 @@ import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
+import '../../../../gen/assets.gen.dart';
 
 final class AuthKeypad extends StatelessWidget {
   const AuthKeypad({
     required this.onDigit,
     required this.onBackspace,
     this.showFingerprint = false,
+    this.onFingerprint,
     super.key,
   });
 
   final ValueChanged<String> onDigit;
   final VoidCallback onBackspace;
   final bool showFingerprint;
+  final VoidCallback? onFingerprint;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,11 @@ final class AuthKeypad extends StatelessWidget {
             Expanded(
               child: showFingerprint
                   ? _Key(
-                      imageAsset: 'assets/auth/fingerprint.png',
-                      onTap: () {},
+                      icon: Assets.icons.icHugeiconsFingerprintScan.svg(
+                        width: 24,
+                        height: 24,
+                      ),
+                      onTap: onFingerprint ?? () {},
                     )
                   : const SizedBox(height: 56),
             ),
@@ -55,7 +61,11 @@ final class AuthKeypad extends StatelessWidget {
             const SizedBox(width: AppSpacing.sm),
             Expanded(
               child: _Key(
-                imageAsset: 'assets/auth/backspace.png',
+                icon: const Icon(
+                  Icons.backspace_outlined,
+                  color: AppColors.text,
+                  size: 24,
+                ),
                 onTap: onBackspace,
               ),
             ),
@@ -67,10 +77,10 @@ final class AuthKeypad extends StatelessWidget {
 }
 
 final class _Key extends StatelessWidget {
-  const _Key({this.label, this.imageAsset, required this.onTap});
+  const _Key({this.label, this.icon, required this.onTap});
 
   final String? label;
-  final String? imageAsset;
+  final Widget? icon;
   final VoidCallback onTap;
 
   @override
@@ -84,17 +94,17 @@ final class _Key extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           child: Center(
-            child: imageAsset == null
-                ? Text(
-                    label!,
-                    style: AppTypography.body.copyWith(
-                      fontSize: 22,
-                      height: 28 / 22,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.text,
-                    ),
-                  )
-                : Image.asset(imageAsset!, width: 24, height: 24),
+            child:
+                icon ??
+                Text(
+                  label!,
+                  style: AppTypography.body.copyWith(
+                    fontSize: 22,
+                    height: 28 / 22,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.text,
+                  ),
+                ),
           ),
         ),
       ),

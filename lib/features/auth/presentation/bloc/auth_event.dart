@@ -37,6 +37,27 @@ final class AuthTelegramSignInRequested extends AuthEvent {
   const AuthTelegramSignInRequested();
 }
 
+final class AuthTelegramStatusCheckRequested extends AuthEvent {
+  const AuthTelegramStatusCheckRequested(this.sessionId);
+
+  final String sessionId;
+
+  @override
+  List<Object?> get props => [sessionId];
+}
+
+final class AuthBiometricAvailabilityRequested extends AuthEvent {
+  const AuthBiometricAvailabilityRequested();
+}
+
+final class AuthBiometricUnlockRequested extends AuthEvent {
+  const AuthBiometricUnlockRequested();
+}
+
+final class AuthApplicationResumed extends AuthEvent {
+  const AuthApplicationResumed();
+}
+
 final class AuthPinCreated extends AuthEvent {
   const AuthPinCreated(this.pin);
 

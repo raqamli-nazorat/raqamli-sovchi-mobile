@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../widgets/auth_logo.dart';
 
@@ -31,11 +32,8 @@ final class SplashPage extends StatelessWidget {
               bottom: -190,
               height: 500,
               child: Opacity(
-                opacity: 0.18,
-                child: Image.asset(
-                  'assets/auth/splash_art.png',
-                  fit: BoxFit.cover,
-                ),
+                opacity: 0.12,
+                child: Assets.icons.icLogo.svg(fit: BoxFit.contain),
               ),
             ),
             Center(

@@ -6,6 +6,8 @@ import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/ui/input_formatters/uz_phone_input_formatter.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -31,8 +33,11 @@ final class _LoginPageState extends State<LoginPage> {
   }
 
   String get _phoneNumber {
-    final digits = _phoneController.text.replaceAll(RegExp(r'\D'), '');
-    return '+998${digits.replaceFirst(RegExp(r'^998'), '')}';
+    return UzPhoneInputFormatter.normalizedPhone(_phoneController.text);
+  }
+
+  int get _phoneDigitsLength {
+    return UzPhoneInputFormatter.localDigits(_phoneController.text).length;
   }
 
   @override
@@ -50,6 +55,8 @@ final class _LoginPageState extends State<LoginPage> {
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
               final isLoading = state.status == AuthStatus.loading;
+              final isTelegramPending =
+                  state.status == AuthStatus.telegramPending;
               final isInvalid = state.failure?.type == FailureType.validation;
               return SingleChildScrollView(
                 child: Column(
@@ -77,7 +84,7 @@ final class _LoginPageState extends State<LoginPage> {
                       controller: _phoneController,
                       onChanged: (_) => setState(() {}),
                       keyboardType: TextInputType.phone,
-                      maxLength: 9,
+                      inputFormatters: const [UzPhoneInputFormatter()],
                       decoration: InputDecoration(
                         counterText: '',
                         hintText: '90 123 45 67',
@@ -85,10 +92,25 @@ final class _LoginPageState extends State<LoginPage> {
                           color: AppColors.placeholder,
                           fontWeight: FontWeight.w500,
                         ),
-                        prefixText: '+998  ',
-                        prefixStyle: AppTypography.body.copyWith(
-                          color: AppColors.placeholder,
-                          fontWeight: FontWeight.w500,
+                        prefixIcon: Center(
+                          widthFactor: 1,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: AppSpacing.lg,
+                              right: AppSpacing.md,
+                            ),
+                            child: Text(
+                              '+998',
+                              style: AppTypography.body.copyWith(
+                                color: AppColors.placeholder,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 0,
+                          minHeight: 0,
                         ),
                         errorText: isInvalid ? l10n.phoneError : null,
                         filled: true,
@@ -117,11 +139,7 @@ final class _LoginPageState extends State<LoginPage> {
                     AuthPrimaryButton(
                       label: l10n.continueLabel,
                       isLoading: isLoading,
-                      enabled:
-                          _phoneController.text
-                              .replaceAll(RegExp(r'\D'), '')
-                              .length >=
-                          9,
+                      enabled: _phoneDigitsLength == 9,
                       onPressed: () => context.read<AuthBloc>().add(
                         AuthPhoneSubmitted(_phoneNumber),
                       ),
@@ -150,18 +168,22 @@ final class _LoginPageState extends State<LoginPage> {
                       children: [
                         AuthSocialButton(
                           label: 'Telegram',
-                          asset: 'assets/auth/telegram.png',
-                          onPressed: () => context.read<AuthBloc>().add(
-                            const AuthTelegramSignInRequested(),
-                          ),
+                          icon: Assets.icons.icTelegramIcon,
+                          onPressed: isLoading || isTelegramPending
+                              ? null
+                              : () => context.read<AuthBloc>().add(
+                                  const AuthTelegramSignInRequested(),
+                                ),
                         ),
                         const SizedBox(width: AppSpacing.md),
                         AuthSocialButton(
                           label: 'Google',
-                          asset: 'assets/auth/google.png',
-                          onPressed: () => context.read<AuthBloc>().add(
-                            const AuthGoogleSignInRequested(),
-                          ),
+                          icon: Assets.icons.icGoogleIcon,
+                          onPressed: isLoading || isTelegramPending
+                              ? null
+                              : () => context.read<AuthBloc>().add(
+                                  const AuthGoogleSignInRequested(),
+                                ),
                         ),
                       ],
                     ),
@@ -169,11 +191,7 @@ final class _LoginPageState extends State<LoginPage> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset(
-                          'assets/auth/info.png',
-                          width: 15,
-                          height: 15,
-                        ),
+                        Assets.icons.icInfo.svg(width: 15, height: 15),
                         const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: Text(
@@ -187,6 +205,17 @@ final class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
+                    if (isTelegramPending) ...[
+                      const SizedBox(height: AppSpacing.md),
+                      Text(l10n.telegramWaiting, style: AppTypography.caption),
+                      const SizedBox(height: AppSpacing.sm),
+                      TextButton(
+                        onPressed: () => context.read<AuthBloc>().add(
+                          const AuthFlowCancelled(),
+                        ),
+                        child: Text(l10n.retry),
+                      ),
+                    ],
                     if (state.failure != null && !isInvalid) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Text(

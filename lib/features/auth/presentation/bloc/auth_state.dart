@@ -8,6 +8,7 @@ enum AuthStatus {
   loading,
   unauthenticated,
   otpPending,
+  telegramPending,
   pinSetupRequired,
   pinLocked,
   authenticated,
@@ -19,12 +20,14 @@ final class AuthState extends Equatable {
     this.session,
     this.phoneNumber,
     this.failure,
+    this.biometricAvailable = false,
   });
 
   final AuthStatus status;
   final Session? session;
   final String? phoneNumber;
   final Failure? failure;
+  final bool biometricAvailable;
 
   AuthState copyWith({
     AuthStatus? status,
@@ -34,15 +37,23 @@ final class AuthState extends Equatable {
     bool clearSession = false,
     bool clearPhoneNumber = false,
     bool clearFailure = false,
+    bool? biometricAvailable,
   }) {
     return AuthState(
       status: status ?? this.status,
       session: clearSession ? null : session ?? this.session,
       phoneNumber: clearPhoneNumber ? null : phoneNumber ?? this.phoneNumber,
       failure: clearFailure ? null : failure ?? this.failure,
+      biometricAvailable: biometricAvailable ?? this.biometricAvailable,
     );
   }
 
   @override
-  List<Object?> get props => [status, session, phoneNumber, failure];
+  List<Object?> get props => [
+    status,
+    session,
+    phoneNumber,
+    failure,
+    biometricAvailable,
+  ];
 }

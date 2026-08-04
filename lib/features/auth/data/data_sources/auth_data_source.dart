@@ -22,8 +22,6 @@ abstract interface class AuthDataSource {
 
   Future<AuthSessionModel> signInWithGoogle();
 
-  Future<AuthSessionModel> signInWithTelegram();
-
   Future<CurrentUserModel> getCurrentUser();
 
   Future<void> refreshSession();
@@ -111,13 +109,6 @@ final class TemporaryAuthDataSource implements AuthDataSource {
   Future<AuthSessionModel> signInWithGoogle() {
     throw const AuthContractException(
       'Google auth contract is not available yet.',
-    );
-  }
-
-  @override
-  Future<AuthSessionModel> signInWithTelegram() {
-    throw const AuthContractException(
-      'Telegram auth endpoint is not available yet.',
     );
   }
 
@@ -242,11 +233,6 @@ final class RemoteAuthDataSource implements AuthDataSource {
     throw const AuthContractException(
       'Google auth request/response contract is not documented by backend.',
     );
-  }
-
-  @override
-  Future<AuthSessionModel> signInWithTelegram() {
-    throw const AuthContractException('Telegram auth endpoint is unavailable.');
   }
 
   @override

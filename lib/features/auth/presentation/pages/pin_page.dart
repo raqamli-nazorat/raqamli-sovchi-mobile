@@ -28,6 +28,31 @@ final class PinPage extends StatefulWidget {
 
 final class _PinPageState extends State<PinPage> {
   String _value = '';
+  bool _requestedBiometricAvailability = false;
+  bool _requestedBiometricUnlock = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.mode == PinPageMode.unlock && !_requestedBiometricAvailability) {
+      _requestedBiometricAvailability = true;
+      context.read<AuthBloc>().add(const AuthBiometricAvailabilityRequested());
+    }
+  }
+
+  void _requestBiometricUnlockIfReady(AuthState authState) {
+    if (widget.mode != PinPageMode.unlock ||
+        _requestedBiometricUnlock ||
+        !authState.biometricAvailable ||
+        authState.status != AuthStatus.pinLocked) {
+      return;
+    }
+    _requestedBiometricUnlock = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AuthBloc>().add(const AuthBiometricUnlockRequested());
+    });
+  }
 
   void _addDigit(String digit) {
     if (_value.length >= 4) return;
@@ -43,6 +68,7 @@ final class _PinPageState extends State<PinPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final authState = context.watch<AuthBloc>().state;
+    _requestBiometricUnlockIfReady(authState);
     final isCreate = widget.mode == PinPageMode.create;
     final isLoading = authState.status == AuthStatus.loading;
     return Scaffold(
@@ -116,7 +142,11 @@ final class _PinPageState extends State<PinPage> {
                         AuthKeypad(
                           onDigit: _addDigit,
                           onBackspace: _removeDigit,
-                          showFingerprint: !isCreate,
+                          showFingerprint:
+                              !isCreate && authState.biometricAvailable,
+                          onFingerprint: () => context.read<AuthBloc>().add(
+                            const AuthBiometricUnlockRequested(),
+                          ),
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         AuthPrimaryButton(

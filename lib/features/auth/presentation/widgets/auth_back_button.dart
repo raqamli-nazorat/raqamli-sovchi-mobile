@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../gen/assets.gen.dart';
+
 final class AuthBackButton extends StatelessWidget {
   const AuthBackButton({required this.onPressed, super.key});
 
@@ -10,7 +12,7 @@ final class AuthBackButton extends StatelessWidget {
     return IconButton(
       onPressed: onPressed,
       tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-      icon: Image.asset('assets/auth/back.png', width: 20, height: 20),
+      icon: Assets.icons.icArrowLeft01Round.svg(width: 20, height: 20),
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints.tightFor(width: 36, height: 36),
     );
