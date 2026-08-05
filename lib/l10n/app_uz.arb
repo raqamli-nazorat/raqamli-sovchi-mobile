@@ -1,0 +1,57 @@
+{
+  "@@locale": "uz",
+  "appTitle": "Raqamli Sovchi",
+  "@appTitle": {
+    "description": "Application title."
+  },
+  "loading": "Yuklanmoqda...",
+  "splashSubtitle": "Shoshilmasdan, oila bilan",
+  "loginTitle": "Xush kelibsiz",
+  "loginHeadline": "Shoshilmasdan,\noila bilan",
+  "loginSubtitle": "Telefon raqamingiz bilan boshlaymiz",
+  "phoneLabel": "Telefon raqam",
+  "phoneError": "Telefon raqamni toʻgʻri kiriting.",
+  "continueLabel": "Davom etish",
+  "orLabel": "yoki",
+  "loginNote": "Raqamingizni hech kim koʻrmaydi. Har bir profil qoʻlda tekshiriladi. Bu yerda faqat nikoh niyatidagilar qoladi.",
+  "otpTitle": "Kodni kiriting",
+  "otpSentTo": "{phone} raqamiga 4 xonali kod yubordik",
+  "@otpSentTo": {
+    "description": "Message shown after sending OTP to a phone number.",
+    "placeholders": {
+      "phone": {
+        "type": "String",
+        "example": "+998 90 123 45 67"
+      }
+    }
+  },
+  "otpResend": "Kod kelmadimi? 00:48 dan keyin qayta yuboramiz",
+  "confirmLabel": "Tasdiqlash",
+  "temporaryOtpHint": "Vaqtinchalik adapter: 1234 kodidan foydalaning",
+  "pinCreateTitle": "Qisqa kod oʻylab toping",
+  "pinUnlockTitle": "PIN-kodni kiriting",
+  "pinHintCreate": "Hisobingiz faqat sizniki boʻlib qolishi uchun. Har safar kirishda shu kodni terasiz.",
+  "pinHintUnlock": "Bu qurilma uchun yaratgan PIN-kodingizni kiriting.",
+  "unlockLabel": "Ochish",
+  "signInAsDemo": "Demo sifatida kirish",
+  "homeTitle": "Bosh sahifa",
+  "homeMessage": "Foundation keyingi feature uchun tayyor.",
+  "logout": "Chiqish",
+  "deleteAccount": "Hisobni oʻchirish",
+  "deleteAccountTitle": "Hisobingiz oʻchirilsinmi?",
+  "deleteAccountMessage": "Bu amal hisobingiz va unga bogʻliq profil maʼlumotlarini oʻchiradi. Amalni ortga qaytarib boʻlmaydi.",
+  "deleteAccountCancel": "Bekor qilish",
+  "deleteAccountConfirm": "Oʻchirish",
+  "retry": "Qayta urinish",
+  "telegramWaiting": "Telegramda telefon raqamingizni tasdiqlang, keyin ilovaga qayting.",
+  "failureMessage": "{type, select, networkTimeout{Ulanish vaqti tugadi.} noInternet{Internet aloqasi yoʻq.} unauthorized{Sessiya tugagan.} cancelled{} forbidden{Kirish rad etildi.} notFound{Maʼlumot topilmadi.} validation{Kiritilgan maʼlumotni tekshiring.} configuration{Google orqali kirish ushbu build uchun sozlanmagan.} unsupported{Bu kirish usuli hali mavjud emas.} server{Serverda xatolik yuz berdi.} unknown{Nimadir xato ketdi.} other{Nimadir xato ketdi.}}",
+  "@failureMessage": {
+    "description": "User-facing error message selected by FailureType.name.",
+    "placeholders": {
+      "type": {
+        "type": "String",
+        "example": "networkTimeout"
+      }
+    }
+  }
+}

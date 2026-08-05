@@ -67,7 +67,13 @@ matches their purpose:
 - Build and reuse design-system widgets such as `AppTextField`, `AppButton`,
   `AppAvatar`, `AppErrorView`, and `AppEmptyState`.
 - Do not hardcode colors, typography, spacing, or radius inside feature UI.
-- All user-facing text must be localization-ready.
+- All user-facing text must come from generated l10n resources in
+  `lib/l10n/*.arb`; do not add hardcoded UI copy in pages, widgets, dialogs,
+  snackbars, tooltips, semantic labels, empty states, or error states.
+- Keep English (`app_en.arb`), Russian (`app_ru.arb`), and Uzbek
+  (`app_uz.arb`) translations in sync whenever UI text is added or changed.
+- The default app locale is Uzbek (`uz`) until an explicit in-app language
+  setting is implemented.
 - Every screen must handle loading, empty, error, offline, and permission-denied
   states where applicable.
 

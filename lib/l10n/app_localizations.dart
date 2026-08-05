@@ -1,129 +1,336 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
 
-import '../core/errors/failure.dart';
+import 'app_localizations_en.dart';
+import 'app_localizations_ru.dart';
+import 'app_localizations_uz.dart';
 
-final class AppLocalizations {
-  const AppLocalizations(this.locale);
+// ignore_for_file: type=lint
 
-  final Locale locale;
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
-  static const delegate = _AppLocalizationsDelegate();
-  static const supportedLocales = [Locale('uz'), Locale('en')];
+  final String localeName;
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
-  bool get _isEnglish => locale.languageCode == 'en';
+  static const LocalizationsDelegate<AppLocalizations> delegate =
+      _AppLocalizationsDelegate();
 
-  String get appTitle => _isEnglish ? 'Digital Matchmaker' : 'Raqamli Sovchi';
-  String get loading => _isEnglish ? 'Loading...' : 'Yuklanmoqda...';
-  String get splashSubtitle =>
-      _isEnglish ? 'Take it slow, with family' : 'Shoshilmasdan, oila bilan';
-  String get loginTitle => _isEnglish ? 'Welcome' : 'Xush kelibsiz';
-  String get loginHeadline =>
-      _isEnglish ? 'Take it slow,\nwith family' : 'Shoshilmasdan,\noila bilan';
-  String get loginSubtitle => _isEnglish
-      ? 'Let’s start with your phone number'
-      : 'Telefon raqamingiz bilan boshlaymiz';
-  String get phoneLabel => _isEnglish ? 'Phone number' : 'Telefon raqam';
-  String get phoneError => _isEnglish
-      ? 'Enter a valid Uzbekistan phone number.'
-      : 'Telefon raqamni to‘g‘ri kiriting.';
-  String get continueLabel => _isEnglish ? 'Continue' : 'Davom etish';
-  String get orLabel => _isEnglish ? 'or' : 'yoki';
-  String get loginNote => _isEnglish
-      ? 'Your number is private. We manually review every profile.'
-      : 'Raqamingizni hech kim ko‘rmaydi. Har bir profilni qo‘lda tekshiramiz — bu yerda faqat nikoh niyatidagilar qoladi.';
-  String get otpTitle => _isEnglish ? 'Enter the code' : 'Kodni kiriting';
-  String otpSentTo(String phone) => _isEnglish
-      ? 'We sent a 4-digit code to $phone'
-      : '$phone raqamiga 4 xonali kod yubordik';
-  String get otpResend => _isEnglish
-      ? 'Didn’t receive it? Resend in 00:48'
-      : 'Kod kelmadimi? 00:48 dan keyin qayta yuboramiz';
-  String get confirmLabel => _isEnglish ? 'Confirm' : 'Tasdiqlash';
-  String get temporaryOtpHint => _isEnglish
-      ? 'Development adapter: use 1234'
-      : 'Vaqtinchalik adapter: 1234 kodidan foydalaning';
-  String get pinCreateTitle =>
-      _isEnglish ? 'Create a short code' : 'Qisqa kod o‘ylab toping';
-  String get pinUnlockTitle =>
-      _isEnglish ? 'Enter your PIN' : 'PIN-kodni kiriting';
-  String get pinHintCreate => _isEnglish
-      ? 'Keep your account private. You will enter this code every time you sign in.'
-      : 'Hisobingiz faqat sizniki bo‘lib qolishi uchun. Har safar kirishda shu kodni terasiz.';
-  String get pinHintUnlock => _isEnglish
-      ? 'Enter the PIN you created for this device.'
-      : 'Bu qurilma uchun yaratgan PIN-kodingizni kiriting.';
-  String get unlockLabel => _isEnglish ? 'Unlock' : 'Ochish';
-  String get signInAsDemo =>
-      _isEnglish ? 'Sign in as demo user' : 'Demo sifatida kirish';
-  String get homeTitle => _isEnglish ? 'Home' : 'Bosh sahifa';
-  String get homeMessage => _isEnglish
-      ? 'Foundation is ready for the next feature.'
-      : 'Foundation keyingi feature uchun tayyor.';
-  String get logout => _isEnglish ? 'Log out' : 'Chiqish';
-  String get deleteAccount =>
-      _isEnglish ? 'Delete account' : 'Hisobni ochirish';
-  String get deleteAccountTitle =>
-      _isEnglish ? 'Delete your account?' : 'Hisobingiz ochirilsinmi?';
-  String get deleteAccountMessage => _isEnglish
-      ? 'This will permanently delete your account and associated profile data. This action cannot be undone.'
-      : 'Bu amal hisobingiz va unga bogliq profil malumotlarini ochiradi. Amalni ortga qaytarib bolmaydi.';
-  String get deleteAccountCancel => _isEnglish ? 'Cancel' : 'Bekor qilish';
-  String get deleteAccountConfirm => _isEnglish ? 'Delete' : 'Ochirish';
-  String get retry => _isEnglish ? 'Retry' : 'Qayta urinish';
-  String get telegramWaiting => _isEnglish
-      ? 'Confirm your phone number in Telegram, then return here.'
-      : 'Telegramda telefon raqamingizni tasdiqlang, keyin ilovaga qayting.';
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
-  String failureMessage(FailureType type) {
-    return switch (type) {
-      FailureType.networkTimeout =>
-        _isEnglish ? 'Connection timed out.' : 'Ulanish vaqti tugadi.',
-      FailureType.noInternet =>
-        _isEnglish ? 'No internet connection.' : 'Internet aloqasi yo‘q.',
-      FailureType.unauthorized =>
-        _isEnglish ? 'Session expired.' : 'Sessiya tugagan.',
-      FailureType.cancelled => '',
-      FailureType.forbidden =>
-        _isEnglish ? 'Access denied.' : 'Kirish rad etildi.',
-      FailureType.notFound =>
-        _isEnglish ? 'Data was not found.' : 'Ma’lumot topilmadi.',
-      FailureType.validation =>
-        _isEnglish
-            ? 'Please check your input.'
-            : 'Kiritilgan ma’lumotni tekshiring.',
-      FailureType.configuration =>
-        _isEnglish
-            ? 'Google sign-in is not configured for this build.'
-            : 'Google orqali kirish ushbu build uchun sozlanmagan.',
-      FailureType.unsupported =>
-        _isEnglish
-            ? 'This sign-in method is not available yet.'
-            : 'Bu kirish usuli hali mavjud emas.',
-      FailureType.server || FailureType.unknown =>
-        _isEnglish ? 'Something went wrong.' : 'Nimadir xato ketdi.',
-    };
-  }
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('ru'),
+    Locale('uz'),
+  ];
+
+  /// Application title.
+  ///
+  /// In uz, this message translates to:
+  /// **'Raqamli Sovchi'**
+  String get appTitle;
+
+  /// No description provided for @loading.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuklanmoqda...'**
+  String get loading;
+
+  /// No description provided for @splashSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shoshilmasdan, oila bilan'**
+  String get splashSubtitle;
+
+  /// No description provided for @loginTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xush kelibsiz'**
+  String get loginTitle;
+
+  /// No description provided for @loginHeadline.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shoshilmasdan,\noila bilan'**
+  String get loginHeadline;
+
+  /// No description provided for @loginSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqamingiz bilan boshlaymiz'**
+  String get loginSubtitle;
+
+  /// No description provided for @phoneLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqam'**
+  String get phoneLabel;
+
+  /// No description provided for @phoneError.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqamni toʻgʻri kiriting.'**
+  String get phoneError;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Davom etish'**
+  String get continueLabel;
+
+  /// No description provided for @orLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'yoki'**
+  String get orLabel;
+
+  /// No description provided for @loginNote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Raqamingizni hech kim koʻrmaydi. Har bir profil qoʻlda tekshiriladi. Bu yerda faqat nikoh niyatidagilar qoladi.'**
+  String get loginNote;
+
+  /// No description provided for @otpTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kodni kiriting'**
+  String get otpTitle;
+
+  /// Message shown after sending OTP to a phone number.
+  ///
+  /// In uz, this message translates to:
+  /// **'{phone} raqamiga 4 xonali kod yubordik'**
+  String otpSentTo(String phone);
+
+  /// No description provided for @otpResend.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kod kelmadimi? 00:48 dan keyin qayta yuboramiz'**
+  String get otpResend;
+
+  /// No description provided for @confirmLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tasdiqlash'**
+  String get confirmLabel;
+
+  /// No description provided for @temporaryOtpHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqtinchalik adapter: 1234 kodidan foydalaning'**
+  String get temporaryOtpHint;
+
+  /// No description provided for @pinCreateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qisqa kod oʻylab toping'**
+  String get pinCreateTitle;
+
+  /// No description provided for @pinUnlockTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'PIN-kodni kiriting'**
+  String get pinUnlockTitle;
+
+  /// No description provided for @pinHintCreate.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobingiz faqat sizniki boʻlib qolishi uchun. Har safar kirishda shu kodni terasiz.'**
+  String get pinHintCreate;
+
+  /// No description provided for @pinHintUnlock.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qurilma uchun yaratgan PIN-kodingizni kiriting.'**
+  String get pinHintUnlock;
+
+  /// No description provided for @unlockLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ochish'**
+  String get unlockLabel;
+
+  /// No description provided for @signInAsDemo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Demo sifatida kirish'**
+  String get signInAsDemo;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bosh sahifa'**
+  String get homeTitle;
+
+  /// No description provided for @homeMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Foundation keyingi feature uchun tayyor.'**
+  String get homeMessage;
+
+  /// No description provided for @logout.
+  ///
+  /// In uz, this message translates to:
+  /// **'Chiqish'**
+  String get logout;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobni oʻchirish'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hisobingiz oʻchirilsinmi?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu amal hisobingiz va unga bogʻliq profil maʼlumotlarini oʻchiradi. Amalni ortga qaytarib boʻlmaydi.'**
+  String get deleteAccountMessage;
+
+  /// No description provided for @deleteAccountCancel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bekor qilish'**
+  String get deleteAccountCancel;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oʻchirish'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @retry.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta urinish'**
+  String get retry;
+
+  /// No description provided for @telegramWaiting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telegramda telefon raqamingizni tasdiqlang, keyin ilovaga qayting.'**
+  String get telegramWaiting;
+
+  /// User-facing error message selected by FailureType.name.
+  ///
+  /// In uz, this message translates to:
+  /// **'{type, select, networkTimeout{Ulanish vaqti tugadi.} noInternet{Internet aloqasi yoʻq.} unauthorized{Sessiya tugagan.} cancelled{} forbidden{Kirish rad etildi.} notFound{Maʼlumot topilmadi.} validation{Kiritilgan maʼlumotni tekshiring.} configuration{Google orqali kirish ushbu build uchun sozlanmagan.} unsupported{Bu kirish usuli hali mavjud emas.} server{Serverda xatolik yuz berdi.} unknown{Nimadir xato ketdi.} other{Nimadir xato ketdi.}}'**
+  String failureMessage(String type);
 }
 
-final class _AppLocalizationsDelegate
+class _AppLocalizationsDelegate
     extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) => AppLocalizations.supportedLocales.any(
-    (supported) => supported.languageCode == locale.languageCode,
-  );
-
-  @override
   Future<AppLocalizations> load(Locale locale) {
-    return SynchronousFuture<AppLocalizations>(AppLocalizations(locale));
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
+  bool isSupported(Locale locale) =>
+      <String>['en', 'ru', 'uz'].contains(locale.languageCode);
+
+  @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'ru':
+      return AppLocalizationsRu();
+    case 'uz':
+      return AppLocalizationsUz();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

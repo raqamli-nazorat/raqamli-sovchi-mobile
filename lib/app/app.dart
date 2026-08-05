@@ -62,6 +62,7 @@ final class _AppState extends State<App> with WidgetsBindingObserver {
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
         themeMode: ThemeMode.light,
+        locale: const Locale('uz'),
         localizationsDelegates: const [
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,

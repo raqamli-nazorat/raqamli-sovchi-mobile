@@ -221,7 +221,7 @@ final class _LoginPageState extends State<LoginPage> {
                         state.failure!.type != FailureType.cancelled) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Text(
-                        l10n.failureMessage(state.failure!.type),
+                        l10n.failureMessage(state.failure!.type.name),
                         style: AppTypography.caption.copyWith(
                           color: Colors.red,
                         ),

@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
                 if (state.failure != null) ...[
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    l10n.failureMessage(state.failure!.type),
+                    l10n.failureMessage(state.failure!.type.name),
                     textAlign: TextAlign.center,
                     style: AppTypography.caption.copyWith(color: Colors.red),
                   ),

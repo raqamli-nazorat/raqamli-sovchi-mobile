@@ -90,7 +90,7 @@ final class _OtpPageState extends State<OtpPage> {
               if (authState.failure != null) ...[
                 const SizedBox(height: AppSpacing.sm),
                 Text(
-                  l10n.failureMessage(authState.failure!.type),
+                  l10n.failureMessage(authState.failure!.type.name),
                   style: AppTypography.caption.copyWith(color: Colors.red),
                 ),
               ],
