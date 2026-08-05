@@ -4,9 +4,11 @@ enum FailureType {
   networkTimeout,
   noInternet,
   unauthorized,
+  cancelled,
   forbidden,
   notFound,
   validation,
+  configuration,
   unsupported,
   server,
   unknown,
@@ -21,11 +23,15 @@ final class Failure extends Equatable {
 
   const Failure.unauthorized() : this(type: FailureType.unauthorized);
 
+  const Failure.cancelled() : this(type: FailureType.cancelled);
+
   const Failure.forbidden() : this(type: FailureType.forbidden);
 
   const Failure.notFound() : this(type: FailureType.notFound);
 
   const Failure.validation() : this(type: FailureType.validation);
+
+  const Failure.configuration() : this(type: FailureType.configuration);
 
   const Failure.unsupported() : this(type: FailureType.unsupported);
 

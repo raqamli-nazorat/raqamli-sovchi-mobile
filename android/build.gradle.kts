@@ -21,16 +21,18 @@ subprojects {
 }
 subprojects {
     project.evaluationDependsOn(":app")
+}
 
-    // Keep Android plugin modules (including screen_protector) on the same
-    // JVM target as the app module.
-    tasks.withType<JavaCompile>().configureEach {
-        sourceCompatibility = JavaVersion.VERSION_17.toString()
-        targetCompatibility = JavaVersion.VERSION_17.toString()
-    }
-    tasks.withType<KotlinCompile>().configureEach {
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+gradle.projectsEvaluated {
+    subprojects.forEach { subproject ->
+        subproject.tasks.withType<JavaCompile>().configureEach {
+            sourceCompatibility = JavaVersion.VERSION_17.toString()
+            targetCompatibility = JavaVersion.VERSION_17.toString()
+        }
+        subproject.tasks.withType<KotlinCompile>().configureEach {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.JVM_17)
+            }
         }
     }
 }

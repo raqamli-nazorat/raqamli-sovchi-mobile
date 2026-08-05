@@ -1,16 +1,7 @@
 name: Flutter CI
 
 on:
-  pull_request:
-    branches:
-      - dev
-      - prod
-      - main
-  push:
-    branches:
-      - dev
-      - prod
-      - main
+  workflow_dispatch:
 
 jobs:
   flutter-analyze:

@@ -25,11 +25,14 @@ import '../../features/auth/application/use_cases/sign_out.dart';
 import '../../features/auth/application/use_cases/verify_phone_otp.dart';
 import '../../features/auth/application/use_cases/verify_pin.dart';
 import '../../features/auth/data/data_sources/auth_data_source.dart';
+import '../../features/auth/data/data_sources/google_auth_data_source.dart';
+import '../../features/auth/data/data_sources/google_oauth_provider.dart';
 import '../../features/auth/data/data_sources/secure_pin_data_source.dart';
 import '../../features/auth/data/data_sources/telegram_auth_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/data/repositories/pin_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/auth/domain/repositories/google_oauth_provider.dart';
 import '../../features/auth/domain/repositories/pin_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 
@@ -77,8 +80,19 @@ Future<void> configureDependencies() async {
         urlLauncher: serviceLocator(),
       ),
     )
+    ..registerLazySingleton<GoogleOAuthProvider>(GoogleSignInOAuthProvider.new)
+    ..registerLazySingleton<GoogleAuthDataSource>(
+      () => RemoteGoogleAuthDataSource(
+        client: serviceLocator(),
+        tokenStore: serviceLocator(),
+      ),
+    )
     ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(serviceLocator(), telegram: serviceLocator()),
+      () => AuthRepositoryImpl(
+        serviceLocator(),
+        telegram: serviceLocator(),
+        google: serviceLocator(),
+      ),
     )
     ..registerLazySingleton<PinDataSource>(
       () => SecurePinDataSource(serviceLocator()),
@@ -99,7 +113,7 @@ Future<void> configureDependencies() async {
       () => VerifyPhoneOtpUseCase(serviceLocator()),
     )
     ..registerFactory<SignInWithGoogleUseCase>(
-      () => SignInWithGoogleUseCase(serviceLocator()),
+      () => SignInWithGoogleUseCase(serviceLocator(), serviceLocator()),
     )
     ..registerFactory<CreateTelegramAuthSessionUseCase>(
       () => CreateTelegramAuthSessionUseCase(serviceLocator()),

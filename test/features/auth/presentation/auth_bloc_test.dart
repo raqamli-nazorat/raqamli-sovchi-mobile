@@ -19,10 +19,12 @@ import 'package:raqamli_sovchi/features/auth/application/use_cases/sign_out.dart
 import 'package:raqamli_sovchi/features/auth/application/use_cases/verify_phone_otp.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/verify_pin.dart';
 import 'package:raqamli_sovchi/features/auth/domain/entities/current_user.dart';
+import 'package:raqamli_sovchi/features/auth/domain/entities/google_authorization_result.dart';
 import 'package:raqamli_sovchi/features/auth/domain/entities/session.dart';
 import 'package:raqamli_sovchi/features/auth/domain/entities/telegram_auth_session.dart';
 import 'package:raqamli_sovchi/features/auth/domain/entities/telegram_auth_status.dart';
 import 'package:raqamli_sovchi/features/auth/domain/repositories/auth_repository.dart';
+import 'package:raqamli_sovchi/features/auth/domain/repositories/google_oauth_provider.dart';
 import 'package:raqamli_sovchi/features/auth/domain/repositories/pin_repository.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_event.dart';
@@ -98,6 +100,23 @@ void main() {
   );
 
   blocTest<AuthBloc, AuthState>(
+    'signs in with Google and enters PIN setup',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(),
+    ),
+    act: (bloc) => bloc.add(const AuthGoogleSignInRequested()),
+    expect: () => [
+      const AuthState(status: AuthStatus.loading),
+      const AuthState(
+        status: AuthStatus.pinSetupRequired,
+        session: session,
+        phoneNumber: '+998901234567',
+      ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
     'locks authenticated session on app resume when local PIN exists',
     build: () => _createBloc(
       repository: _FakeAuthRepository(session: session),
@@ -150,7 +169,10 @@ AuthBloc _createBloc({
     restoreSession: RestoreSessionUseCase(repository),
     requestPhoneOtp: RequestPhoneOtpUseCase(repository),
     verifyPhoneOtp: VerifyPhoneOtpUseCase(repository),
-    signInWithGoogle: SignInWithGoogleUseCase(repository),
+    signInWithGoogle: SignInWithGoogleUseCase(
+      repository,
+      const _FakeGoogleOAuthProvider(),
+    ),
     createTelegramAuthSession: CreateTelegramAuthSessionUseCase(repository),
     getTelegramAuthSessionStatus: GetTelegramAuthSessionStatusUseCase(
       repository,
@@ -198,8 +220,9 @@ final class _FakeAuthRepository implements AuthRepository {
   }) async => Right<Failure, Session>(session!);
 
   @override
-  Future<Either<Failure, Session>> signInWithGoogle() async =>
-      Right<Failure, Session>(session!);
+  Future<Either<Failure, Session>> signInWithGoogle({
+    required GoogleAuthorizationResult credential,
+  }) async => Right<Failure, Session>(session!);
 
   @override
   Future<Either<Failure, TelegramAuthSession>>
@@ -241,6 +264,16 @@ final class _FakeAuthRepository implements AuthRepository {
   @override
   Future<Either<Failure, void>> signOut() async =>
       const Right<Failure, void>(null);
+}
+
+final class _FakeGoogleOAuthProvider implements GoogleOAuthProvider {
+  const _FakeGoogleOAuthProvider();
+
+  @override
+  Future<Either<Failure, GoogleAuthorizationResult>> authorize() async =>
+      const Right<Failure, GoogleAuthorizationResult>(
+        GoogleAuthorizationResult(authorizationCode: 'code'),
+      );
 }
 
 final class _FakePinRepository implements PinRepository {

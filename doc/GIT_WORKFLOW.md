@@ -21,21 +21,22 @@ protected branchlarga kiradi.
 
 ## PR Talablari
 
-Har bir PR quyidagi quality gatedan o'tishi kerak:
+Har bir PRdan oldin local muhitda quyidagi tekshiruvlar bajariladi:
 
 - `flutter analyze`
 - `dart format --set-exit-if-changed .`
-- `promotion-guard`
+- kerakli unit/widget/BLoC testlar
 
-`flutter test` GitHub required check emas. Testlar lokal yoki alohida targeted
-CI sifatida kerakli change uchun yuritiladi, lekin merge gate qilinmaydi.
+GitHub Actions PR yoki protected branch push paytida avtomatik ishlamaydi.
+`.github/workflows/flutter-ci.yml` faqat qo'lda `workflow_dispatch` orqali
+ishga tushiriladi. Tekshiruvlar repositoryga push qilishdan oldin lokal
+muhitda bajariladi.
 
 PR merge bo'lishidan oldin:
 
 - kamida 1 approval bo'lishi kerak;
 - stale approval yangi commitdan keyin bekor qilinadi;
 - barcha review conversationlar resolve qilinadi;
-- required checks pass bo'ladi;
 - branch base bilan up to date bo'ladi.
 
 ## Agent Ish Tartibi

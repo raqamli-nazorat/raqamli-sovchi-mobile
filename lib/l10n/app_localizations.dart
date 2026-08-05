@@ -87,6 +87,7 @@ final class AppLocalizations {
         _isEnglish ? 'No internet connection.' : 'Internet aloqasi yo‘q.',
       FailureType.unauthorized =>
         _isEnglish ? 'Session expired.' : 'Sessiya tugagan.',
+      FailureType.cancelled => '',
       FailureType.forbidden =>
         _isEnglish ? 'Access denied.' : 'Kirish rad etildi.',
       FailureType.notFound =>
@@ -95,6 +96,10 @@ final class AppLocalizations {
         _isEnglish
             ? 'Please check your input.'
             : 'Kiritilgan ma’lumotni tekshiring.',
+      FailureType.configuration =>
+        _isEnglish
+            ? 'Google sign-in is not configured for this build.'
+            : 'Google orqali kirish ushbu build uchun sozlanmagan.',
       FailureType.unsupported =>
         _isEnglish
             ? 'This sign-in method is not available yet.'

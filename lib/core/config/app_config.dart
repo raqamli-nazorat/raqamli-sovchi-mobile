@@ -17,12 +17,21 @@ abstract final class AppConfig {
     defaultValue: 'https://backend.raqamlisovchi.uz',
   );
   static const wsUrl = String.fromEnvironment('WS_URL');
+  static const googleClientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+  static const googleServerClientId = String.fromEnvironment(
+    'GOOGLE_SERVER_CLIENT_ID',
+  );
   static const flavorValue = String.fromEnvironment(
     'FLAVOR',
     defaultValue: 'dev',
   );
 
   static AppFlavor get flavor => AppFlavor.fromValue(flavorValue);
+
+  static String get resolvedGoogleServerClientId {
+    if (googleServerClientId.isNotEmpty) return googleServerClientId;
+    return googleClientId;
+  }
 
   static bool get useTemporaryAuthAdapter {
     if (const bool.hasEnvironment('USE_TEMP_AUTH')) {

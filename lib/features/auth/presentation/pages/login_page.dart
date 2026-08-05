@@ -216,7 +216,9 @@ final class _LoginPageState extends State<LoginPage> {
                         child: Text(l10n.retry),
                       ),
                     ],
-                    if (state.failure != null && !isInvalid) ...[
+                    if (state.failure != null &&
+                        !isInvalid &&
+                        state.failure!.type != FailureType.cancelled) ...[
                       const SizedBox(height: AppSpacing.lg),
                       Text(
                         l10n.failureMessage(state.failure!.type),

@@ -20,8 +20,6 @@ abstract interface class AuthDataSource {
     required String password,
   });
 
-  Future<AuthSessionModel> signInWithGoogle();
-
   Future<CurrentUserModel> getCurrentUser();
 
   Future<void> refreshSession();
@@ -106,13 +104,6 @@ final class TemporaryAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<AuthSessionModel> signInWithGoogle() {
-    throw const AuthContractException(
-      'Google auth contract is not available yet.',
-    );
-  }
-
-  @override
   Future<CurrentUserModel> getCurrentUser() async {
     return const CurrentUserModel(
       id: _temporaryUserId,
@@ -150,7 +141,6 @@ final class RemoteAuthDataSource implements AuthDataSource {
        _tokenStore = tokenStore;
 
   static const _phonePath = '/api/v1/accounts/auth/phone/';
-  static const _googlePath = '/api/v1/accounts/auth/google/';
   static const _tokenPath = '/api/v1/accounts/auth/token/';
   static const _tokenRefreshPath = '/api/v1/accounts/auth/token/refresh/';
   static const _mePath = '/api/v1/accounts/users/me/';
@@ -229,13 +219,6 @@ final class RemoteAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<AuthSessionModel> signInWithGoogle() {
-    throw const AuthContractException(
-      'Google auth request/response contract is not documented by backend.',
-    );
-  }
-
-  @override
   Future<CurrentUserModel> getCurrentUser() async {
     final response = await _client.get<Map<String, dynamic>>(_mePath);
     return CurrentUserModel.fromJson(response.data!);
@@ -291,8 +274,4 @@ final class RemoteAuthDataSource implements AuthDataSource {
 
   @override
   Future<void> signOut() => _tokenStore.clear();
-
-  // Kept as a named reference so the documented endpoint remains visible next
-  // to the contract adapter until backend provides its request schema.
-  String get googleEndpoint => _googlePath;
 }

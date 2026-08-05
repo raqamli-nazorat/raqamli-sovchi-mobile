@@ -1,6 +1,7 @@
 import '../../../../core/errors/either.dart';
 import '../../../../core/errors/failure.dart';
 import '../entities/current_user.dart';
+import '../entities/google_authorization_result.dart';
 import '../entities/session.dart';
 import '../entities/telegram_auth_session.dart';
 import '../entities/telegram_auth_status.dart';
@@ -20,7 +21,9 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  Future<Either<Failure, Session>> signInWithGoogle();
+  Future<Either<Failure, Session>> signInWithGoogle({
+    required GoogleAuthorizationResult credential,
+  });
 
   Future<Either<Failure, TelegramAuthSession>> createTelegramAuthSession();
 

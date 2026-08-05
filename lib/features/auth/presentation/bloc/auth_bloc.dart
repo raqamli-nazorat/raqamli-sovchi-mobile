@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/errors/failure.dart';
@@ -164,13 +165,19 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthGoogleSignInRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _debugGoogleAuthLog('bloc.googleRequested');
     _stopTelegramPolling();
     emit(const AuthState(status: AuthStatus.loading));
     final result = await _signInWithGoogle();
     await result.fold(
-      (failure) async =>
-          emit(AuthState(status: AuthStatus.unauthenticated, failure: failure)),
-      (session) async => _emitPinGate(session, emit),
+      (failure) async {
+        _debugGoogleAuthLog('bloc.googleFailure type=${failure.type}');
+        emit(AuthState(status: AuthStatus.unauthenticated, failure: failure));
+      },
+      (session) async {
+        _debugGoogleAuthLog('bloc.googleSuccess.emitPinGate');
+        await _emitPinGate(session, emit);
+      },
     );
   }
 
@@ -421,4 +428,9 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   static const _validationFailure = Failure.validation();
+}
+
+void _debugGoogleAuthLog(String message) {
+  if (!kDebugMode) return;
+  debugPrint('[GoogleAuth] $message');
 }

@@ -1,23 +1,31 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../../../core/errors/either.dart';
 import '../../../../core/errors/exception_mapper.dart';
 import '../../../../core/errors/failure.dart';
 import '../../domain/entities/current_user.dart';
+import '../../domain/entities/google_authorization_result.dart';
 import '../../domain/entities/session.dart';
 import '../../domain/entities/telegram_auth_session.dart';
 import '../../domain/entities/telegram_auth_status.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../data_sources/auth_data_source.dart';
+import '../data_sources/google_auth_data_source.dart';
 import '../data_sources/telegram_auth_data_source.dart';
 import '../models/auth_session_model.dart';
 
 final class AuthRepositoryImpl implements AuthRepository {
-  const AuthRepositoryImpl(this._dataSource, {TelegramAuthDataSource? telegram})
-    : _telegram = telegram;
+  const AuthRepositoryImpl(
+    this._dataSource, {
+    TelegramAuthDataSource? telegram,
+    GoogleAuthDataSource? google,
+  }) : _telegram = telegram,
+       _google = google;
 
   final AuthDataSource _dataSource;
   final TelegramAuthDataSource? _telegram;
+  final GoogleAuthDataSource? _google;
 
   @override
   Future<Either<Failure, Session?>> restoreSession() async {
@@ -80,8 +88,21 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, Session>> signInWithGoogle() =>
-      _sessionCall(() => _dataSource.signInWithGoogle());
+  Future<Either<Failure, Session>> signInWithGoogle({
+    required GoogleAuthorizationResult credential,
+  }) async {
+    _debugGoogleAuthLog(
+      'repository.signInWithGoogle.start googleDataSourceConfigured=${_google != null} codeLength=${credential.authorizationCode.length}',
+    );
+    final google = _google;
+    if (google == null) {
+      _debugGoogleAuthLog(
+        'repository.signInWithGoogle.unsupportedNoDataSource',
+      );
+      return const Left<Failure, Session>(Failure.unsupported());
+    }
+    return _sessionCall(() => google.signInWithGoogle(credential: credential));
+  }
 
   @override
   Future<Either<Failure, Session>> obtainToken({
@@ -145,14 +166,23 @@ final class AuthRepositoryImpl implements AuthRepository {
   ) async {
     try {
       final model = await call();
+      _debugGoogleAuthLog('repository.sessionCall.success');
       return Right<Failure, Session>(model.toEntity());
     } on DioException catch (error) {
+      _debugGoogleAuthLog(
+        'repository.sessionCall.dioException status=${error.response?.statusCode} type=${error.type}',
+      );
       return Left<Failure, Session>(mapDioException(error));
     } on AuthContractException {
+      _debugGoogleAuthLog('repository.sessionCall.authContractException');
       return const Left<Failure, Session>(Failure.unsupported());
     } on AuthValidationException {
+      _debugGoogleAuthLog('repository.sessionCall.authValidationException');
       return const Left<Failure, Session>(Failure.validation());
     } on Object catch (error) {
+      _debugGoogleAuthLog(
+        'repository.sessionCall.unknownException type=${error.runtimeType}',
+      );
       return Left<Failure, Session>(
         Failure.unknown(technicalReason: error.toString()),
       );
@@ -214,4 +244,9 @@ final class AuthRepositoryImpl implements AuthRepository {
       );
     }
   }
+}
+
+void _debugGoogleAuthLog(String message) {
+  if (!kDebugMode) return;
+  debugPrint('[GoogleAuth] $message');
 }
