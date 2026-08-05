@@ -9,6 +9,7 @@ import '../../application/use_cases/check_biometric_availability.dart';
 import '../../application/use_cases/clear_pin.dart';
 import '../../application/use_cases/create_pin.dart';
 import '../../application/use_cases/create_telegram_auth_session.dart';
+import '../../application/use_cases/delete_account.dart';
 import '../../application/use_cases/get_telegram_auth_session_status.dart';
 import '../../application/use_cases/has_pin.dart';
 import '../../application/use_cases/request_phone_otp.dart';
@@ -36,6 +37,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required VerifyPinUseCase verifyPin,
     required ClearPinUseCase clearPin,
     required SignOutUseCase signOut,
+    required DeleteAccountUseCase deleteAccount,
     this.telegramPollingInterval = const Duration(seconds: 2),
   }) : _restoreSession = restoreSession,
        _requestPhoneOtp = requestPhoneOtp,
@@ -50,6 +52,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _verifyPin = verifyPin,
        _clearPin = clearPin,
        _signOut = signOut,
+       _deleteAccount = deleteAccount,
        super(const AuthState()) {
     on<AuthStarted>(_onStarted);
     on<AuthPhoneSubmitted>(_onPhoneSubmitted);
@@ -63,6 +66,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthPinCreated>(_onPinCreated);
     on<AuthPinUnlockRequested>(_onPinUnlockRequested);
     on<AuthSignOutRequested>(_onSignOutRequested);
+    on<AuthDeleteAccountRequested>(_onDeleteAccountRequested);
     on<AuthFlowCancelled>(_onFlowCancelled);
   }
 
@@ -79,6 +83,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final VerifyPinUseCase _verifyPin;
   final ClearPinUseCase _clearPin;
   final SignOutUseCase _signOut;
+  final DeleteAccountUseCase _deleteAccount;
   final Duration telegramPollingInterval;
   Timer? _telegramPollingTimer;
   String? _telegramSessionId;
@@ -347,6 +352,27 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) =>
           emit(AuthState(status: AuthStatus.unauthenticated, failure: failure)),
+      (_) => clearPinResult.fold(
+        (failure) => emit(
+          AuthState(status: AuthStatus.unauthenticated, failure: failure),
+        ),
+        (_) => emit(const AuthState(status: AuthStatus.unauthenticated)),
+      ),
+    );
+  }
+
+  Future<void> _onDeleteAccountRequested(
+    AuthDeleteAccountRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    _stopTelegramPolling();
+    emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
+    final result = await _deleteAccount();
+    final clearPinResult = await _clearPin();
+    result.fold(
+      (failure) => emit(
+        state.copyWith(status: AuthStatus.authenticated, failure: failure),
+      ),
       (_) => clearPinResult.fold(
         (failure) => emit(
           AuthState(status: AuthStatus.unauthenticated, failure: failure),

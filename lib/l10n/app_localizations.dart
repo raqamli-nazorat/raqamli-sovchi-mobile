@@ -65,6 +65,15 @@ final class AppLocalizations {
       ? 'Foundation is ready for the next feature.'
       : 'Foundation keyingi feature uchun tayyor.';
   String get logout => _isEnglish ? 'Log out' : 'Chiqish';
+  String get deleteAccount =>
+      _isEnglish ? 'Delete account' : 'Hisobni ochirish';
+  String get deleteAccountTitle =>
+      _isEnglish ? 'Delete your account?' : 'Hisobingiz ochirilsinmi?';
+  String get deleteAccountMessage => _isEnglish
+      ? 'This will permanently delete your account and associated profile data. This action cannot be undone.'
+      : 'Bu amal hisobingiz va unga bogliq profil malumotlarini ochiradi. Amalni ortga qaytarib bolmaydi.';
+  String get deleteAccountCancel => _isEnglish ? 'Cancel' : 'Bekor qilish';
+  String get deleteAccountConfirm => _isEnglish ? 'Delete' : 'Ochirish';
   String get retry => _isEnglish ? 'Retry' : 'Qayta urinish';
   String get telegramWaiting => _isEnglish
       ? 'Confirm your phone number in Telegram, then return here.'

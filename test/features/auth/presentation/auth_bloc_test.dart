@@ -9,6 +9,7 @@ import 'package:raqamli_sovchi/features/auth/application/use_cases/check_biometr
 import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_telegram_auth_session.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/delete_account.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/get_telegram_auth_session_status.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/has_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/request_phone_otp.dart';
@@ -116,6 +117,28 @@ void main() {
       ),
     ],
   );
+
+  blocTest<AuthBloc, AuthState>(
+    'deletes account and clears local session state',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.authenticated,
+      session: session,
+      phoneNumber: '+998901234567',
+    ),
+    act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: session,
+        phoneNumber: '+998901234567',
+      ),
+      const AuthState(status: AuthStatus.unauthenticated),
+    ],
+  );
 }
 
 AuthBloc _createBloc({
@@ -144,6 +167,7 @@ AuthBloc _createBloc({
     verifyPin: VerifyPinUseCase(pinRepository),
     clearPin: ClearPinUseCase(pinRepository),
     signOut: SignOutUseCase(repository),
+    deleteAccount: DeleteAccountUseCase(repository),
     telegramPollingInterval: telegramPollingInterval,
   );
 }

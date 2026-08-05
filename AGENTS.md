@@ -5,10 +5,15 @@ architecture, UI, dependency, security, or testing change, read and follow:
 
 - `doc/ARCHITECTURE_TECHNICAL_SPEC.md`
 
-That file is the source of truth for this repository. Do not copy architecture
-rules into other files unless the user explicitly asks for a summary. If this
-file and the architecture spec conflict, follow the architecture spec and report
-the conflict.
+For product context and privacy expectations for the Raqamli Sovchi mobile app,
+also read:
+
+- `doc/PRIVACY_POLICY.md`
+
+The architecture spec is the source of truth for this repository. Do not copy
+architecture rules into other files unless the user explicitly asks for a
+summary. If another project document and the architecture spec conflict, follow
+the architecture spec and report the conflict.
 
 Before making any Git, branch, commit, push, pull request, merge, release, or
 repository protection change, read and follow:

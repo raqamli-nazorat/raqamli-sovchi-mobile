@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Raqamli Sovchi - Account Deletion</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f8fb;
+        --surface: #ffffff;
+        --text: #111827;
+        --muted: #5b6472;
+        --border: #dbe2ea;
+        --primary: #0474f3;
+        --danger: #dc2626;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      main {
+        width: min(880px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 48px 0;
+      }
+
+      section {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+      }
+
+      h1,
+      h2 {
+        line-height: 1.2;
+        margin: 0 0 16px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 5vw, 44px);
+      }
+
+      h2 {
+        font-size: 22px;
+        margin-top: 32px;
+      }
+
+      p {
+        margin: 0 0 16px;
+      }
+
+      ol,
+      ul {
+        margin: 0 0 20px;
+        padding-left: 22px;
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+
+      a {
+        color: var(--primary);
+        font-weight: 700;
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .button {
+        display: inline-block;
+        margin: 8px 0 20px;
+        padding: 12px 18px;
+        border-radius: 8px;
+        background: var(--danger);
+        color: #ffffff;
+        text-decoration: none;
+      }
+
+      .divider {
+        height: 1px;
+        margin: 32px 0;
+        background: var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section>
+        <h1>Raqamli Sovchi account deletion</h1>
+        <p class="muted">
+          This page explains how Raqamli Sovchi users can delete their account
+          and request deletion of associated app data.
+        </p>
+
+        <h2>Delete your account in the app</h2>
+        <ol>
+          <li>Open the Raqamli Sovchi mobile app.</li>
+          <li>Sign in to your account.</li>
+          <li>Open the home/settings area.</li>
+          <li>Tap <strong>Delete account</strong>.</li>
+          <li>Confirm the deletion request.</li>
+        </ol>
+        <p>
+          After confirmation, your account deletion request is sent to the
+          Raqamli Sovchi backend and your local app session is cleared.
+        </p>
+
+        <h2>If you cannot access the app</h2>
+        <p>
+          If you deleted the app or cannot sign in, send an account deletion
+          request by email. Include the phone number or email address connected
+          to your Raqamli Sovchi account so we can identify it.
+        </p>
+        <a
+          class="button"
+          href="mailto:support@raqamlisovchi.uz?subject=Raqamli%20Sovchi%20account%20deletion%20request&body=Please%20delete%20my%20Raqamli%20Sovchi%20account.%0A%0AAccount%20phone%20or%20email%3A%0AReason%20(optional)%3A"
+          >Request account deletion</a
+        >
+
+        <h2>What data is deleted</h2>
+        <ul>
+          <li>Your app account.</li>
+          <li>Your profile data connected to the account.</li>
+          <li>Authentication/session data connected to the account.</li>
+          <li>Other app data associated with the account where deletion is allowed.</li>
+        </ul>
+
+        <h2>Data we may retain</h2>
+        <p>
+          Some records may be retained only when required for legal, security,
+          fraud prevention, abuse prevention, or accounting obligations. Data
+          that is retained for these reasons is not used for normal app profile
+          matching.
+        </p>
+
+        <h2>Processing time</h2>
+        <p>
+          In-app deletion is processed immediately when the backend accepts the
+          request. Email deletion requests are reviewed and processed within 30
+          days after we verify account ownership.
+        </p>
+
+        <div class="divider"></div>
+
+        <h1>Raqamli Sovchi hisobini o'chirish</h1>
+        <p class="muted">
+          Ushbu sahifada Raqamli Sovchi foydalanuvchilari hisobini va unga
+          bog'liq ilova ma'lumotlarini qanday o'chirish mumkinligi tushuntiriladi.
+        </p>
+
+        <h2>Ilova ichida hisobni o'chirish</h2>
+        <ol>
+          <li>Raqamli Sovchi mobil ilovasini oching.</li>
+          <li>Hisobingizga kiring.</li>
+          <li>Bosh sahifa yoki sozlamalar bo'limini oching.</li>
+          <li><strong>Hisobni o'chirish</strong> tugmasini bosing.</li>
+          <li>O'chirish so'rovini tasdiqlang.</li>
+        </ol>
+
+        <h2>Ilovaga kira olmasangiz</h2>
+        <p>
+          Ilovani o'chirib yuborgan bo'lsangiz yoki hisobga kira olmasangiz,
+          email orqali so'rov yuboring. Hisobingizni aniqlashimiz uchun Raqamli
+          Sovchi hisobiga bog'langan telefon raqam yoki email manzilni kiriting.
+        </p>
+        <a
+          class="button"
+          href="mailto:support@raqamlisovchi.uz?subject=Raqamli%20Sovchi%20hisobini%20o'chirish%20so'rovi&body=Raqamli%20Sovchi%20hisobimni%20o'chirib%20berishingizni%20so'rayman.%0A%0AHisob%20telefon%20raqami%20yoki%20email%3A%0ASabab%20(ixtiyoriy)%3A"
+          >Hisobni o'chirish so'rovini yuborish</a
+        >
+      </section>
+    </main>
+  </body>
+</html>

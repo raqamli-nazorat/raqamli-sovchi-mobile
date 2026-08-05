@@ -14,6 +14,7 @@ import '../../features/auth/application/use_cases/check_biometric_availability.d
 import '../../features/auth/application/use_cases/clear_pin.dart';
 import '../../features/auth/application/use_cases/create_pin.dart';
 import '../../features/auth/application/use_cases/create_telegram_auth_session.dart';
+import '../../features/auth/application/use_cases/delete_account.dart';
 import '../../features/auth/application/use_cases/get_telegram_auth_session_status.dart';
 import '../../features/auth/application/use_cases/has_pin.dart';
 import '../../features/auth/application/use_cases/obtain_token.dart';
@@ -121,6 +122,9 @@ Future<void> configureDependencies() async {
     )
     ..registerFactory<ClearPinUseCase>(() => ClearPinUseCase(serviceLocator()))
     ..registerFactory<SignOutUseCase>(() => SignOutUseCase(serviceLocator()))
+    ..registerFactory<DeleteAccountUseCase>(
+      () => DeleteAccountUseCase(serviceLocator()),
+    )
     ..registerFactory<AuthBloc>(
       () => AuthBloc(
         restoreSession: serviceLocator(),
@@ -136,6 +140,7 @@ Future<void> configureDependencies() async {
         verifyPin: serviceLocator(),
         clearPin: serviceLocator(),
         signOut: serviceLocator(),
+        deleteAccount: serviceLocator(),
       ),
     );
 }

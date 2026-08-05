@@ -1,224 +1,364 @@
-# OAuth2 Google and Email Auth Plan
+# Google OAuth2 Authorization Code Auth Plan
 
-Status: proposed plan
+Status: implementation plan
 
-Date: 2026-08-04
+Date: 2026-08-05
 
-## Summary
+## Maqsad
 
-Use `oauth2_client` only if we implement a generic OAuth2 browser redirect flow in the Flutter app. Between `oauth2_client` and `oauth2`, `oauth2_client` fits this mobile app better because it is Flutter-oriented and already handles browser redirect flow, callback activity setup, secure token storage, and predefined Google OAuth2 client helpers.
+Google button bosilganda Flutter ilovasi Google OAuth2 Authorization Code
+flow orqali bir martalik `authorization_code` oladi. Ilova shu kodni Raqamli
+Sovchi backendiga yuboradi. Backend Google bilan code exchange qiladi, userni
+yaratadi yoki topadi va Raqamli Sovchi `access`/`refresh` tokenlarini qaytaradi.
 
-Do not use the backend email endpoint as OAuth2 sign-in. Current backend schema shows `POST /api/v1/accounts/auth/email/` as an authenticated endpoint that accepts and returns only an email value. It has `jwtAuth` security, so it is more likely for adding or updating an email on an existing account, not for initial login.
-
-Do not implement Google sign-in against `POST /api/v1/accounts/auth/google/` yet as a production flow. Current backend schema exposes no request body and no response body for that endpoint, and it also marks the endpoint with `jwtAuth`. That contract is not enough to know whether the backend expects an authorization code, access token, ID token, Firebase token, or something else.
-
-## Sources Checked
-
-- `https://pub.dev/packages/oauth2_client`
-- `https://pub.dev/packages/oauth2`
-- `https://backend.raqamlisovchi.uz/api/schema/`
-- Swagger UI paths:
-  - `POST /api/v1/accounts/auth/google/`
-  - `POST /api/v1/accounts/auth/email/`
-
-## Package Decision
-
-### Recommended if choosing between the two: `oauth2_client`
-
-Reasons:
-
-- It is a Flutter package, not only a Dart package.
-- It supports Authorization Code flow and provides predefined Google client helpers.
-- It uses browser-based redirect flow through Flutter platform integration.
-- It is closer to what a mobile app needs: open browser, receive callback, extract OAuth result.
-- It can work without us hand-rolling the redirect listener.
-
-Important constraint:
-
-- Do not use `oauth2_client` as the app's main API client.
-- Do not let it own Raqamli Sovchi backend JWT lifecycle.
-- Use it only to get the external Google OAuth result, then exchange that result with the backend.
-- Backend access/refresh tokens must still be stored only through the existing `TokenStore`.
-
-### Not recommended as primary Flutter auth package: `oauth2`
-
-Reasons:
-
-- It is a lower-level Dart OAuth2 package.
-- It can model Authorization Code, credentials, refresh, and HTTP client behavior, but it does not provide a complete Flutter redirect integration.
-- For Flutter apps, redirect handling still needs extra pieces such as `url_launcher` plus an app/deep link listener, or a WebView.
-- This project already has strict auth flow, router, token store, and Dio integration. Adding a low-level OAuth client would require more custom platform code and more test surface.
-
-Use `oauth2` only if we intentionally want to own the full OAuth2 state machine and callback/deep-link handling ourselves. That is not necessary for the current app.
-
-## Backend Contract Findings
-
-### Google endpoint
-
-Schema:
-
-```text
-POST /api/v1/accounts/auth/google/
-operationId: v1_accounts_auth_google_create
-security: jwtAuth
-200: No response body
-```
-
-Current blocker:
-
-- No request schema.
-- No response schema.
-- No examples.
-- Security says `jwtAuth`, which conflicts with it being an unauthenticated sign-in endpoint.
-
-Required backend clarification:
-
-- Is this endpoint for initial login/register or for linking Google to an already authenticated account?
-- Should mobile send `id_token`, `access_token`, `authorization_code`, or another provider credential?
-- Is PKCE required?
-- What exact success response returns backend access and refresh tokens?
-- Does the response use the same token shape as `/api/v1/accounts/auth/token/`?
-- What are validation/error responses for cancelled, invalid token, unverified email, blocked user, and already linked account?
-- Should mobile use Google OAuth client IDs for Android/iOS, or does backend provide a custom OAuth start URL?
-
-Until those are answered, production Google auth should stay disabled or show a clear unavailable state.
-
-### Email endpoint
-
-Schema:
-
-```text
-POST /api/v1/accounts/auth/email/
-security: jwtAuth
-request: EmailAuthRequest { email: string, format: email, minLength: 1 }
-response: EmailAuth { email: string, format: email }
-```
-
-Interpretation:
-
-- This is not OAuth2.
-- This is not a complete email login flow.
-- Because it requires `jwtAuth`, it appears to be an authenticated account email attach/update endpoint.
-
-Required backend clarification:
-
-- Is email supposed to be login, registration, profile update, or account linking?
-- If email login is planned, where are the password, OTP, magic link, verification code, or token exchange endpoints?
-- Should unauthenticated users call this endpoint? If yes, `jwtAuth` in schema is wrong.
-
-## Proposed Google Flow After Backend Contract Is Fixed
-
-Target architecture:
+Yakuniy oqim:
 
 ```text
 LoginPage
-  -> AuthGoogleSignInRequested
-  -> AuthBloc
-  -> SignInWithGoogleUseCase
-  -> AuthRepository
-  -> GoogleOAuthDataSource
-  -> oauth2_client opens Google OAuth
-  -> receive provider result
-  -> RemoteAuthDataSource POST /api/v1/accounts/auth/google/
-  -> backend returns app access/refresh tokens
-  -> TokenStore.saveTokens
-  -> AuthBloc emits PIN gate
+  -> Google OAuth consent
+  -> one-time authorization_code
+  -> POST /api/v1/accounts/auth/google/
+  -> backend Google token exchange
+  -> Raqamli Sovchi access/refresh tokens
+  -> TokenStore (flutter_secure_storage)
+  -> existing PIN setup/unlock gate
+  -> Home
 ```
 
-Implementation rules:
+## Hozirgi backend kontrakti
 
-- Domain layer must not import `oauth2_client`.
-- `oauth2_client` belongs in data or core platform integration only.
-- BLoC calls a use case only.
-- Repository returns `Either<Failure, Session>`.
-- Raw provider exceptions map to typed `Failure`.
-- Backend JWT tokens remain the only tokens used by Dio interceptors.
-- Google OAuth token/code must not be logged.
+Swagger endpoint:
 
-## Data Layer Shape
+```text
+POST https://backend.raqamlisovchi.uz/api/v1/accounts/auth/google/
+operationId: v1_accounts_auth_google_create
+Content-Type: application/json
+```
 
-Add a provider abstraction:
+Swagger request example:
+
+```json
+{
+  "code": "string",
+  "authorization_code": "string",
+  "access_token": "string",
+  "redirect_uri": ""
+}
+```
+
+Backend `GoogleLoginSerializer` quyidagilarni belgilaydi:
+
+- `code` — Google OAuth authorization code;
+- `authorization_code` — `code`ning muqobil nomi;
+- `access_token` — Google providerdan olingan access token;
+- `redirect_uri` — ixtiyoriy, default qiymati bo‘sh string.
+
+`code` yoki `authorization_code` ustun. Serializer kamida `code`/`authorization_code`
+yoki `access_token`dan bittasini talab qiladi. Mobile app uchun ushbu plan
+`authorization_code` variantini tanlaydi.
+
+Backend `GoogleLoginView`:
+
+1. `authorization_code`ni `code` sifatida oladi.
+2. `GoogleOAuth2Adapter` orqali Google token endpointiga code exchange qiladi.
+3. `redirect_uri` berilsa shu URI’dan foydalanadi; berilmasa avval
+   `postmessage`, keyin backend callback URL bilan qayta urinadi.
+4. Google profilini oladi va SocialAccount/User bilan bog‘laydi.
+5. Yangi user uchun `201 Created`, mavjud user uchun `200 OK` qaytaradi.
+
+Success response backend kodida quyidagi shaklda qaytariladi:
+
+```json
+{
+  "user": {},
+  "tokens": {
+    "refresh": "<raqamli-sovchi-refresh-token>",
+    "access": "<raqamli-sovchi-access-token>"
+  },
+  "created": true
+}
+```
+
+`user` maydonining to‘liq modeli backend `UserSerializer`ga bog‘liq. Mapper
+`tokens.access` va `tokens.refresh`ni alohida o‘qishi kerak; tokenlar root
+darajasida deb taxmin qilinmaydi.
+
+## 401 xatosining sababi
+
+Berilgan javob:
+
+```json
+{
+  "error": {
+    "errorId": 401,
+    "errorCode": "token_not_valid",
+    "details": {
+      "messages": [
+        {
+          "token_class": "AccessToken",
+          "token_type": "access",
+          "message": "Token is expired"
+        }
+      ]
+    }
+  }
+}
+```
+
+Bu Google `authorization_code` xatosi emas. Requestga muddati tugagan
+Raqamli Sovchi JWT `Authorization: Bearer ...` headeri qo‘shilgan yoki
+`access_token` sifatida Raqamli Sovchi access tokeni yuborilgan.
+
+Muhim farq:
+
+- `authorization_code` — Google’dan OAuth login paytida yangi olinadigan,
+  bir martalik va qisqa muddatli code;
+- `access_token` — agar ishlatilsa, Google provider access tokeni;
+- Raqamli Sovchi `access` tokeni — faqat backend API requestlari uchun;
+  Google auth requestiga yuborilmaydi.
+
+Google login public auth endpoint sifatida ishlatilgani uchun request
+`skipAuth: true` bilan yuboriladi. Bu `AuthInterceptor`ning eski yoki expired
+Raqamli Sovchi tokenini headerga qo‘shishiga yo‘l qo‘ymaydi.
+
+Body bo‘lmasa, UI requestni yubormasligi kerak. Backendga yetib borgan bo‘sh
+body credential validation xatosi qaytaradi; expired Sovchi JWT bilan kelgan
+401 esa alohida unauthorized/network failure sifatida ko‘rsatiladi.
+
+## Paket qarori
+
+Ikki variant ichidan `oauth2_client` tanlanadi:
+
+- Flutter mobil callback flowiga yaqinroq;
+- authorization-code flow uchun tayyor client abstraction beradi;
+- browser redirect va callback integratsiyasini `oauth2`ga qaraganda kamroq
+  qo‘lda yozishni talab qiladi.
+
+`oauth2` past darajadagi Dart OAuth2 package. Uni tanlash browser/deep-link,
+state, callback va PKCE qismlarini ko‘proq o‘zimiz boshqarishimizni talab
+qiladi. Shuning uchun hozircha qo‘shilmaydi.
+
+Har ikkala holatda ham package faqat Google credential olish uchun ishlatiladi.
+Raqamli Sovchi API client sifatida Dio va backend JWT lifecycle esa mavjud
+`ApiClient`/`TokenStore` orqali qoladi.
+
+## Implementatsiya bosqichlari
+
+### 1. Google OAuth konfiguratsiyasi
+
+Backend jamoasidan quyidagilar tasdiqlanadi:
+
+- Android/iOS uchun qaysi Google OAuth client ID ishlatiladi;
+- authorization code qaysi client ID uchun beriladi;
+- `redirect_uri` qiymati `postmessage`mi yoki mobile custom scheme/app linkmi;
+- PKCE talab qilinadimi;
+- Android package name va SHA-1/SHA-256 fingerprintlar Google Console’da
+  ro‘yxatdan o‘tganmi;
+- iOS bundle ID va URL scheme sozlanganmi.
+
+Mobile callbackda ishlatiladigan client ID backend `GoogleOAuth2Adapter`
+exchange qiladigan Google app konfiguratsiyasiga mos bo‘lishi kerak. Aks holda
+`invalid_grant` yoki `redirect_uri_mismatch` keladi.
+
+### 2. Provider abstraction
+
+`oauth2_client` domain qatlamiga kirmaydi. Data yoki core platform qatlamida
+alohida abstraction bo‘ladi:
 
 ```dart
 abstract interface class GoogleOAuthProvider {
-  Future<GoogleOAuthCredential> signIn();
+  Future<GoogleAuthorizationResult> authorize();
 }
-```
 
-Model the external credential separately:
-
-```dart
-final class GoogleOAuthCredential {
-  const GoogleOAuthCredential({
-    this.authorizationCode,
-    this.idToken,
-    this.accessToken,
+final class GoogleAuthorizationResult {
+  const GoogleAuthorizationResult({
+    required this.authorizationCode,
+    this.redirectUri,
   });
 
-  final String? authorizationCode;
-  final String? idToken;
-  final String? accessToken;
+  final String authorizationCode;
+  final String? redirectUri;
 }
 ```
 
-The request DTO must wait for backend confirmation. Possible shapes:
+Provider quyidagilarni bajaradi:
 
-```json
-{ "id_token": "<google id token>" }
+- Google consent oynasini ochish;
+- state/PKCE qiymatlarini boshqarish, agar konfiguratsiya talab qilsa;
+- callbackdan `authorization_code`ni olish;
+- cancel, timeout va provider errorni typed failurega map qilish;
+- code yoki Google access tokenni log qilmaslik.
+
+One-time authorization code secure storagega saqlanmaydi. U faqat request
+vaqtida memoryda bo‘ladi.
+
+### 3. Domain va application contract
+
+Hozirgi `signInWithGoogle()` parametrlarsiz. U quyidagiga o‘zgartiriladi:
+
+```dart
+Future<Either<Failure, Session>> signInWithGoogle({
+  required GoogleAuthorizationResult credential,
+});
 ```
 
-or:
+Domain `GoogleAuthorizationResult` tashqi package type emas, loyiha ichidagi
+oddiy immutable model bo‘ladi. Use case provider’dan credential olib,
+repositoryga uzatadi. BLoC OAuth package bilan bevosita ishlamaydi.
+
+### 4. Backend request
+
+Remote data source quyidagi requestni yuboradi:
 
 ```json
-{ "code": "<authorization code>", "redirect_uri": "<redirect uri>" }
+{
+  "authorization_code": "<one-time-google-code>",
+  "redirect_uri": "<exact-configured-redirect-uri>"
+}
 ```
 
-Do not guess which one is correct.
+`redirect_uri` backend va Google Console konfiguratsiyasida default
+`postmessage` ishlatilsa yuborilmasligi mumkin. URI aniq talab qilinsa,
+provider qaytargan qiymat yuboriladi. Har ikkala holat backend jamoasi bilan
+integratsiya testida tasdiqlanadi.
 
-## Package Integration Plan
+Dio request:
 
-If backend confirms mobile should perform OAuth:
+```dart
+await _client.post<Map<String, dynamic>>(
+  _googlePath,
+  data: {
+    'authorization_code': credential.authorizationCode,
+    if (credential.redirectUri != null)
+      'redirect_uri': credential.redirectUri,
+  },
+  options: Options(extra: {'skipAuth': true}),
+);
+```
 
-1. Add `oauth2_client` only after confirming Android/iOS callback requirements.
-2. Configure Android callback activity for the app redirect scheme.
-3. Configure iOS URL scheme.
-4. Add non-secret OAuth config to app config:
-   - Google Android client ID
-   - Google iOS client ID
-   - Redirect URI/custom scheme
-   - Scopes
-5. Implement `GoogleOAuthProvider` behind data/core platform boundary.
-6. Update `RemoteAuthDataSource.signInWithGoogle`.
-7. Map backend token response to `AuthSessionModel`.
-8. Store backend tokens via `TokenStore`.
-9. Route successful login into existing PIN setup/unlock flow.
-10. Add tests for provider cancellation, backend validation failure, token save, and BLoC state transitions.
+### 5. Response mapper va token lifecycle
 
-## Email Auth Plan
+Google response uchun alohida mapper yoziladi:
 
-Do not build email login from current endpoint.
+1. `response.data['tokens']['access']`ni o‘qiydi.
+2. `response.data['tokens']['refresh']`ni o‘qiydi.
+3. `response.data['user']`ni `CurrentUserModel`/session ma’lumotiga map qiladi.
+4. `access` bo‘lmasa typed `AuthContractException` qaytaradi.
+5. `TokenStore.saveTokens` orqali faqat backend tokenlarini secure storagega
+   yozadi.
+6. `AuthBloc`ga `Session` qaytaradi va PIN gate’ni ishga tushiradi.
 
-Use current email endpoint only if product wants "add email to current account" after login. That should be implemented as a profile/account setting, not as `AuthGoogleSignInRequested` or initial auth.
+Backend access tokeni tugaganda mavjud refresh endpoint ishlatiladi:
 
-If backend later adds email login, required contract:
+```text
+POST /api/v1/accounts/auth/token/refresh/
+{ "refresh": "<backend-refresh-token>" }
+```
 
-- Start email auth request.
-- Verify OTP/magic link/password.
-- Return backend access/refresh tokens.
-- Define resend, expiry, rate-limit, and error response rules.
+Google `authorization_code` refresh uchun qayta ishlatilmaydi.
 
-## Acceptance Criteria Before Implementation
+### 6. DI va feature flag
 
-- Backend provides concrete Google request and response examples.
-- Backend clarifies whether Google endpoint is unauthenticated login or authenticated account linking.
-- Backend provides token response shape.
-- Backend confirms whether mobile should send authorization code, ID token, or access token.
-- App callback scheme is registered for Android and iOS.
-- No OAuth client secret is shipped in the mobile app.
-- Tests cover provider cancellation, invalid provider credential, backend failure, and successful session-to-PIN gate.
+DI’da `GoogleOAuthProvider`ning bitta aniq implementationi ro‘yxatdan o‘tadi.
+Provider yo‘q bo‘lsa Google button yashirin yoki aniq unavailable state’da
+bo‘ladi; productionda jim temporary fallback bo‘lmaydi.
 
-## Final Recommendation
+Tavsiya qilinadigan konfiguratsiya:
 
-Use `oauth2_client` if we must choose from the two packages, but do not implement Google login until backend fixes or clarifies `POST /api/v1/accounts/auth/google/`.
+- `googleAuthEnabled` — feature flag;
+- Google Android/iOS client ID — public config, secret emas;
+- redirect URI — public config;
+- backend base URL — mavjud `AppConfig` orqali.
 
-Do not use `POST /api/v1/accounts/auth/email/` for OAuth2 or login. It is currently an authenticated email attach/update style endpoint, not an auth flow.
+Google client secret mobile appga qo‘yilmaydi.
+
+## Xatolarni map qilish
+
+| Holat | Backend/provider signali | UI natijasi |
+|---|---|---|
+| User cancel qildi | OAuth cancel | Login sahifasiga qaytish, qizil error ko‘rsatmaslik |
+| Credential yo‘q | `code`/`authorization_code`/`access_token` yo‘q | Validation failure |
+| Expired Sovchi JWT | `token_not_valid`, `AccessToken`, `Token is expired` | `skipAuth` konfiguratsiyasini tekshirish; retry |
+| Google code eskirgan yoki qayta ishlatilgan | `invalid_grant`, backend validation error | Yangi Google flow boshlash |
+| Redirect mos emas | `redirect_uri_mismatch` | Google/backend redirect configni tuzatish |
+| User bloklangan | `403` | Backend friendly message |
+| Network/offline | Dio connection/timeout | Offline/retry state |
+| Backend response’da token yo‘q | mapper contract error | Auth contract error; token saqlanmaydi |
+
+PII, authorization code, Google token va backend JWT error logga yozilmaydi.
+
+## Test rejasi
+
+### Unit testlar
+
+- Google response nested `tokens.access/refresh` mapperi;
+- `authorization_code` request body;
+- `redirect_uri` bor/yo‘q holatlari;
+- `skipAuth: true` request optioni;
+- missing access token contract failure;
+- `201 created` va `200 existing` response mapping;
+- expired backend JWT failure mapping;
+- provider cancel/timeout mapping.
+
+### BLoC testlar
+
+- Google requested -> loading -> PIN setup;
+- Google requested -> loading -> PIN unlock;
+- provider cancel -> unauthenticated, qizil error yo‘q;
+- backend 401/403/400 -> expected failure state;
+- mapper failure -> session/token saqlanmasligi.
+
+### Integration test
+
+Test Google account bilan:
+
+1. LoginPage’dan Google button bosiladi.
+2. Google consent yakunlanadi.
+3. App callbackdan yangi authorization code oladi.
+4. Backend requestida `Authorization` header bo‘lmaydi.
+5. Body’da `authorization_code` va kerak bo‘lsa aniq `redirect_uri` bo‘ladi.
+6. Backend `200` yoki `201` va nested `tokens` qaytaradi.
+7. Access/refresh secure storagega yoziladi.
+8. PIN setup/unlock va Home ishlaydi.
+
+Real Google credential test loglarida yoki test snapshotlarda saqlanmaydi.
+
+## Acceptance criteria
+
+- Google button `This sign-in method is not available yet` holatida qolmaydi.
+- App Google’dan haqiqiy one-time `authorization_code` oladi.
+- `/auth/google/` requestida expired Raqamli Sovchi access tokeni yuborilmaydi.
+- Backend request body `authorization_code`ga ega bo‘ladi.
+- `redirect_uri` Google/backend konfiguratsiyasiga mos bo‘ladi.
+- Backend `tokens.access` va `tokens.refresh` to‘g‘ri map qilinadi.
+- Tokenlar faqat `flutter_secure_storage` orqali saqlanadi.
+- Successdan keyin mavjud PIN gate ishlaydi.
+- Cancel, invalid code, expired JWT, network va blocked user holatlari typed
+  failure bilan UI’da ko‘rsatiladi.
+- `flutter analyze`, format, targeted unit/BLoC/widget/integration testlar
+  o‘tadi.
+
+## Email bo‘yicha qaror
+
+`POST /api/v1/accounts/auth/email/` OAuth2 endpoint emas. Hozirgi backend
+kontrakti emailni qabul qiladi, lekin OAuth authorization code, password,
+OTP yoki magic-link verification flow bermaydi. Email login shu endpoint bilan
+qurilmaydi; backend alohida email auth contract chiqargandan keyin alohida
+plan qilinadi.
+
+## Manbalar
+
+- Swagger: https://backend.raqamlisovchi.uz/api/docs/#/Accounts%20(Users)/v1_accounts_auth_google_create
+- OpenAPI schema: https://backend.raqamlisovchi.uz/api/schema/
+- Backend Google view: https://github.com/raqamli-nazorat/raqamli-sovchi-backend/blob/main/apps/accounts/users/views.py
+- Backend Google serializer: https://github.com/raqamli-nazorat/raqamli-sovchi-backend/blob/main/apps/accounts/users/serializers.py
+- `oauth2_client`: https://pub.dev/packages/oauth2_client
+- `oauth2`: https://pub.dev/packages/oauth2
+
+## Yakuniy qaror
+
+`oauth2_client` + Authorization Code flow tanlanadi. App Google’dan olingan
+`authorization_code`ni `POST /api/v1/accounts/auth/google/` endpointiga
+`skipAuth: true` bilan yuboradi. Backend qaytargan nested Raqamli Sovchi
+`tokens` secure storagega yoziladi. Google access token yoki expired Sovchi
+JWTni aralashtirish taqiqlanadi.

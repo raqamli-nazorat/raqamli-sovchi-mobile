@@ -80,6 +80,10 @@ final class AuthSignOutRequested extends AuthEvent {
   const AuthSignOutRequested();
 }
 
+final class AuthDeleteAccountRequested extends AuthEvent {
+  const AuthDeleteAccountRequested();
+}
+
 final class AuthFlowCancelled extends AuthEvent {
   const AuthFlowCancelled();
 }

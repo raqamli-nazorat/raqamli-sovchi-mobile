@@ -1,4 +1,4 @@
-package app.raqamlisovchi.uz.raqamli_sovchi
+package app.raqamlisovchi.uz
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
