@@ -22,7 +22,7 @@ final class SignInWithGoogleUseCase {
       },
       (credential) {
         _debugGoogleAuthLog(
-          'useCase.providerSuccess codeLength=${credential.authorizationCode.length}',
+          'useCase.providerSuccess tokenLength=${credential.idToken.length}',
         );
         _debugGoogleAuthLog('useCase.repositoryCall.start');
         return _repository.signInWithGoogle(credential: credential);

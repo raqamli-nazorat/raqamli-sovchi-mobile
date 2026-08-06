@@ -15,14 +15,16 @@ final class TelegramAuthStatusModel extends Equatable {
     return TelegramAuthStatusModel(
       status: (json['status'] ?? '').toString(),
       session: hasSession
-          ? AuthSessionModel(
-              userId: (user['id'] ?? '').toString(),
-              displayName: (user['full_name'] ?? 'Raqamli Sovchi').toString(),
-              accessToken: (tokens['access'] ?? '').toString(),
-              refreshToken: tokens['refresh']?.toString(),
-              phoneNumber: user['phone_number']?.toString(),
-              isVerified: true,
-            )
+          ? AuthSessionModel.fromAuthResponse(<String, dynamic>{
+              'data': <String, dynamic>{
+                'user': <String, dynamic>{
+                  ...user,
+                  'is_verified': user['is_verified'] ?? true,
+                },
+                'tokens': tokens,
+              },
+              'success': true,
+            })
           : null,
     );
   }

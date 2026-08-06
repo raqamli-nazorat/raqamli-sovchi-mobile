@@ -46,18 +46,18 @@ final class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> requestPhoneOtp(String phoneNumber) async {
+  Future<Either<Failure, Session?>> requestPhoneOtp(String phoneNumber) async {
     try {
-      await _dataSource.requestPhoneOtp(phoneNumber);
-      return const Right<Failure, void>(null);
+      final model = await _dataSource.requestPhoneOtp(phoneNumber);
+      return Right<Failure, Session?>(model?.toEntity());
     } on DioException catch (error) {
-      return Left<Failure, void>(mapDioException(error));
+      return Left<Failure, Session?>(mapDioException(error));
     } on AuthContractException {
-      return const Left<Failure, void>(Failure.unsupported());
+      return const Left<Failure, Session?>(Failure.unsupported());
     } on AuthValidationException {
-      return const Left<Failure, void>(Failure.validation());
+      return const Left<Failure, Session?>(Failure.validation());
     } on Object catch (error) {
-      return Left<Failure, void>(
+      return Left<Failure, Session?>(
         Failure.unknown(technicalReason: error.toString()),
       );
     }
@@ -92,7 +92,7 @@ final class AuthRepositoryImpl implements AuthRepository {
     required GoogleAuthorizationResult credential,
   }) async {
     _debugGoogleAuthLog(
-      'repository.signInWithGoogle.start googleDataSourceConfigured=${_google != null} codeLength=${credential.authorizationCode.length}',
+      'repository.signInWithGoogle.start googleDataSourceConfigured=${_google != null} tokenLength=${credential.idToken.length}',
     );
     final google = _google;
     if (google == null) {

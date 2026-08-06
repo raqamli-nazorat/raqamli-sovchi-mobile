@@ -6,7 +6,7 @@ import 'package:raqamli_sovchi/features/auth/data/data_sources/google_auth_data_
 import 'package:raqamli_sovchi/features/auth/domain/entities/google_authorization_result.dart';
 
 void main() {
-  test('sends authorization code without backend auth header', () async {
+  test('sends id token without backend auth header', () async {
     final client = _FakeApiClient();
     final tokenStore = _FakeTokenStore();
     final dataSource = RemoteGoogleAuthDataSource(
@@ -15,13 +15,11 @@ void main() {
     );
 
     final session = await dataSource.signInWithGoogle(
-      credential: const GoogleAuthorizationResult(
-        authorizationCode: 'one-time-code',
-      ),
+      credential: const GoogleAuthorizationResult(idToken: 'google-id-token'),
     );
 
     expect(client.lastPath, '/api/v1/accounts/auth/google/');
-    expect(client.lastData, {'authorization_code': 'one-time-code'});
+    expect(client.lastData, {'id_token': 'google-id-token'});
     expect(client.lastOptions, isNotNull);
     expect(client.lastOptions!.extra?['skipAuth'], isTrue);
     expect(session.userId, 'user-1');

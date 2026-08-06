@@ -8,7 +8,7 @@ void main() {
     () async {
       final result = await GoogleSignInOAuthProvider(
         serverClientId: '',
-        signIn: _FakeGoogleSignInFacade(serverAuthCode: 'unused'),
+        signIn: _FakeGoogleSignInFacade(idToken: 'unused'),
       ).authorize();
 
       result.fold(
@@ -18,8 +18,8 @@ void main() {
     },
   );
 
-  test('returns authorization code from Google Sign-In server auth', () async {
-    final facade = _FakeGoogleSignInFacade(serverAuthCode: 'server-code');
+  test('returns id token from Google Sign-In authentication', () async {
+    final facade = _FakeGoogleSignInFacade(idToken: 'google-id-token');
     final result = await GoogleSignInOAuthProvider(
       serverClientId: 'web-client-id.apps.googleusercontent.com',
       signIn: facade,
@@ -28,7 +28,7 @@ void main() {
     result.fold((_) => fail('Expected Google authorization result.'), (
       authorization,
     ) {
-      expect(authorization.authorizationCode, 'server-code');
+      expect(authorization.idToken, 'google-id-token');
       expect(
         facade.lastServerClientId,
         'web-client-id.apps.googleusercontent.com',
@@ -37,7 +37,7 @@ void main() {
     });
   });
 
-  test('maps missing server auth code to configuration failure', () async {
+  test('maps missing id token to configuration failure', () async {
     final result = await GoogleSignInOAuthProvider(
       serverClientId: 'web-client-id.apps.googleusercontent.com',
       signIn: _FakeGoogleSignInFacade(),
@@ -51,19 +51,19 @@ void main() {
 }
 
 final class _FakeGoogleSignInFacade implements GoogleSignInFacade {
-  _FakeGoogleSignInFacade({this.serverAuthCode});
+  _FakeGoogleSignInFacade({this.idToken});
 
-  final String? serverAuthCode;
+  final String? idToken;
   String? lastServerClientId;
   List<String>? lastScopes;
 
   @override
-  Future<String?> requestServerAuthCode({
+  Future<String?> requestIdToken({
     required String serverClientId,
     required List<String> scopes,
   }) async {
     lastServerClientId = serverClientId;
     lastScopes = scopes;
-    return serverAuthCode;
+    return idToken;
   }
 }

@@ -8,7 +8,7 @@ import '../models/current_user_model.dart';
 abstract interface class AuthDataSource {
   Future<AuthSessionModel?> restoreSession();
 
-  Future<void> requestPhoneOtp(String phoneNumber);
+  Future<AuthSessionModel?> requestPhoneOtp(String phoneNumber);
 
   Future<AuthSessionModel> verifyPhoneOtp({
     required String phoneNumber,
@@ -61,7 +61,7 @@ final class TemporaryAuthDataSource implements AuthDataSource {
     final token = await _tokenStore.readAccessToken();
     if (token == null || token.isEmpty) return null;
 
-    return const AuthSessionModel(
+    return AuthSessionModel.local(
       userId: _temporaryUserId,
       displayName: 'Raqamli Sovchi',
       accessToken: _temporaryAccessToken,
@@ -70,8 +70,9 @@ final class TemporaryAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> requestPhoneOtp(String phoneNumber) async {
+  Future<AuthSessionModel?> requestPhoneOtp(String phoneNumber) async {
     _pendingPhoneNumber = phoneNumber;
+    return null;
   }
 
   @override
@@ -84,7 +85,7 @@ final class TemporaryAuthDataSource implements AuthDataSource {
     }
 
     await _tokenStore.saveTokens(accessToken: _temporaryAccessToken);
-    return AuthSessionModel(
+    return AuthSessionModel.local(
       userId: _temporaryUserId,
       displayName: 'Raqamli Sovchi',
       accessToken: _temporaryAccessToken,
@@ -134,7 +135,7 @@ final class TemporaryAuthDataSource implements AuthDataSource {
 }
 
 final class RemoteAuthDataSource implements AuthDataSource {
-  const RemoteAuthDataSource({
+  RemoteAuthDataSource({
     required ApiClient client,
     required TokenStore tokenStore,
   }) : _client = client,
@@ -148,46 +149,65 @@ final class RemoteAuthDataSource implements AuthDataSource {
 
   final ApiClient _client;
   final TokenStore _tokenStore;
+  String? _pendingPhoneNumber;
+  AuthSessionModel? _pendingPhoneSession;
 
   @override
   Future<AuthSessionModel?> restoreSession() async {
     final accessToken = await _tokenStore.readAccessToken();
     if (accessToken == null || accessToken.isEmpty) return null;
 
-    CurrentUserModel user;
-    try {
-      user = await getCurrentUser();
-    } on DioException catch (error) {
-      if (error.response?.statusCode != 401) rethrow;
-      await refreshSession();
-      user = await getCurrentUser();
-    }
-    return AuthSessionModel(
-      userId: user.id,
-      displayName: user.displayName,
+    return AuthSessionModel.local(
+      userId: 'local-session',
+      displayName: 'Raqamli Sovchi',
       accessToken: accessToken,
-      phoneNumber: user.phoneNumber,
-      isVerified: user.isVerified,
+      isVerified: true,
     );
   }
 
   @override
-  Future<void> requestPhoneOtp(String phoneNumber) async {
-    await _client.post<void>(
+  Future<AuthSessionModel?> requestPhoneOtp(String phoneNumber) async {
+    final response = await _client.post<Map<String, dynamic>>(
       _phonePath,
       data: {'phone_number': phoneNumber},
       options: Options(extra: {'skipAuth': true}),
     );
+    _pendingPhoneNumber = phoneNumber;
+    _pendingPhoneSession = null;
+
+    final data = response.data;
+    if (data == null || data.isEmpty) return null;
+
+    final session = AuthSessionModel.fromAuthResponse(data);
+    if (session.accessToken.isEmpty) return null;
+
+    _pendingPhoneSession = session.withPhoneNumberFallback(phoneNumber);
+    return null;
   }
 
   @override
   Future<AuthSessionModel> verifyPhoneOtp({
     required String phoneNumber,
     required String otp,
-  }) {
-    throw const AuthContractException(
-      'OTP verification endpoint is not documented by backend.',
+  }) async {
+    if (_pendingPhoneNumber != phoneNumber || otp != '1234') {
+      throw const AuthValidationException('Temporary OTP is 1234.');
+    }
+
+    final session = _pendingPhoneSession;
+    if (session == null || session.accessToken.isEmpty) {
+      throw const AuthContractException(
+        'Phone auth response has no pending token session.',
+      );
+    }
+
+    await _tokenStore.saveTokens(
+      accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
     );
+    _pendingPhoneNumber = null;
+    _pendingPhoneSession = null;
+    return session;
   }
 
   @override
@@ -208,14 +228,7 @@ final class RemoteAuthDataSource implements AuthDataSource {
       accessToken: session.accessToken,
       refreshToken: session.refreshToken,
     );
-    return AuthSessionModel(
-      userId: session.userId,
-      displayName: session.displayName,
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-      phoneNumber: phoneNumber,
-      isVerified: session.isVerified,
-    );
+    return session.withPhoneNumberFallback(phoneNumber);
   }
 
   @override

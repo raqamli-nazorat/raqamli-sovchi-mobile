@@ -9,7 +9,7 @@ import '../entities/telegram_auth_status.dart';
 abstract interface class AuthRepository {
   Future<Either<Failure, Session?>> restoreSession();
 
-  Future<Either<Failure, void>> requestPhoneOtp(String phoneNumber);
+  Future<Either<Failure, Session?>> requestPhoneOtp(String phoneNumber);
 
   Future<Either<Failure, Session>> verifyPhoneOtp({
     required String phoneNumber,

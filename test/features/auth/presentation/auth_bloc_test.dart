@@ -204,8 +204,8 @@ final class _FakeAuthRepository implements AuthRepository {
       Right<Failure, Session?>(session);
 
   @override
-  Future<Either<Failure, void>> requestPhoneOtp(String phoneNumber) async =>
-      const Right<Failure, void>(null);
+  Future<Either<Failure, Session?>> requestPhoneOtp(String phoneNumber) async =>
+      const Right<Failure, Session?>(null);
 
   @override
   Future<Either<Failure, Session>> verifyPhoneOtp({
@@ -272,7 +272,7 @@ final class _FakeGoogleOAuthProvider implements GoogleOAuthProvider {
   @override
   Future<Either<Failure, GoogleAuthorizationResult>> authorize() async =>
       const Right<Failure, GoogleAuthorizationResult>(
-        GoogleAuthorizationResult(authorizationCode: 'code'),
+        GoogleAuthorizationResult(idToken: 'id-token'),
       );
 }
 

@@ -30,11 +30,11 @@ final class RemoteGoogleAuthDataSource implements GoogleAuthDataSource {
     required GoogleAuthorizationResult credential,
   }) async {
     _debugGoogleAuthLog(
-      'dataSource.post.start path=$_googlePath codeLength=${credential.authorizationCode.length}',
+      'dataSource.post.start path=$_googlePath tokenLength=${credential.idToken.length}',
     );
     final response = await _client.post<Map<String, dynamic>>(
       _googlePath,
-      data: {'authorization_code': credential.authorizationCode},
+      data: {'id_token': credential.idToken},
       options: Options(extra: {'skipAuth': true}),
     );
     _debugGoogleAuthLog(

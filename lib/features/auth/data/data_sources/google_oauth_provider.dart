@@ -8,7 +8,7 @@ import '../../domain/entities/google_authorization_result.dart';
 import '../../domain/repositories/google_oauth_provider.dart';
 
 abstract interface class GoogleSignInFacade {
-  Future<String?> requestServerAuthCode({
+  Future<String?> requestIdToken({
     required String serverClientId,
     required List<String> scopes,
   });
@@ -22,12 +22,12 @@ final class PluginGoogleSignInFacade implements GoogleSignInFacade {
   String? _initializedServerClientId;
 
   @override
-  Future<String?> requestServerAuthCode({
+  Future<String?> requestIdToken({
     required String serverClientId,
     required List<String> scopes,
   }) async {
     _debugGoogleAuthLog(
-      'facade.requestServerAuthCode.start serverClientIdPresent=${serverClientId.isNotEmpty} scopes=${scopes.length}',
+      'facade.requestIdToken.start serverClientIdPresent=${serverClientId.isNotEmpty} scopes=${scopes.length}',
     );
     await _initialize(serverClientId);
 
@@ -39,14 +39,10 @@ final class PluginGoogleSignInFacade implements GoogleSignInFacade {
     _debugGoogleAuthLog('facade.authenticate.start');
     final account = await _signIn.authenticate(scopeHint: scopes);
     _debugGoogleAuthLog('facade.authenticate.success');
-    _debugGoogleAuthLog('facade.authorizeServer.start');
-    final authorization = await account.authorizationClient.authorizeServer(
-      scopes,
-    );
     _debugGoogleAuthLog(
-      'facade.authorizeServer.done codePresent=${authorization?.serverAuthCode.isNotEmpty ?? false} codeLength=${authorization?.serverAuthCode.length ?? 0}',
+      'facade.idToken.done tokenPresent=${account.authentication.idToken?.isNotEmpty ?? false} tokenLength=${account.authentication.idToken?.length ?? 0}',
     );
-    return authorization?.serverAuthCode;
+    return account.authentication.idToken;
   }
 
   Future<void> _initialize(String serverClientId) async {
@@ -89,23 +85,23 @@ final class GoogleSignInOAuthProvider implements GoogleOAuthProvider {
     }
 
     try {
-      final code = await _signIn.requestServerAuthCode(
+      final idToken = await _signIn.requestIdToken(
         serverClientId: serverClientId,
         scopes: _scopes,
       );
 
-      if (code == null || code.isEmpty) {
-        _debugGoogleAuthLog('provider.authorize.missingServerAuthCode');
+      if (idToken == null || idToken.isEmpty) {
+        _debugGoogleAuthLog('provider.authorize.missingIdToken');
         return const Left<Failure, GoogleAuthorizationResult>(
           Failure.configuration(),
         );
       }
 
       _debugGoogleAuthLog(
-        'provider.authorize.success codeLength=${code.length}',
+        'provider.authorize.success tokenLength=${idToken.length}',
       );
       return Right<Failure, GoogleAuthorizationResult>(
-        GoogleAuthorizationResult(authorizationCode: code),
+        GoogleAuthorizationResult(idToken: idToken),
       );
     } on GoogleSignInException catch (error) {
       _debugGoogleAuthLog(
