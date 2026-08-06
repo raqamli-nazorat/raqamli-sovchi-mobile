@@ -57,6 +57,54 @@ class AppLocalizationsRu extends AppLocalizations {
   String get confirmLabel => 'Подтвердить';
 
   @override
+  String get candidateTypeTitle => 'Кого вы ищете?';
+
+  @override
+  String get candidateTypeSubtitle =>
+      'Этот выбор определит вашу анкету. Повторно о поле не спросим.';
+
+  @override
+  String get groomCandidateTitle => 'Кандидат-жених';
+
+  @override
+  String get groomCandidateSubtitle => 'Я мужчина, ищу для себя';
+
+  @override
+  String get brideCandidateTitle => 'Кандидатка-невеста';
+
+  @override
+  String get brideCandidateSubtitle => 'Я женщина, ищу для себя';
+
+  @override
+  String get representativeCandidateTitle => 'Представитель';
+
+  @override
+  String get representativeCandidateSubtitle =>
+      'Заполняю анкету от имени близкого человека';
+
+  @override
+  String get pledgeTitle => 'Для доверия между нами';
+
+  @override
+  String get pledgePointOne =>
+      'Я буду использовать это приложение только с намерением вступить в брак.';
+
+  @override
+  String get pledgePointTwo =>
+      'Мои данные верны, а фотографии принадлежат мне.';
+
+  @override
+  String get pledgePointThree =>
+      'В беседе я буду соблюдать уважение и согласен на контроль AI-модератора.';
+
+  @override
+  String get pledgeAgreement =>
+      'Согласен. Показывать на моём профиле значок «Серьёзные намерения».';
+
+  @override
+  String get pledgeStart => 'Начать анкету';
+
+  @override
   String get temporaryOtpHint => 'Временный адаптер: используйте код 1234';
 
   @override

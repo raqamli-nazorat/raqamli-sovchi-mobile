@@ -19,6 +19,14 @@ abstract final class AppTypography {
     letterSpacing: -0.5,
     color: AppColors.text,
   );
+  static const onboardingTitle = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 24,
+    height: 30 / 24,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    color: AppColors.text,
+  );
   static const body = TextStyle(
     fontFamily: 'Manrope',
     fontSize: 15,

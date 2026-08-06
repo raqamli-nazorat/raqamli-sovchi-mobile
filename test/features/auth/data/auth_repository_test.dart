@@ -180,4 +180,13 @@ final class _RecordingApiClient implements ApiClient {
     Options? options,
     CancelToken? cancelToken,
   }) async => _response<T>(path);
+
+  @override
+  Future<Response<T>> patch<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async => _response<T>(path);
 }

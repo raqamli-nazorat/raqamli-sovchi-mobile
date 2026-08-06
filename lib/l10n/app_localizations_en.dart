@@ -57,6 +57,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmLabel => 'Confirm';
 
   @override
+  String get candidateTypeTitle => 'Who are you looking for?';
+
+  @override
+  String get candidateTypeSubtitle =>
+      'This choice determines your questionnaire. We will not ask your gender again.';
+
+  @override
+  String get groomCandidateTitle => 'Groom candidate';
+
+  @override
+  String get groomCandidateSubtitle => 'I am a man, looking for myself';
+
+  @override
+  String get brideCandidateTitle => 'Bride candidate';
+
+  @override
+  String get brideCandidateSubtitle => 'I am a woman, looking for myself';
+
+  @override
+  String get representativeCandidateTitle => 'Representative';
+
+  @override
+  String get representativeCandidateSubtitle =>
+      'I am filling out an application for someone close to me';
+
+  @override
+  String get pledgeTitle => 'For trust between us';
+
+  @override
+  String get pledgePointOne =>
+      'I will use this app only with the intention of marriage.';
+
+  @override
+  String get pledgePointTwo =>
+      'My information is accurate, and the photos are mine.';
+
+  @override
+  String get pledgePointThree =>
+      'I will be respectful in conversations and agree to AI moderation.';
+
+  @override
+  String get pledgeAgreement =>
+      'I agree. Show the Serious Intent badge on my profile.';
+
+  @override
+  String get pledgeStart => 'Start questionnaire';
+
+  @override
   String get temporaryOtpHint => 'Development adapter: use 1234';
 
   @override

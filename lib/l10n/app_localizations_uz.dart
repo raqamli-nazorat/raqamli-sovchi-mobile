@@ -57,6 +57,52 @@ class AppLocalizationsUz extends AppLocalizations {
   String get confirmLabel => 'Tasdiqlash';
 
   @override
+  String get candidateTypeTitle => 'Kim sifatida qidiryapsiz?';
+
+  @override
+  String get candidateTypeSubtitle =>
+      'Bu tanlov anketangiz qanday bo‘lishini belgilaydi. Jinsni qayta so‘ramaymiz.';
+
+  @override
+  String get groomCandidateTitle => 'Kuyov nomzodi';
+
+  @override
+  String get groomCandidateSubtitle => 'Erkakman, o‘zim uchun izlayapman';
+
+  @override
+  String get brideCandidateTitle => 'Kelin nomzodi';
+
+  @override
+  String get brideCandidateSubtitle => 'Ayolman, o‘zim uchun izlayapman';
+
+  @override
+  String get representativeCandidateTitle => 'Vakil';
+
+  @override
+  String get representativeCandidateSubtitle =>
+      'Yaqinim nomidan ariza to‘ldiraman';
+
+  @override
+  String get pledgeTitle => 'Bir-birimizga ishonch uchun';
+
+  @override
+  String get pledgePointOne => 'Bu ilovadan faqat nikoh niyatida foydalanaman.';
+
+  @override
+  String get pledgePointTwo => 'Ma’lumotlarim to‘g‘ri, suratlar o‘zimniki.';
+
+  @override
+  String get pledgePointThree =>
+      'Suhbatda odob saqlayman. AI moderator nazoratiga roziman.';
+
+  @override
+  String get pledgeAgreement =>
+      'Roziman. Profilimda «Niyati jiddiy» belgisi ko‘rinsin.';
+
+  @override
+  String get pledgeStart => 'Anketani boshlash';
+
+  @override
   String get temporaryOtpHint =>
       'Vaqtinchalik adapter: 1234 kodidan foydalaning';
 

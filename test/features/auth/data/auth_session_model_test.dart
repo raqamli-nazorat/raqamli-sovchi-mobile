@@ -47,6 +47,10 @@ void main() {
     expect(entity.userId, model.userId);
     expect(entity.displayName, model.displayName);
     expect(entity.phoneNumber, model.phoneNumber);
+    expect(entity.status, "Anketa to'liq emas");
+    expect(entity.candidateType, isNull);
+    expect(entity.profileInfo, isNull);
+    expect(entity.needsCandidateType, isTrue);
   });
 
   test('keeps flat token response compatibility', () {

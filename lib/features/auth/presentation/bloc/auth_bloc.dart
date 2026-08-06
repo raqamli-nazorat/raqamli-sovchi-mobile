@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/errors/failure.dart';
 import '../../../../core/security/biometric_auth_service.dart';
+import '../../../onboarding/application/use_cases/submit_pledge.dart';
+import '../../../onboarding/application/use_cases/update_candidate_type.dart';
 import '../../application/use_cases/authenticate_biometric.dart';
 import '../../application/use_cases/check_biometric_availability.dart';
 import '../../application/use_cases/clear_pin.dart';
@@ -39,6 +41,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required ClearPinUseCase clearPin,
     required SignOutUseCase signOut,
     required DeleteAccountUseCase deleteAccount,
+    UpdateCandidateTypeUseCase? updateCandidateType,
+    SubmitPledgeUseCase? submitPledge,
     this.telegramPollingInterval = const Duration(seconds: 2),
   }) : _restoreSession = restoreSession,
        _requestPhoneOtp = requestPhoneOtp,
@@ -54,6 +58,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _clearPin = clearPin,
        _signOut = signOut,
        _deleteAccount = deleteAccount,
+       _updateCandidateType = updateCandidateType,
+       _submitPledge = submitPledge,
        super(const AuthState()) {
     on<AuthStarted>(_onStarted);
     on<AuthPhoneSubmitted>(_onPhoneSubmitted);
@@ -66,6 +72,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthApplicationResumed>(_onApplicationResumed);
     on<AuthPinCreated>(_onPinCreated);
     on<AuthPinUnlockRequested>(_onPinUnlockRequested);
+    on<AuthCandidateTypeSelected>(_onCandidateTypeSelected);
+    on<AuthPledgeSubmitted>(_onPledgeSubmitted);
     on<AuthSignOutRequested>(_onSignOutRequested);
     on<AuthDeleteAccountRequested>(_onDeleteAccountRequested);
     on<AuthFlowCancelled>(_onFlowCancelled);
@@ -85,6 +93,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ClearPinUseCase _clearPin;
   final SignOutUseCase _signOut;
   final DeleteAccountUseCase _deleteAccount;
+  final UpdateCandidateTypeUseCase? _updateCandidateType;
+  final SubmitPledgeUseCase? _submitPledge;
   final Duration telegramPollingInterval;
   Timer? _telegramPollingTimer;
   String? _telegramSessionId;
@@ -270,20 +280,25 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
     final result = await _authenticateBiometric();
-    result.fold(
-      (failure) =>
+    await result.fold(
+      (failure) async =>
           emit(state.copyWith(status: AuthStatus.pinLocked, failure: failure)),
-      (outcome) => emit(switch (outcome) {
-        BiometricUnlockOutcome.authenticated => state.copyWith(
-          status: AuthStatus.authenticated,
-        ),
-        BiometricUnlockOutcome.noSession => state.copyWith(
-          status: AuthStatus.unauthenticated,
-          clearSession: true,
-        ),
-        BiometricUnlockOutcome.userCanceled || BiometricUnlockOutcome.failed =>
-          state.copyWith(status: AuthStatus.pinLocked),
-      }),
+      (outcome) async {
+        switch (outcome) {
+          case BiometricUnlockOutcome.authenticated:
+            await _emitPostPinGate(state.session!, emit);
+          case BiometricUnlockOutcome.noSession:
+            emit(
+              state.copyWith(
+                status: AuthStatus.unauthenticated,
+                clearSession: true,
+              ),
+            );
+          case BiometricUnlockOutcome.userCanceled:
+          case BiometricUnlockOutcome.failed:
+            emit(state.copyWith(status: AuthStatus.pinLocked));
+        }
+      },
     );
   }
 
@@ -323,7 +338,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (failure) => emit(
         state.copyWith(status: AuthStatus.pinSetupRequired, failure: failure),
       ),
-      (_) => emit(state.copyWith(status: AuthStatus.authenticated)),
+      (_) => _emitPostPinGate(state.session!, emit),
     );
   }
 
@@ -337,13 +352,76 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     result.fold(
       (failure) =>
           emit(state.copyWith(status: AuthStatus.pinLocked, failure: failure)),
-      (isValid) => emit(
-        isValid
-            ? state.copyWith(status: AuthStatus.authenticated)
-            : state.copyWith(
-                status: AuthStatus.pinLocked,
-                failure: _validationFailure,
-              ),
+      (isValid) async {
+        if (isValid) {
+          await _emitPostPinGate(state.session!, emit);
+          return;
+        }
+        emit(
+          state.copyWith(
+            status: AuthStatus.pinLocked,
+            failure: _validationFailure,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onCandidateTypeSelected(
+    AuthCandidateTypeSelected event,
+    Emitter<AuthState> emit,
+  ) async {
+    final session = state.session;
+    final updateCandidateType = _updateCandidateType;
+    if (session == null || updateCandidateType == null) return;
+
+    emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
+    final result = await updateCandidateType(event.candidateType.apiValue);
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          status: AuthStatus.candidateTypeRequired,
+          failure: failure,
+        ),
+      ),
+      (_) => emit(
+        AuthState(
+          status: AuthStatus.pledgeRequired,
+          session: session.copyWith(
+            candidateType: event.candidateType.apiValue,
+          ),
+          phoneNumber: state.phoneNumber,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onPledgeSubmitted(
+    AuthPledgeSubmitted event,
+    Emitter<AuthState> emit,
+  ) async {
+    final session = state.session;
+    final submitPledge = _submitPledge;
+    if (session == null || submitPledge == null || !event.acceptedTerms) {
+      return;
+    }
+
+    emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
+    final result = await submitPledge(
+      userId: session.userId,
+      acceptedTerms: event.acceptedTerms,
+      hasSeriousBadge: event.hasSeriousBadge,
+    );
+    result.fold(
+      (failure) => emit(
+        state.copyWith(status: AuthStatus.pledgeRequired, failure: failure),
+      ),
+      (_) => emit(
+        AuthState(
+          status: AuthStatus.authenticated,
+          session: session,
+          phoneNumber: state.phoneNumber,
+        ),
       ),
     );
   }
@@ -417,12 +495,37 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
           failure: failure,
         ),
       ),
-      (hasPin) => emit(
+      (hasPin) async {
+        emit(
+          AuthState(
+            status: hasPin ? AuthStatus.pinLocked : AuthStatus.pinSetupRequired,
+            session: session,
+            phoneNumber: session.phoneNumber ?? state.phoneNumber,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _emitPostPinGate(
+    Session session,
+    Emitter<AuthState> emit,
+  ) async {
+    if (session.needsCandidateType) {
+      emit(
         AuthState(
-          status: hasPin ? AuthStatus.pinLocked : AuthStatus.pinSetupRequired,
+          status: AuthStatus.candidateTypeRequired,
           session: session,
           phoneNumber: session.phoneNumber ?? state.phoneNumber,
         ),
+      );
+      return;
+    }
+    emit(
+      AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: session.phoneNumber ?? state.phoneNumber,
       ),
     );
   }

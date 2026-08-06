@@ -28,6 +28,14 @@ abstract interface class ApiClient {
     CancelToken? cancelToken,
   });
 
+  Future<Response<T>> patch<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  });
+
   Future<Response<T>> delete<T>(
     String path, {
     Object? data,
@@ -86,6 +94,23 @@ final class DioApiClient implements ApiClient {
     CancelToken? cancelToken,
   }) {
     return _dio.put<T>(
+      path,
+      data: data,
+      queryParameters: queryParameters,
+      options: options,
+      cancelToken: cancelToken,
+    );
+  }
+
+  @override
+  Future<Response<T>> patch<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) {
+    return _dio.patch<T>(
       path,
       data: data,
       queryParameters: queryParameters,

@@ -134,6 +134,15 @@ final class _FakeApiClient implements ApiClient {
     Options? options,
     CancelToken? cancelToken,
   }) async => _response<T>();
+
+  @override
+  Future<Response<T>> patch<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) async => _response<T>();
 }
 
 final class _FakeTokenStore implements TokenStore {

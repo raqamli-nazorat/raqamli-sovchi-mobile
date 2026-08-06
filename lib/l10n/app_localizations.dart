@@ -190,6 +190,90 @@ abstract class AppLocalizations {
   /// **'Tasdiqlash'**
   String get confirmLabel;
 
+  /// No description provided for @candidateTypeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kim sifatida qidiryapsiz?'**
+  String get candidateTypeTitle;
+
+  /// No description provided for @candidateTypeSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu tanlov anketangiz qanday bo‘lishini belgilaydi. Jinsni qayta so‘ramaymiz.'**
+  String get candidateTypeSubtitle;
+
+  /// No description provided for @groomCandidateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kuyov nomzodi'**
+  String get groomCandidateTitle;
+
+  /// No description provided for @groomCandidateSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Erkakman, o‘zim uchun izlayapman'**
+  String get groomCandidateSubtitle;
+
+  /// No description provided for @brideCandidateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kelin nomzodi'**
+  String get brideCandidateTitle;
+
+  /// No description provided for @brideCandidateSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ayolman, o‘zim uchun izlayapman'**
+  String get brideCandidateSubtitle;
+
+  /// No description provided for @representativeCandidateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vakil'**
+  String get representativeCandidateTitle;
+
+  /// No description provided for @representativeCandidateSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaqinim nomidan ariza to‘ldiraman'**
+  String get representativeCandidateSubtitle;
+
+  /// No description provided for @pledgeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bir-birimizga ishonch uchun'**
+  String get pledgeTitle;
+
+  /// No description provided for @pledgePointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ilovadan faqat nikoh niyatida foydalanaman.'**
+  String get pledgePointOne;
+
+  /// No description provided for @pledgePointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ma’lumotlarim to‘g‘ri, suratlar o‘zimniki.'**
+  String get pledgePointTwo;
+
+  /// No description provided for @pledgePointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatda odob saqlayman. AI moderator nazoratiga roziman.'**
+  String get pledgePointThree;
+
+  /// No description provided for @pledgeAgreement.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roziman. Profilimda «Niyati jiddiy» belgisi ko‘rinsin.'**
+  String get pledgeAgreement;
+
+  /// No description provided for @pledgeStart.
+  ///
+  /// In uz, this message translates to:
+  /// **'Anketani boshlash'**
+  String get pledgeStart;
+
   /// No description provided for @temporaryOtpHint.
   ///
   /// In uz, this message translates to:

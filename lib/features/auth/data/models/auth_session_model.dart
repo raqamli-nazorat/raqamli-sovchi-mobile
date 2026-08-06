@@ -138,6 +138,9 @@ final class AuthSessionModel extends Equatable {
       displayName: displayName,
       phoneNumber: phoneNumber,
       isVerified: isVerified,
+      status: data?.user?.status,
+      candidateType: data?.user?.candidateType,
+      profileInfo: data?.user?.profileInfo,
     );
   }
 
@@ -232,7 +235,7 @@ final class AuthUserModel extends Equatable {
       phoneNumber: _asString(json['phone_number']),
       email: json['email'],
       telegramId: json['telegram_id'],
-      candidateType: json['candidate_type'],
+      candidateType: _asString(json['candidate_type']),
       completionPercentage: _asInt(json['completion_percentage']),
       status: _asString(json['status']),
       authProvider: _asString(json['auth_provider']),
@@ -253,7 +256,7 @@ final class AuthUserModel extends Equatable {
   final String? phoneNumber;
   final Object? email;
   final Object? telegramId;
-  final Object? candidateType;
+  final String? candidateType;
   final int? completionPercentage;
   final String? status;
   final String? authProvider;
@@ -271,7 +274,7 @@ final class AuthUserModel extends Equatable {
     String? phoneNumber,
     Object? email,
     Object? telegramId,
-    Object? candidateType,
+    String? candidateType,
     int? completionPercentage,
     String? status,
     String? authProvider,

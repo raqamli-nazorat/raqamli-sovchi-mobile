@@ -11,6 +11,8 @@ import '../../features/auth/presentation/pages/pin_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/chat/presentation/pages/messages_page.dart';
 import '../../features/discovery/presentation/pages/candidates_page.dart';
+import '../../features/onboarding/presentation/pages/candidate_type_page.dart';
+import '../../features/onboarding/presentation/pages/pledge_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/saved/presentation/pages/saved_page.dart';
 import '../../features/services/presentation/pages/services_page.dart';
@@ -36,6 +38,8 @@ final class AppRouter {
       final onOtp = location == RouteNames.otp;
       final onPin =
           location == RouteNames.pinCreate || location == RouteNames.pinUnlock;
+      final onOnboarding =
+          location == RouteNames.candidateType || location == RouteNames.pledge;
 
       if (status == AuthStatus.initial) {
         return onSplash ? null : RouteNames.splash;
@@ -44,7 +48,9 @@ final class AppRouter {
       if (status == AuthStatus.loading) return null;
 
       if (status == AuthStatus.authenticated) {
-        return onSplash || onLogin || onOtp || onPin ? RouteNames.home : null;
+        return onSplash || onLogin || onOtp || onPin || onOnboarding
+            ? RouteNames.home
+            : null;
       }
 
       if (status == AuthStatus.otpPending) {
@@ -61,6 +67,16 @@ final class AppRouter {
 
       if (status == AuthStatus.pinLocked) {
         return location == RouteNames.pinUnlock ? null : RouteNames.pinUnlock;
+      }
+
+      if (status == AuthStatus.candidateTypeRequired) {
+        return location == RouteNames.candidateType
+            ? null
+            : RouteNames.candidateType;
+      }
+
+      if (status == AuthStatus.pledgeRequired) {
+        return location == RouteNames.pledge ? null : RouteNames.pledge;
       }
 
       return onLogin ? null : RouteNames.login;
@@ -85,6 +101,14 @@ final class AppRouter {
       GoRoute(
         path: RouteNames.pinUnlock,
         builder: (context, state) => const PinPage(mode: PinPageMode.unlock),
+      ),
+      GoRoute(
+        path: RouteNames.candidateType,
+        builder: (context, state) => const CandidateTypePage(),
+      ),
+      GoRoute(
+        path: RouteNames.pledge,
+        builder: (context, state) => const PledgePage(),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

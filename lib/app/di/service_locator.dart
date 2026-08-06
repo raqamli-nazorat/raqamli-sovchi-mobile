@@ -35,6 +35,11 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/repositories/google_oauth_provider.dart';
 import '../../features/auth/domain/repositories/pin_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/onboarding/application/use_cases/submit_pledge.dart';
+import '../../features/onboarding/application/use_cases/update_candidate_type.dart';
+import '../../features/onboarding/data/data_sources/onboarding_data_source.dart';
+import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -94,6 +99,12 @@ Future<void> configureDependencies() async {
         google: serviceLocator(),
       ),
     )
+    ..registerLazySingleton<OnboardingDataSource>(
+      () => RemoteOnboardingDataSource(serviceLocator()),
+    )
+    ..registerLazySingleton<OnboardingRepository>(
+      () => OnboardingRepositoryImpl(serviceLocator()),
+    )
     ..registerLazySingleton<PinDataSource>(
       () => SecurePinDataSource(serviceLocator()),
     )
@@ -139,6 +150,12 @@ Future<void> configureDependencies() async {
     ..registerFactory<DeleteAccountUseCase>(
       () => DeleteAccountUseCase(serviceLocator()),
     )
+    ..registerFactory<UpdateCandidateTypeUseCase>(
+      () => UpdateCandidateTypeUseCase(serviceLocator()),
+    )
+    ..registerFactory<SubmitPledgeUseCase>(
+      () => SubmitPledgeUseCase(serviceLocator()),
+    )
     ..registerFactory<AuthBloc>(
       () => AuthBloc(
         restoreSession: serviceLocator(),
@@ -155,6 +172,8 @@ Future<void> configureDependencies() async {
         clearPin: serviceLocator(),
         signOut: serviceLocator(),
         deleteAccount: serviceLocator(),
+        updateCandidateType: serviceLocator(),
+        submitPledge: serviceLocator(),
       ),
     );
 }

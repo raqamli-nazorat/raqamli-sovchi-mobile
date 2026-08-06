@@ -29,6 +29,11 @@ import 'package:raqamli_sovchi/features/auth/domain/repositories/pin_repository.
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_state.dart';
+import 'package:raqamli_sovchi/features/onboarding/application/use_cases/submit_pledge.dart';
+import 'package:raqamli_sovchi/features/onboarding/application/use_cases/update_candidate_type.dart';
+import 'package:raqamli_sovchi/features/onboarding/domain/entities/candidate_type.dart';
+import 'package:raqamli_sovchi/features/onboarding/domain/entities/user_pledge.dart';
+import 'package:raqamli_sovchi/features/onboarding/domain/repositories/onboarding_repository.dart';
 
 void main() {
   const session = Session(
@@ -158,11 +163,97 @@ void main() {
       const AuthState(status: AuthStatus.unauthenticated),
     ],
   );
+
+  blocTest<AuthBloc, AuthState>(
+    'routes incomplete account through candidate type and pledge',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(
+        session: const Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+        ),
+      ),
+      pinRepository: const _FakePinRepository(hasPin: true),
+      onboardingRepository: const _FakeOnboardingRepository(),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinLocked,
+      session: Session(
+        userId: 'user-1',
+        displayName: 'Test User',
+        status: "Anketa to'liq emas",
+      ),
+    ),
+    act: (bloc) async {
+      bloc.add(const AuthPinUnlockRequested('1234'));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const AuthCandidateTypeSelected(CandidateType.groom));
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(
+        const AuthPledgeSubmitted(acceptedTerms: true, hasSeriousBadge: true),
+      );
+    },
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.candidateTypeRequired,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.loading,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.pledgeRequired,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+          candidateType: 'groom',
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.loading,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+          candidateType: 'groom',
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.authenticated,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+          candidateType: 'groom',
+        ),
+      ),
+    ],
+  );
 }
 
 AuthBloc _createBloc({
   required _FakeAuthRepository repository,
   required _FakePinRepository pinRepository,
+  _FakeOnboardingRepository? onboardingRepository,
   Duration telegramPollingInterval = const Duration(seconds: 2),
 }) {
   return AuthBloc(
@@ -190,7 +281,31 @@ AuthBloc _createBloc({
     clearPin: ClearPinUseCase(pinRepository),
     signOut: SignOutUseCase(repository),
     deleteAccount: DeleteAccountUseCase(repository),
+    updateCandidateType: onboardingRepository == null
+        ? null
+        : UpdateCandidateTypeUseCase(onboardingRepository),
+    submitPledge: onboardingRepository == null
+        ? null
+        : SubmitPledgeUseCase(onboardingRepository),
     telegramPollingInterval: telegramPollingInterval,
+  );
+}
+
+final class _FakeOnboardingRepository implements OnboardingRepository {
+  const _FakeOnboardingRepository();
+
+  @override
+  Future<Either<Failure, void>> updateCandidateType(
+    String candidateType,
+  ) async => const Right<Failure, void>(null);
+
+  @override
+  Future<Either<Failure, UserPledge>> submitPledge({
+    required String userId,
+    required bool acceptedTerms,
+    required bool hasSeriousBadge,
+  }) async => const Right<Failure, UserPledge>(
+    UserPledge(id: 'pledge-1', acceptedTerms: true, hasSeriousBadge: true),
   );
 }
 

@@ -88,6 +88,15 @@ final class _FakeApiClient implements ApiClient {
     Options? options,
     CancelToken? cancelToken,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Response<T>> patch<T>(
+    String path, {
+    Object? data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+  }) => throw UnimplementedError();
 }
 
 final class _FakeTokenStore implements TokenStore {
