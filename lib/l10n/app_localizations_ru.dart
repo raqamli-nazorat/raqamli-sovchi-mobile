@@ -112,6 +112,152 @@ class AppLocalizationsRu extends AppLocalizations {
       'Подтвердите номер телефона в Telegram, затем вернитесь в приложение.';
 
   @override
+  String get candidatesTabLabel => 'Кандидаты';
+
+  @override
+  String get messagesTabLabel => 'Сообщения';
+
+  @override
+  String get servicesTabLabel => 'Услуги';
+
+  @override
+  String get savedTabLabel => 'Сохранено';
+
+  @override
+  String get profileTabLabel => 'Профиль';
+
+  @override
+  String get candidatesPlaceholder => 'Пока страница кандидатов.';
+
+  @override
+  String get messagesPlaceholder => 'Пока страница сообщений.';
+
+  @override
+  String get servicesPlaceholder => 'Пока страница услуг.';
+
+  @override
+  String get savedPlaceholder => 'Пока страница сохраненного.';
+
+  @override
+  String get profilePlaceholder => 'Пока страница профиля.';
+
+  @override
+  String get notificationsActionLabel => 'Уведомления';
+
+  @override
+  String get candidatesFilterMatches => 'Подходящие';
+
+  @override
+  String get candidatesFilterRecommended => 'Рекомендации';
+
+  @override
+  String get candidatesFilterNearby => 'Рядом';
+
+  @override
+  String get candidatesFilterRepresentative => 'Представитель';
+
+  @override
+  String get privatePhotoLabel => 'Приватное фото';
+
+  @override
+  String get matchLockedLabel => 'совпадение закрыто';
+
+  @override
+  String get surveyPromptTitle => 'Процент совпадения закрыт';
+
+  @override
+  String get surveyPromptMessage =>
+      'Ответьте на 30 вопросов — AI проанализирует ваши ответы и автоматически рассчитает совместимость с каждым кандидатом.';
+
+  @override
+  String get surveyPromptButton => 'Начать анкету';
+
+  @override
+  String get mockCandidateMohira => 'Мохира Р., 23';
+
+  @override
+  String get mockCandidateZilola => 'Зилола К., 25';
+
+  @override
+  String get mockCandidateNilufar => 'Нилуфар А., 22';
+
+  @override
+  String get mockCandidateDilnoza => 'Дилноза С., 27';
+
+  @override
+  String get mockCityTashkent => 'Ташкент';
+
+  @override
+  String get mockCitySamarkand => 'Самарканд';
+
+  @override
+  String get mockCityFergana => 'Фергана';
+
+  @override
+  String get mockCityBukhara => 'Бухара';
+
+  @override
+  String get messagesSegmentChats => 'Чаты';
+
+  @override
+  String get messagesSegmentRequests => 'Запросы';
+
+  @override
+  String get mockMessageMohiraName => 'Мохира Р.';
+
+  @override
+  String get mockMessageZilolaName => 'Зилола К.';
+
+  @override
+  String get mockMessageNilufarName => 'Нилуфар А.';
+
+  @override
+  String get mockMessageDilnozaName => 'Дилноза С.';
+
+  @override
+  String get mockMessageMohiraPreview => 'Если будет время, познакомимся.';
+
+  @override
+  String get mockMessageZilolaPreview => 'Ваше приглашение просмотрено';
+
+  @override
+  String get mockMessageNilufarPreview => 'Срок чата истек';
+
+  @override
+  String get mockMessageDilnozaPreview => 'Ожидается ответ';
+
+  @override
+  String get messageTimeYesterday => 'Вчера';
+
+  @override
+  String get messageTimeMonday => 'Пн';
+
+  @override
+  String get messageTimeTuesday => 'Вт';
+
+  @override
+  String get savedFilterAll => 'Все';
+
+  @override
+  String get savedFilterInvited => 'Приглашение отправлено';
+
+  @override
+  String get savedFilterWaiting => 'Ожидается ответ';
+
+  @override
+  String get savedLimitLabel => '7 / 10 сохранено';
+
+  @override
+  String get savedPremiumCta => 'Premium — безлимит';
+
+  @override
+  String get savedUpsellTitle => 'Осталось 3 места';
+
+  @override
+  String get savedUpsellMessage =>
+      'В бесплатном плане можно сохранить до 10 профилей. В Premium ограничений нет.';
+
+  @override
   String failureMessage(String type) {
     String _temp0 = intl.Intl.selectLogic(type, {
       'networkTimeout': 'Время подключения истекло.',

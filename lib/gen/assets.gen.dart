@@ -64,6 +64,13 @@ class $AssetsIconsGen {
   SvgGenImage get icArrowLeft01Round =>
       const SvgGenImage('assets/icons/ic_arrow_left_01_round.svg');
 
+  /// File path: assets/icons/ic_candidates_btv.svg
+  SvgGenImage get icCandidatesBtv =>
+      const SvgGenImage('assets/icons/ic_candidates_btv.svg');
+
+  /// File path: assets/icons/ic_glyph.svg
+  SvgGenImage get icGlyph => const SvgGenImage('assets/icons/ic_glyph.svg');
+
   /// File path: assets/icons/ic_google_icon.svg
   SvgGenImage get icGoogleIcon =>
       const SvgGenImage('assets/icons/ic_google_icon.svg');
@@ -78,24 +85,90 @@ class $AssetsIconsGen {
   /// File path: assets/icons/ic_logo.svg
   SvgGenImage get icLogo => const SvgGenImage('assets/icons/ic_logo.svg');
 
+  /// File path: assets/icons/ic_messages_btv.svg
+  SvgGenImage get icMessagesBtv =>
+      const SvgGenImage('assets/icons/ic_messages_btv.svg');
+
+  /// File path: assets/icons/ic_notification.svg
+  SvgGenImage get icNotification =>
+      const SvgGenImage('assets/icons/ic_notification.svg');
+
+  /// File path: assets/icons/ic_preserved_btv.svg
+  SvgGenImage get icPreservedBtv =>
+      const SvgGenImage('assets/icons/ic_preserved_btv.svg');
+
+  /// File path: assets/icons/ic_profile_btv.svg
+  SvgGenImage get icProfileBtv =>
+      const SvgGenImage('assets/icons/ic_profile_btv.svg');
+
+  /// File path: assets/icons/ic_services_btv.svg
+  SvgGenImage get icServicesBtv =>
+      const SvgGenImage('assets/icons/ic_services_btv.svg');
+
   /// File path: assets/icons/ic_telegram_icon.svg
   SvgGenImage get icTelegramIcon =>
       const SvgGenImage('assets/icons/ic_telegram_icon.svg');
 
+  /// File path: assets/icons/ic_verify_check.svg
+  SvgGenImage get icVerifyCheck =>
+      const SvgGenImage('assets/icons/ic_verify_check.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
     icArrowLeft01Round,
+    icCandidatesBtv,
+    icGlyph,
     icGoogleIcon,
     icHugeiconsFingerprintScan,
     icInfo,
     icLogo,
+    icMessagesBtv,
+    icNotification,
+    icPreservedBtv,
+    icProfileBtv,
+    icServicesBtv,
     icTelegramIcon,
+    icVerifyCheck,
+  ];
+}
+
+class $AssetsImagesGen {
+  const $AssetsImagesGen();
+
+  /// File path: assets/images/.gitkeep
+  String get aGitkeep => 'assets/images/.gitkeep';
+
+  /// File path: assets/images/image1.jpg
+  AssetGenImage get image1 => const AssetGenImage('assets/images/image1.jpg');
+
+  /// File path: assets/images/image2.jpg
+  AssetGenImage get image2 => const AssetGenImage('assets/images/image2.jpg');
+
+  /// File path: assets/images/image3.jpg
+  AssetGenImage get image3 => const AssetGenImage('assets/images/image3.jpg');
+
+  /// File path: assets/images/image4.jpg
+  AssetGenImage get image4 => const AssetGenImage('assets/images/image4.jpg');
+
+  /// File path: assets/images/launcher_icon.png
+  AssetGenImage get launcherIcon =>
+      const AssetGenImage('assets/images/launcher_icon.png');
+
+  /// List of all assets
+  List<dynamic> get values => [
+    aGitkeep,
+    image1,
+    image2,
+    image3,
+    image4,
+    launcherIcon,
   ];
 }
 
 abstract final class Assets {
   static const $AssetsAuthGen auth = $AssetsAuthGen();
   static const $AssetsIconsGen icons = $AssetsIconsGen();
+  static const $AssetsImagesGen images = $AssetsImagesGen();
 }
 
 class AssetGenImage {

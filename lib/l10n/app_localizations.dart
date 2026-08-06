@@ -292,6 +292,294 @@ abstract class AppLocalizations {
   /// **'Telegramda telefon raqamingizni tasdiqlang, keyin ilovaga qayting.'**
   String get telegramWaiting;
 
+  /// No description provided for @candidatesTabLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodlar'**
+  String get candidatesTabLabel;
+
+  /// No description provided for @messagesTabLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xabarlar'**
+  String get messagesTabLabel;
+
+  /// No description provided for @servicesTabLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Xizmatlar'**
+  String get servicesTabLabel;
+
+  /// No description provided for @savedTabLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Saqlangan'**
+  String get savedTabLabel;
+
+  /// No description provided for @profileTabLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profil'**
+  String get profileTabLabel;
+
+  /// No description provided for @candidatesPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha nomzodlar sahifasi.'**
+  String get candidatesPlaceholder;
+
+  /// No description provided for @messagesPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha xabarlar sahifasi.'**
+  String get messagesPlaceholder;
+
+  /// No description provided for @servicesPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha xizmatlar sahifasi.'**
+  String get servicesPlaceholder;
+
+  /// No description provided for @savedPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha saqlanganlar sahifasi.'**
+  String get savedPlaceholder;
+
+  /// No description provided for @profilePlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha profil sahifasi.'**
+  String get profilePlaceholder;
+
+  /// No description provided for @notificationsActionLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bildirishnomalar'**
+  String get notificationsActionLabel;
+
+  /// No description provided for @candidatesFilterMatches.
+  ///
+  /// In uz, this message translates to:
+  /// **'Moslar'**
+  String get candidatesFilterMatches;
+
+  /// No description provided for @candidatesFilterRecommended.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tavsiyalar'**
+  String get candidatesFilterRecommended;
+
+  /// No description provided for @candidatesFilterNearby.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaqinlar'**
+  String get candidatesFilterNearby;
+
+  /// No description provided for @candidatesFilterRepresentative.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vakil'**
+  String get candidatesFilterRepresentative;
+
+  /// No description provided for @privatePhotoLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Maxfiy rasm'**
+  String get privatePhotoLabel;
+
+  /// No description provided for @matchLockedLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'moslik yopiq'**
+  String get matchLockedLabel;
+
+  /// No description provided for @surveyPromptTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Moslik foizi yopiq'**
+  String get surveyPromptTitle;
+
+  /// No description provided for @surveyPromptMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'30 ta savolga javob bering — AI javoblaringizni tahlil qilib, har bir nomzod bilan moslik foizingizni avtomatik hisoblaydi.'**
+  String get surveyPromptMessage;
+
+  /// No description provided for @surveyPromptButton.
+  ///
+  /// In uz, this message translates to:
+  /// **'Soʻrovnomani boshlash'**
+  String get surveyPromptButton;
+
+  /// No description provided for @mockCandidateMohira.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mohira R., 23'**
+  String get mockCandidateMohira;
+
+  /// No description provided for @mockCandidateZilola.
+  ///
+  /// In uz, this message translates to:
+  /// **'Zilola K., 25'**
+  String get mockCandidateZilola;
+
+  /// No description provided for @mockCandidateNilufar.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nilufar A., 22'**
+  String get mockCandidateNilufar;
+
+  /// No description provided for @mockCandidateDilnoza.
+  ///
+  /// In uz, this message translates to:
+  /// **'Dilnoza S., 27'**
+  String get mockCandidateDilnoza;
+
+  /// No description provided for @mockCityTashkent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Toshkent'**
+  String get mockCityTashkent;
+
+  /// No description provided for @mockCitySamarkand.
+  ///
+  /// In uz, this message translates to:
+  /// **'Samarqand'**
+  String get mockCitySamarkand;
+
+  /// No description provided for @mockCityFergana.
+  ///
+  /// In uz, this message translates to:
+  /// **'Fargʻona'**
+  String get mockCityFergana;
+
+  /// No description provided for @mockCityBukhara.
+  ///
+  /// In uz, this message translates to:
+  /// **'Buxoro'**
+  String get mockCityBukhara;
+
+  /// No description provided for @messagesSegmentChats.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatlar'**
+  String get messagesSegmentChats;
+
+  /// No description provided for @messagesSegmentRequests.
+  ///
+  /// In uz, this message translates to:
+  /// **'Soʻrovlar'**
+  String get messagesSegmentRequests;
+
+  /// No description provided for @mockMessageMohiraName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mohira R.'**
+  String get mockMessageMohiraName;
+
+  /// No description provided for @mockMessageZilolaName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Zilola K.'**
+  String get mockMessageZilolaName;
+
+  /// No description provided for @mockMessageNilufarName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nilufar A.'**
+  String get mockMessageNilufarName;
+
+  /// No description provided for @mockMessageDilnozaName.
+  ///
+  /// In uz, this message translates to:
+  /// **'Dilnoza S.'**
+  String get mockMessageDilnozaName;
+
+  /// No description provided for @mockMessageMohiraPreview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaqtingiz boʻlsa tanishsak.'**
+  String get mockMessageMohiraPreview;
+
+  /// No description provided for @mockMessageZilolaPreview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Taklifingiz koʻrildi'**
+  String get mockMessageZilolaPreview;
+
+  /// No description provided for @mockMessageNilufarPreview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Chat muddati tugadi'**
+  String get mockMessageNilufarPreview;
+
+  /// No description provided for @mockMessageDilnozaPreview.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hozircha javob kutilmoqda'**
+  String get mockMessageDilnozaPreview;
+
+  /// No description provided for @messageTimeYesterday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kecha'**
+  String get messageTimeYesterday;
+
+  /// No description provided for @messageTimeMonday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Dush'**
+  String get messageTimeMonday;
+
+  /// No description provided for @messageTimeTuesday.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sesh'**
+  String get messageTimeTuesday;
+
+  /// No description provided for @savedFilterAll.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi'**
+  String get savedFilterAll;
+
+  /// No description provided for @savedFilterInvited.
+  ///
+  /// In uz, this message translates to:
+  /// **'Taklif yuborilgan'**
+  String get savedFilterInvited;
+
+  /// No description provided for @savedFilterWaiting.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javob kutilmoqda'**
+  String get savedFilterWaiting;
+
+  /// No description provided for @savedLimitLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'7 / 10 saqlangan'**
+  String get savedLimitLabel;
+
+  /// No description provided for @savedPremiumCta.
+  ///
+  /// In uz, this message translates to:
+  /// **'Premium — cheksiz'**
+  String get savedPremiumCta;
+
+  /// No description provided for @savedUpsellTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yana 3 ta joy qoldi'**
+  String get savedUpsellTitle;
+
+  /// No description provided for @savedUpsellMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bepul rejada 10 tagacha profil saqlanadi. Premium bilan cheklov yoʻq.'**
+  String get savedUpsellMessage;
+
   /// User-facing error message selected by FailureType.name.
   ///
   /// In uz, this message translates to:

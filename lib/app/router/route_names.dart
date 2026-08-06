@@ -5,4 +5,8 @@ abstract final class RouteNames {
   static const pinCreate = '/pin/create';
   static const pinUnlock = '/pin/unlock';
   static const home = '/home';
+  static const messages = '/messages';
+  static const services = '/services';
+  static const saved = '/saved';
+  static const profile = '/profile';
 }
