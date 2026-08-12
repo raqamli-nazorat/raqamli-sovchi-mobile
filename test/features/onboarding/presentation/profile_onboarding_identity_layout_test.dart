@@ -6,6 +6,7 @@ import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/commit_pending_auth_session.dart';
 import 'package:raqamli_sovchi/features/onboarding/application/services/onboarding_location_service.dart';
 import 'package:raqamli_sovchi/features/onboarding/application/services/onboarding_media_service.dart';
+import 'package:raqamli_sovchi/features/onboarding/domain/entities/candidate_type.dart';
 import 'package:raqamli_sovchi/features/onboarding/domain/entities/onboarding_reference.dart';
 import 'package:raqamli_sovchi/features/onboarding/domain/entities/profile_onboarding_draft.dart';
 import 'package:raqamli_sovchi/features/onboarding/domain/repositories/onboarding_draft_repository.dart';
@@ -96,6 +97,38 @@ void main() {
     expect(find.textContaining('18 yoshdan'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  for (final scenario in [
+    (type: CandidateType.groom, height: '175', weight: '75'),
+    (type: CandidateType.bride, height: '165', weight: '63'),
+  ]) {
+    testWidgets('height step defaults ${scenario.type.name} measurements', (
+      tester,
+    ) async {
+      final bloc = _createBloc();
+      addTearDown(bloc.close);
+
+      await _pumpStep(
+        tester,
+        bloc: bloc,
+        step: OnboardingStep.height,
+        size: const Size(390, 844),
+        state: ProfileOnboardingState(
+          status: ProfileOnboardingStatus.editing,
+          draft: ProfileOnboardingDraft(
+            ownerUserId: 'user-1',
+            candidateType: scenario.type,
+            updatedAt: DateTime.utc(2026),
+          ),
+        ),
+      );
+
+      final fields = tester.widgetList<TextField>(find.byType(TextField));
+      expect(fields.elementAt(0).controller?.text, scenario.height);
+      expect(fields.elementAt(1).controller?.text, scenario.weight);
+      expect(tester.takeException(), isNull);
+    });
+  }
 
   testWidgets('location step shows unselected placeholders', (tester) async {
     final bloc = _createBloc();
