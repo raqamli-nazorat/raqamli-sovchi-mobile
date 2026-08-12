@@ -46,6 +46,9 @@ final class ProfileOnboardingDraftModel {
           (status) => status.name == json['faceVerificationStatus'],
           orElse: () => FaceVerificationStatus.notStarted,
         ),
+        aboutMe: json['aboutMe']?.toString(),
+        latitude: double.tryParse((json['latitude'] ?? '').toString()),
+        longitude: double.tryParse((json['longitude'] ?? '').toString()),
         updatedAt:
             DateTime.tryParse((json['updatedAt'] ?? '').toString())?.toUtc() ??
             DateTime.now().toUtc(),
@@ -83,6 +86,9 @@ final class ProfileOnboardingDraftModel {
           ? null
           : _voiceToJson(draft.voiceIntroMetadata!),
       'faceVerificationStatus': draft.faceVerificationStatus.name,
+      'aboutMe': draft.aboutMe,
+      'latitude': draft.latitude,
+      'longitude': draft.longitude,
       'updatedAt': draft.updatedAt.toUtc().toIso8601String(),
       'schemaVersion': draft.schemaVersion,
     };

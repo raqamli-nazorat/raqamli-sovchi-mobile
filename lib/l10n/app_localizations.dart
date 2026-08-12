@@ -109,7 +109,7 @@ abstract class AppLocalizations {
   /// No description provided for @faceCaptureSubtitle.
   ///
   /// In uz, this message translates to:
-  /// **'Shundan keyin profilingizga ishonch ortadi.'**
+  /// **'Asosiy suratingiz bilan solishtiramiz. Selfi hech kimga ko‘rinmaydi va tekshiruvdan keyin o‘chiriladi.'**
   String get faceCaptureSubtitle;
 
   /// No description provided for @selfieCameraLabel.
@@ -135,6 +135,36 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Telefonni ko‘z darajasida ushlang.'**
   String get faceRuleThree;
+
+  /// No description provided for @takeSelfieLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Selfi olish'**
+  String get takeSelfieLabel;
+
+  /// No description provided for @aboutMeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘zingiz haqingizda'**
+  String get aboutMeTitle;
+
+  /// No description provided for @aboutMeSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. Qisqacha yozing — nomzodlar shuni o‘qiydi.'**
+  String get aboutMeSubtitle;
+
+  /// No description provided for @aboutMeHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘zingiz, kasbingiz va oilaviy qadriyatlaringiz haqida 2–3 gap...'**
+  String get aboutMeHint;
+
+  /// No description provided for @aboutMeCounter.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} / 300 belgi'**
+  String aboutMeCounter(int count);
 
   /// No description provided for @mainPhotoSelectionHint.
   ///
@@ -169,7 +199,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSuccessTitle.
   ///
   /// In uz, this message translates to:
-  /// **'Anketangiz tayyor!'**
+  /// **'Profillingiz tayyor!'**
   String get onboardingSuccessTitle;
 
   /// No description provided for @onboardingSuccessSubtitle.
@@ -177,6 +207,42 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.'**
   String get onboardingSuccessSubtitle;
+
+  /// No description provided for @pledgeConfirmationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Niyatingizni tasdiqlang'**
+  String get pledgeConfirmationTitle;
+
+  /// No description provided for @pledgeConfirmationSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qadam majburiy. Tasdiqlagach profilingizda «Niyati jiddiy» belgisi paydo bo‘ladi.'**
+  String get pledgeConfirmationSubtitle;
+
+  /// No description provided for @pledgeConfirmationPointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ma’lumotlarim to‘g‘ri va o‘zimga tegishli.'**
+  String get pledgeConfirmationPointOne;
+
+  /// No description provided for @pledgeConfirmationPointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Niyatim jiddiy — oila qurish uchun keldim.'**
+  String get pledgeConfirmationPointTwo;
+
+  /// No description provided for @pledgeConfirmationPointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatdoshga hurmat bilan munosabatda bo‘laman.'**
+  String get pledgeConfirmationPointThree;
+
+  /// No description provided for @pledgeConfirmationButton.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qasamni tasdiqlash'**
+  String get pledgeConfirmationButton;
 
   /// No description provided for @aiTestBadge.
   ///
@@ -765,6 +831,54 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Yozuvni eshitish'**
   String get playRecording;
+
+  /// No description provided for @voiceSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. 10–15 soniya yetarli — ovoz odam haqida ko‘proq narsani aytadi.'**
+  String get voiceSubtitle;
+
+  /// No description provided for @startRecordingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash uchun bosing'**
+  String get startRecordingHint;
+
+  /// No description provided for @recordedVoiceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eshitib ko‘ring. Yoqmasa qayta yozing yoki o‘chiring — ovoz ixtiyoriy.'**
+  String get recordedVoiceHint;
+
+  /// No description provided for @reRecordVoice.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yozish'**
+  String get reRecordVoice;
+
+  /// No description provided for @deleteVoice.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘chirish'**
+  String get deleteVoice;
+
+  /// No description provided for @locationPermissionTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuvingiz'**
+  String get locationPermissionTitle;
+
+  /// No description provided for @locationPermissionSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaqin hududdagi nomzodlarni birinchi ko‘rsatish uchun joylashuv ruxsati kerak. Aniq manzil hech kimga ko‘rinmaydi.'**
+  String get locationPermissionSubtitle;
+
+  /// No description provided for @enableLocation.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuvni yoqish'**
+  String get enableLocation;
 
   /// No description provided for @skipLabel.
   ///

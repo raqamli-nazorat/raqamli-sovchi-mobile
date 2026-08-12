@@ -12,7 +12,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get faceCaptureTitle => 'Сделаем одно селфи';
 
   @override
-  String get faceCaptureSubtitle => 'Так вашему профилю будут больше доверять.';
+  String get faceCaptureSubtitle =>
+      'Мы сравним селфи с главным фото. Селфи никто не увидит, после проверки оно удаляется.';
 
   @override
   String get selfieCameraLabel => 'камера селфи';
@@ -25,6 +26,25 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get faceRuleThree => 'Держите телефон на уровне глаз.';
+
+  @override
+  String get takeSelfieLabel => 'Сделать селфи';
+
+  @override
+  String get aboutMeTitle => 'О себе';
+
+  @override
+  String get aboutMeSubtitle =>
+      'Необязательно. Напишите кратко — кандидаты это прочитают.';
+
+  @override
+  String get aboutMeHint =>
+      'Напишите 2–3 предложения о себе, работе и семейных ценностях...';
+
+  @override
+  String aboutMeCounter(int count) {
+    return '$count / 300 символов';
+  }
 
   @override
   String get mainPhotoSelectionHint => 'Выберите главное фото';
@@ -48,6 +68,28 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get onboardingSuccessSubtitle =>
       'Всё сохранено. Теперь вы можете посмотреть подходящих кандидатов.';
+
+  @override
+  String get pledgeConfirmationTitle => 'Подтвердите своё намерение';
+
+  @override
+  String get pledgeConfirmationSubtitle =>
+      'Этот шаг обязателен. После подтверждения в профиле появится отметка «Серьёзные намерения».';
+
+  @override
+  String get pledgeConfirmationPointOne =>
+      'Мои данные верны и принадлежат мне.';
+
+  @override
+  String get pledgeConfirmationPointTwo =>
+      'Моё намерение серьёзное — я пришёл(ла), чтобы создать семью.';
+
+  @override
+  String get pledgeConfirmationPointThree =>
+      'Я буду уважительно относиться к собеседникам.';
+
+  @override
+  String get pledgeConfirmationButton => 'Подтвердить обещание';
 
   @override
   String get aiTestBadge => 'AI-ТЕСТ СОВМЕСТИМОСТИ';
@@ -370,6 +412,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get playRecording => 'Прослушать запись';
+
+  @override
+  String get voiceSubtitle =>
+      'Необязательно. 10–15 секунд достаточно — голос расскажет о человеке больше.';
+
+  @override
+  String get startRecordingHint => 'Нажмите, чтобы начать запись';
+
+  @override
+  String get recordedVoiceHint =>
+      'Прослушайте запись. Если не понравится, запишите заново или удалите — голос необязателен.';
+
+  @override
+  String get reRecordVoice => 'Записать заново';
+
+  @override
+  String get deleteVoice => 'Удалить';
+
+  @override
+  String get locationPermissionTitle => 'Ваше местоположение';
+
+  @override
+  String get locationPermissionSubtitle =>
+      'Разрешение на геолокацию нужно, чтобы сначала показывать кандидатов поблизости. Точный адрес никому не виден.';
+
+  @override
+  String get enableLocation => 'Включить геолокацию';
 
   @override
   String get skipLabel => 'Пропустить';

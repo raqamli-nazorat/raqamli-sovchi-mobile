@@ -73,16 +73,21 @@ void main() {
     ]);
   });
 
-  test('posts pledge with consent flags and without a user field', () async {
+  test('posts pledge with user id and consent flags', () async {
     final client = _RecordingApiClient();
     final dataSource = RemoteOnboardingDataSource(client);
 
-    await dataSource.submitPledge(acceptedTerms: true, hasSeriousBadge: false);
+    await dataSource.submitPledge(
+      userId: 'user-1',
+      acceptedTerms: true,
+      hasSeriousBadge: true,
+    );
 
     expect(client.postPath, '/api/v1/accounts/pledges/');
     expect(client.postData, {
+      'user': 'user-1',
       'accepted_terms': true,
-      'has_serious_badge': false,
+      'has_serious_badge': true,
     });
   });
 
@@ -108,6 +113,24 @@ void main() {
       'region': 'region-1',
       'page': 1,
       'search': 'Yunus',
+    });
+  });
+
+  test('patches optional profile details with location coordinates', () async {
+    final client = _RecordingApiClient();
+    final dataSource = RemoteOnboardingDataSource(client);
+
+    await dataSource.updateProfileDetails(
+      aboutMe: 'Oila qadriyatlari muhim.',
+      latitude: 41.3111,
+      longitude: 69.2797,
+    );
+
+    expect(client.patchPath, '/api/v1/accounts/profiles/me/');
+    expect(client.patchData, {
+      'bio': 'Oila qadriyatlari muhim.',
+      'latitude': '41.311100',
+      'longitude': '69.279700',
     });
   });
 
@@ -147,6 +170,8 @@ final class _RecordingApiClient implements ApiClient {
   Object? postData;
   String? getPath;
   Map<String, dynamic>? getQuery;
+  String? patchPath;
+  Object? patchData;
 
   Response<T> _response<T>(String path) => Response<T>(
     requestOptions: RequestOptions(path: path),
@@ -194,7 +219,11 @@ final class _RecordingApiClient implements ApiClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-  }) => throw UnimplementedError();
+  }) async {
+    patchPath = path;
+    patchData = data;
+    return _response<T>(path);
+  }
 
   @override
   Future<Response<T>> put<T>(

@@ -1,11 +1,24 @@
 {
   "@@locale": "ru",
   "faceCaptureTitle": "Сделаем одно селфи",
-  "faceCaptureSubtitle": "Так вашему профилю будут больше доверять.",
+  "faceCaptureSubtitle": "Мы сравним селфи с главным фото. Селфи никто не увидит, после проверки оно удаляется.",
   "selfieCameraLabel": "камера селфи",
   "faceRuleOne": "Разместите лицо внутри круга.",
   "faceRuleTwo": "Убедитесь, что лицо хорошо видно.",
   "faceRuleThree": "Держите телефон на уровне глаз.",
+  "takeSelfieLabel": "Сделать селфи",
+  "aboutMeTitle": "О себе",
+  "aboutMeSubtitle": "Необязательно. Напишите кратко — кандидаты это прочитают.",
+  "aboutMeHint": "Напишите 2–3 предложения о себе, работе и семейных ценностях...",
+  "aboutMeCounter": "{count} / 300 символов",
+  "@aboutMeCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
   "mainPhotoSelectionHint": "Выберите главное фото",
   "mainPhotoSubtitle": "Это фото будет первым в профиле и будет сравниваться с селфи.",
   "mainPhotoBadge": "ГЛАВНОЕ",
@@ -13,6 +26,12 @@
   "faceCameraError": "Не удалось запустить камеру.",
   "onboardingSuccessTitle": "Ваша анкета готова!",
   "onboardingSuccessSubtitle": "Всё сохранено. Теперь вы можете посмотреть подходящих кандидатов.",
+  "pledgeConfirmationTitle": "Подтвердите своё намерение",
+  "pledgeConfirmationSubtitle": "Этот шаг обязателен. После подтверждения в профиле появится отметка «Серьёзные намерения».",
+  "pledgeConfirmationPointOne": "Мои данные верны и принадлежат мне.",
+  "pledgeConfirmationPointTwo": "Моё намерение серьёзное — я пришёл(ла), чтобы создать семью.",
+  "pledgeConfirmationPointThree": "Я буду уважительно относиться к собеседникам.",
+  "pledgeConfirmationButton": "Подтвердить обещание",
   "aiTestBadge": "AI-ТЕСТ СОВМЕСТИМОСТИ",
   "aiTestTitle": "Ответите на 30 вопросов?",
   "aiTestDescription": "По вашим ответам мы рассчитаем совместимость с каждым кандидатом. Это займёт около 8 минут.",
@@ -90,6 +109,14 @@
   "startRecording": "Начать запись",
   "stopRecording": "Остановить запись",
   "playRecording": "Прослушать запись",
+  "voiceSubtitle": "Необязательно. 10–15 секунд достаточно — голос расскажет о человеке больше.",
+  "startRecordingHint": "Нажмите, чтобы начать запись",
+  "recordedVoiceHint": "Прослушайте запись. Если не понравится, запишите заново или удалите — голос необязателен.",
+  "reRecordVoice": "Записать заново",
+  "deleteVoice": "Удалить",
+  "locationPermissionTitle": "Ваше местоположение",
+  "locationPermissionSubtitle": "Разрешение на геолокацию нужно, чтобы сначала показывать кандидатов поблизости. Точный адрес никому не виден.",
+  "enableLocation": "Включить геолокацию",
   "skipLabel": "Пропустить",
   "faceTitle": "Подтвердите лицо",
   "faceHint": "Сделайте селфи прямо, с открытыми глазами.",

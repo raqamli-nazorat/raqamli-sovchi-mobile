@@ -76,12 +76,29 @@ final class OnboardingRepositoryImpl implements OnboardingRepository {
   }
 
   @override
+  Future<Either<Failure, void>> updateProfileDetails({
+    String? aboutMe,
+    double? latitude,
+    double? longitude,
+  }) {
+    return _voidCall(
+      () => _dataSource.updateProfileDetails(
+        aboutMe: aboutMe,
+        latitude: latitude,
+        longitude: longitude,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, void>> submitPledge({
+    required String userId,
     required bool acceptedTerms,
     required bool hasSeriousBadge,
   }) {
     return _voidCall(
       () => _dataSource.submitPledge(
+        userId: userId,
         acceptedTerms: acceptedTerms,
         hasSeriousBadge: hasSeriousBadge,
       ),

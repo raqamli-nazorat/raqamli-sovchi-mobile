@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/commit_pending_auth_session.dart';
+import 'package:raqamli_sovchi/features/onboarding/application/services/onboarding_location_service.dart';
 import 'package:raqamli_sovchi/features/onboarding/application/services/onboarding_media_service.dart';
 import 'package:raqamli_sovchi/features/onboarding/domain/entities/onboarding_reference.dart';
 import 'package:raqamli_sovchi/features/onboarding/domain/entities/profile_onboarding_draft.dart';
@@ -22,6 +23,9 @@ final class _MockOnboardingDraftRepository extends Mock
 
 final class _MockOnboardingMediaService extends Mock
     implements OnboardingMediaService {}
+
+final class _MockOnboardingLocationService extends Mock
+    implements OnboardingLocationService {}
 
 final class _MockAuthSessionManager extends Mock
     implements AuthSessionManager {}
@@ -370,18 +374,158 @@ void main() {
     expect(find.text('surat'), findsNWidgets(4));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('about me step renders optional textarea and skip action', (
+    tester,
+  ) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.aboutMe,
+      size: const Size(390, 844),
+      state: ProfileOnboardingState(
+        status: ProfileOnboardingStatus.editing,
+        draft: ProfileOnboardingDraft(
+          ownerUserId: 'user-1',
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
+
+    expect(find.text('O‘zingiz haqingizda'), findsOneWidget);
+    expect(
+      find.text('Ixtiyoriy. Qisqacha yozing — nomzodlar shuni o‘qiydi.'),
+      findsOneWidget,
+    );
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('0 / 300 belgi'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Davom etish'), findsOneWidget);
+    expect(find.text('O‘tkazib yuborish'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets(
+    'voice step shows recording controls before and after recording',
+    (tester) async {
+      final bloc = _createBloc();
+      addTearDown(bloc.close);
+
+      await _pumpStep(
+        tester,
+        bloc: bloc,
+        step: OnboardingStep.voiceIntro,
+        size: const Size(390, 844),
+      );
+
+      expect(find.byIcon(Icons.mic_none_rounded), findsOneWidget);
+      expect(find.text('Yozishni boshlash uchun bosing'), findsOneWidget);
+      expect(find.text('Qayta yozish'), findsNothing);
+      expect(tester.takeException(), isNull);
+
+      await _pumpStep(
+        tester,
+        bloc: bloc,
+        step: OnboardingStep.voiceIntro,
+        size: const Size(390, 844),
+        state: ProfileOnboardingState(
+          status: ProfileOnboardingStatus.editing,
+          draft: ProfileOnboardingDraft(
+            ownerUserId: 'user-1',
+            updatedAt: DateTime.utc(2026),
+            voiceIntroMetadata: const VoiceIntroMetadata(
+              localFilePath: '/private/voice.m4a',
+              duration: Duration(seconds: 12),
+              sizeBytes: 100,
+              uploaded: true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.play_arrow), findsOneWidget);
+      expect(find.text('0:12'), findsOneWidget);
+      expect(find.text('Qayta yozish'), findsOneWidget);
+      expect(find.text('O‘chirish'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('location permission step requires enabling location', (
+    tester,
+  ) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.locationPermission,
+      size: const Size(390, 844),
+    );
+
+    expect(find.text('Joylashuvingiz'), findsOneWidget);
+    expect(find.text('Joylashuvni yoqish'), findsOneWidget);
+    expect(find.text('O‘tkazib yuborish'), findsNothing);
+    expect(find.byIcon(Icons.location_on_outlined), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('pledge confirmation step matches final confirmation copy', (
+    tester,
+  ) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.success,
+      size: const Size(390, 844),
+    );
+
+    expect(find.text('Niyatingizni tasdiqlang'), findsOneWidget);
+    expect(
+      find.text('Ma’lumotlarim to‘g‘ri va o‘zimga tegishli.'),
+      findsOneWidget,
+    );
+    expect(find.text('Qasamni tasdiqlash'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('profile ready step shows AI test choices', (tester) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.profileReady,
+      size: const Size(390, 844),
+    );
+
+    expect(find.text('Profillingiz tayyor!'), findsOneWidget);
+    expect(find.text('AI MOSLIK TESTI'), findsOneWidget);
+    expect(find.text('Ha, testni boshlayman'), findsOneWidget);
+    expect(find.text('Keyinroq — avval nomzodlarni ko‘raman'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 ProfileOnboardingBloc _createBloc({
   OnboardingDraftRepository? draftRepository,
 }) {
   final mediaService = _MockOnboardingMediaService();
+  final locationService = _MockOnboardingLocationService();
   when(() => mediaService.dispose()).thenAnswer((_) async {});
 
   return ProfileOnboardingBloc(
     onboardingRepository: _MockOnboardingRepository(),
     draftRepository: draftRepository ?? _MockOnboardingDraftRepository(),
     mediaService: mediaService,
+    locationService: locationService,
     commitPendingAuthSession: CommitPendingAuthSessionUseCase(
       _MockAuthSessionManager(),
     ),

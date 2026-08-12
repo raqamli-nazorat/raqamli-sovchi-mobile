@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/errors/failure.dart';
 import '../../../auth/application/use_cases/commit_pending_auth_session.dart';
 import '../../application/onboarding_date_validator.dart';
+import '../../application/services/onboarding_location_service.dart';
 import '../../application/services/onboarding_media_service.dart';
 import '../../domain/entities/candidate_type.dart';
 import '../../domain/entities/profile_onboarding_draft.dart';
@@ -20,11 +21,13 @@ final class ProfileOnboardingBloc
     required OnboardingRepository onboardingRepository,
     required OnboardingDraftRepository draftRepository,
     required OnboardingMediaService mediaService,
+    required OnboardingLocationService locationService,
     required CommitPendingAuthSessionUseCase commitPendingAuthSession,
     DateTime Function()? now,
   }) : _onboardingRepository = onboardingRepository,
        _draftRepository = draftRepository,
        _mediaService = mediaService,
+       _locationService = locationService,
        _commitPendingAuthSession = commitPendingAuthSession,
        _now = now ?? DateTime.now,
        super(const ProfileOnboardingState()) {
@@ -64,17 +67,24 @@ final class ProfileOnboardingBloc
     on<VoiceRecordingStarted>(_onVoiceRecordingStarted);
     on<VoiceRecordingStopped>(_onVoiceRecordingStopped);
     on<VoiceIntroContinuePressed>(_onVoiceIntroContinuePressed);
+    on<VoiceIntroSkipped>(_onVoiceIntroSkipped);
+    on<VoiceIntroDeleted>(_onVoiceIntroDeleted);
     on<VoicePlaybackRequested>(_onVoicePlaybackRequested);
+    on<LocationPermissionRequested>(_onLocationPermissionRequested);
     on<FaceVerificationPageOpened>(_onFaceVerificationPageOpened);
     on<FaceVerificationRequested>(_onFaceVerificationRequested);
     on<FaceSelfieCaptured>(_onFaceSelfieCaptured);
+    on<AboutMeContinuePressed>(_onAboutMeContinuePressed);
+    on<AboutMeSkipPressed>(_onAboutMeSkipPressed);
     on<ProfileOnboardingFinalizationRequested>(_onFinalizationRequested);
+    on<ProfileReadyHomeRequested>(_onProfileReadyHomeRequested);
     on<ProfileOnboardingCancelled>(_onCancelled);
   }
 
   final OnboardingRepository _onboardingRepository;
   final OnboardingDraftRepository _draftRepository;
   final OnboardingMediaService _mediaService;
+  final OnboardingLocationService _locationService;
   final CommitPendingAuthSessionUseCase _commitPendingAuthSession;
   final DateTime Function() _now;
 
@@ -976,7 +986,10 @@ final class ProfileOnboardingBloc
       emit(state.copyWith(failure: const Failure.validation()));
       return;
     }
-    await _save(draft.copyWith(currentStep: OnboardingStep.voiceIntro), emit);
+    await _save(
+      draft.copyWith(currentStep: OnboardingStep.faceVerification),
+      emit,
+    );
   }
 
   Future<void> _onVoiceRecordingStopped(
@@ -995,31 +1008,6 @@ final class ProfileOnboardingBloc
         );
       }
       await _save(draft.copyWith(voiceIntroMetadata: voice), emit);
-      emit(
-        state.copyWith(
-          status: ProfileOnboardingStatus.submitting,
-          clearFailure: true,
-        ),
-      );
-      final result = await _onboardingRepository.updateVoiceIntro(
-        voice.localFilePath,
-      );
-      await result.fold<Future<void>>(
-        (failure) async {
-          emit(
-            state.copyWith(
-              status: ProfileOnboardingStatus.editing,
-              failure: failure,
-            ),
-          );
-        },
-        (_) => _save(
-          state.draft!.copyWith(
-            voiceIntroMetadata: voice.copyWith(uploaded: true),
-          ),
-          emit,
-        ),
-      );
     } on OnboardingMediaValidationException {
       emit(
         state.copyWith(
@@ -1037,7 +1025,17 @@ final class ProfileOnboardingBloc
   ) async {
     final voice = state.draft?.voiceIntroMetadata;
     if (voice == null) return;
-    await _mediaService.playVoice(voice.localFilePath);
+    if (state.isVoicePlaying) {
+      await _mediaService.stopVoicePlayback();
+      emit(state.copyWith(isVoicePlaying: false));
+      return;
+    }
+    emit(state.copyWith(isVoicePlaying: true));
+    try {
+      await _mediaService.playVoice(voice.localFilePath);
+    } finally {
+      if (!isClosed) emit(state.copyWith(isVoicePlaying: false));
+    }
   }
 
   Future<void> _onVoiceIntroContinuePressed(
@@ -1046,10 +1044,115 @@ final class ProfileOnboardingBloc
   ) async {
     final draft = state.draft;
     if (draft == null || state.isVoiceRecording) return;
+    await _continueFromVoice(draft, emit);
+  }
+
+  Future<void> _onVoiceIntroSkipped(
+    VoiceIntroSkipped event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || state.isVoiceRecording) return;
+    await _mediaService.stopVoicePlayback();
+    if (draft.voiceIntroMetadata != null) {
+      await _mediaService.deletePrivateFile(
+        draft.voiceIntroMetadata!.localFilePath,
+      );
+    }
     await _save(
-      draft.copyWith(currentStep: OnboardingStep.faceVerification),
+      draft.copyWith(
+        currentStep: OnboardingStep.locationPermission,
+        clearVoiceIntro: true,
+      ),
       emit,
     );
+  }
+
+  Future<void> _onVoiceIntroDeleted(
+    VoiceIntroDeleted event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    final voice = draft?.voiceIntroMetadata;
+    if (draft == null || voice == null || state.isVoiceRecording) return;
+    await _mediaService.stopVoicePlayback();
+    await _mediaService.deletePrivateFile(voice.localFilePath);
+    await _save(draft.copyWith(clearVoiceIntro: true), emit);
+  }
+
+  Future<void> _continueFromVoice(
+    ProfileOnboardingDraft draft,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final voice = draft.voiceIntroMetadata;
+    if (voice == null || voice.uploaded) {
+      await _save(
+        draft.copyWith(currentStep: OnboardingStep.locationPermission),
+        emit,
+      );
+      return;
+    }
+    emit(state.copyWith(status: ProfileOnboardingStatus.submitting));
+    final result = await _onboardingRepository.updateVoiceIntro(
+      voice.localFilePath,
+    );
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          failure: failure,
+        ),
+      ),
+      (_) => _save(
+        state.draft!.copyWith(
+          voiceIntroMetadata: voice.copyWith(uploaded: true),
+          currentStep: OnboardingStep.locationPermission,
+        ),
+        emit,
+      ),
+    );
+  }
+
+  Future<void> _onLocationPermissionRequested(
+    LocationPermissionRequested event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || state.isLocationLoading) return;
+    emit(state.copyWith(isLocationLoading: true, clearFailure: true));
+    try {
+      final coordinates = await _locationService.requestCurrentLocation();
+      await _save(
+        draft.copyWith(
+          latitude: coordinates.latitude,
+          longitude: coordinates.longitude,
+          currentStep: OnboardingStep.success,
+        ),
+        emit,
+      );
+      emit(state.copyWith(isLocationLoading: false));
+    } on OnboardingLocationPermissionException {
+      emit(
+        state.copyWith(
+          isLocationLoading: false,
+          failure: const Failure.forbidden(),
+        ),
+      );
+    } on OnboardingLocationUnavailableException {
+      emit(
+        state.copyWith(
+          isLocationLoading: false,
+          failure: const Failure.unsupported(),
+        ),
+      );
+    } catch (_) {
+      emit(
+        state.copyWith(
+          isLocationLoading: false,
+          failure: const Failure.unknown(),
+        ),
+      );
+    }
   }
 
   Future<void> _onFaceVerificationRequested(
@@ -1117,7 +1220,7 @@ final class ProfileOnboardingBloc
         (response) => _save(
           state.draft!.copyWith(
             currentStep: response.verified
-                ? OnboardingStep.success
+                ? OnboardingStep.aboutMe
                 : OnboardingStep.faceVerification,
             faceVerificationStatus: response.verified
                 ? FaceVerificationStatus.matched
@@ -1138,6 +1241,38 @@ final class ProfileOnboardingBloc
       await _mediaService.deletePrivateFile(event.sourcePath);
       if (selfiePath != null) await _mediaService.deletePrivateFile(selfiePath);
     }
+  }
+
+  Future<void> _onAboutMeContinuePressed(
+    AboutMeContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null) return;
+    final value = event.aboutMe.trim();
+    await _save(
+      draft.copyWith(
+        aboutMe: value.isEmpty ? null : value,
+        clearAboutMe: value.isEmpty,
+        currentStep: OnboardingStep.voiceIntro,
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _onAboutMeSkipPressed(
+    AboutMeSkipPressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null) return;
+    await _save(
+      draft.copyWith(
+        currentStep: OnboardingStep.voiceIntro,
+        clearAboutMe: true,
+      ),
+      emit,
+    );
   }
 
   Future<void> _onFinalizationRequested(
@@ -1161,9 +1296,32 @@ final class ProfileOnboardingBloc
         clearFailure: true,
       ),
     );
+    if (draft.aboutMe != null ||
+        draft.latitude != null ||
+        draft.longitude != null) {
+      final details = await _onboardingRepository.updateProfileDetails(
+        aboutMe: draft.aboutMe,
+        latitude: draft.latitude,
+        longitude: draft.longitude,
+      );
+      final detailsFailure = details.fold<Failure?>(
+        (failure) => failure,
+        (_) => null,
+      );
+      if (detailsFailure != null) {
+        emit(
+          state.copyWith(
+            status: ProfileOnboardingStatus.editing,
+            failure: detailsFailure,
+          ),
+        );
+        return;
+      }
+    }
     final pledge = await _onboardingRepository.submitPledge(
+      userId: draft.ownerUserId,
       acceptedTerms: true,
-      hasSeriousBadge: false,
+      hasSeriousBadge: true,
     );
     final pledgeFailure = pledge.fold<Failure?>(
       (failure) => failure,
@@ -1193,6 +1351,33 @@ final class ProfileOnboardingBloc
       return;
     }
     await _cleanupDraftMedia(draft);
+    final profileReadyDraft = draft.copyWith(
+      currentStep: OnboardingStep.profileReady,
+    );
+    final draftSave = await _draftRepository.save(profileReadyDraft);
+    draftSave.fold(
+      (failure) => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          draft: profileReadyDraft,
+          failure: failure,
+        ),
+      ),
+      (_) => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          draft: profileReadyDraft,
+          clearFailure: true,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onProfileReadyHomeRequested(
+    ProfileReadyHomeRequested event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    if (state.status == ProfileOnboardingStatus.submitting) return;
     await _draftRepository.clear();
     emit(state.copyWith(status: ProfileOnboardingStatus.completed));
   }

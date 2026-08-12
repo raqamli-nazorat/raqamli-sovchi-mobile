@@ -27,7 +27,14 @@ abstract interface class OnboardingDataSource {
 
   Future<void> updateVoiceIntro(String localFilePath);
 
+  Future<void> updateProfileDetails({
+    String? aboutMe,
+    double? latitude,
+    double? longitude,
+  });
+
   Future<void> submitPledge({
+    required String userId,
     required bool acceptedTerms,
     required bool hasSeriousBadge,
   });
@@ -165,13 +172,30 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
   }
 
   @override
+  Future<void> updateProfileDetails({
+    String? aboutMe,
+    double? latitude,
+    double? longitude,
+  }) async {
+    final data = <String, dynamic>{};
+    if (aboutMe != null) data['bio'] = aboutMe;
+    if (latitude != null) data['latitude'] = latitude.toStringAsFixed(6);
+    if (longitude != null) {
+      data['longitude'] = longitude.toStringAsFixed(6);
+    }
+    await _client.patch<Map<String, dynamic>>(_profileMePath, data: data);
+  }
+
+  @override
   Future<void> submitPledge({
+    required String userId,
     required bool acceptedTerms,
     required bool hasSeriousBadge,
   }) async {
     await _client.post<Map<String, dynamic>>(
       _pledgesPath,
       data: {
+        'user': userId,
         'accepted_terms': acceptedTerms,
         'has_serious_badge': hasSeriousBadge,
       },

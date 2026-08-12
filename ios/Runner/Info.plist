@@ -10,6 +10,8 @@
 	<string>Profilingizni tasdiqlash uchun kamera ishlatiladi.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Ovozli tanishtiruv yozish uchun mikrofon ishlatiladi.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Yaqin hududdagi nomzodlarni ko‘rsatish uchun joylashuv ishlatiladi.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Profil suratingizni tanlash uchun foto kutubxonasi ishlatiladi.</string>
 	<key>CFBundleDevelopmentRegion</key>

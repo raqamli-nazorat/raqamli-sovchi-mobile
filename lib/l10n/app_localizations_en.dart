@@ -12,7 +12,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get faceCaptureTitle => 'Take one selfie';
 
   @override
-  String get faceCaptureSubtitle => 'This makes your profile more trustworthy.';
+  String get faceCaptureSubtitle =>
+      'We compare it with your main photo. The selfie is not shown to anyone and is deleted after verification.';
 
   @override
   String get selfieCameraLabel => 'selfie camera';
@@ -25,6 +26,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faceRuleThree => 'Hold the phone at eye level.';
+
+  @override
+  String get takeSelfieLabel => 'Take selfie';
+
+  @override
+  String get aboutMeTitle => 'About you';
+
+  @override
+  String get aboutMeSubtitle =>
+      'Optional. Write briefly — candidates will read this.';
+
+  @override
+  String get aboutMeHint =>
+      'Write 2–3 sentences about yourself, your work, and family values...';
+
+  @override
+  String aboutMeCounter(int count) {
+    return '$count / 300 characters';
+  }
 
   @override
   String get mainPhotoSelectionHint => 'Select your main photo';
@@ -48,6 +68,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get onboardingSuccessSubtitle =>
       'Everything is saved. You can now see candidates who may be a good fit.';
+
+  @override
+  String get pledgeConfirmationTitle => 'Confirm your intention';
+
+  @override
+  String get pledgeConfirmationSubtitle =>
+      'This step is required. After confirming, a Serious Intent badge will appear on your profile.';
+
+  @override
+  String get pledgeConfirmationPointOne =>
+      'My information is accurate and belongs to me.';
+
+  @override
+  String get pledgeConfirmationPointTwo =>
+      'My intention is serious — I came here to build a family.';
+
+  @override
+  String get pledgeConfirmationPointThree =>
+      'I will treat conversation partners with respect.';
+
+  @override
+  String get pledgeConfirmationButton => 'Confirm pledge';
 
   @override
   String get aiTestBadge => 'AI COMPATIBILITY TEST';
@@ -369,6 +411,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playRecording => 'Play recording';
+
+  @override
+  String get voiceSubtitle =>
+      'Optional. 10–15 seconds is enough — voice says more about a person.';
+
+  @override
+  String get startRecordingHint => 'Tap to start recording';
+
+  @override
+  String get recordedVoiceHint =>
+      'Listen to it. Record again or delete it if you do not like it — voice is optional.';
+
+  @override
+  String get reRecordVoice => 'Record again';
+
+  @override
+  String get deleteVoice => 'Delete';
+
+  @override
+  String get locationPermissionTitle => 'Your location';
+
+  @override
+  String get locationPermissionSubtitle =>
+      'Location permission is required to show nearby candidates first. Your exact address will not be visible to anyone.';
+
+  @override
+  String get enableLocation => 'Enable location';
 
   @override
   String get skipLabel => 'Skip';

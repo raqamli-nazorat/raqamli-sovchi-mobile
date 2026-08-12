@@ -1,11 +1,24 @@
 {
   "@@locale": "en",
   "faceCaptureTitle": "Take one selfie",
-  "faceCaptureSubtitle": "This makes your profile more trustworthy.",
+  "faceCaptureSubtitle": "We compare it with your main photo. The selfie is not shown to anyone and is deleted after verification.",
   "selfieCameraLabel": "selfie camera",
   "faceRuleOne": "Place your face inside the circle.",
   "faceRuleTwo": "Make sure your face is visible.",
   "faceRuleThree": "Hold the phone at eye level.",
+  "takeSelfieLabel": "Take selfie",
+  "aboutMeTitle": "About you",
+  "aboutMeSubtitle": "Optional. Write briefly — candidates will read this.",
+  "aboutMeHint": "Write 2–3 sentences about yourself, your work, and family values...",
+  "aboutMeCounter": "{count} / 300 characters",
+  "@aboutMeCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "0"
+      }
+    }
+  },
   "mainPhotoSelectionHint": "Select your main photo",
   "mainPhotoSubtitle": "This photo appears first on your profile and is compared with your selfie.",
   "mainPhotoBadge": "MAIN",
@@ -13,6 +26,12 @@
   "faceCameraError": "The camera could not be started.",
   "onboardingSuccessTitle": "Your profile is ready!",
   "onboardingSuccessSubtitle": "Everything is saved. You can now see candidates who may be a good fit.",
+  "pledgeConfirmationTitle": "Confirm your intention",
+  "pledgeConfirmationSubtitle": "This step is required. After confirming, a Serious Intent badge will appear on your profile.",
+  "pledgeConfirmationPointOne": "My information is accurate and belongs to me.",
+  "pledgeConfirmationPointTwo": "My intention is serious — I came here to build a family.",
+  "pledgeConfirmationPointThree": "I will treat conversation partners with respect.",
+  "pledgeConfirmationButton": "Confirm pledge",
   "aiTestBadge": "AI COMPATIBILITY TEST",
   "aiTestTitle": "Ready to answer 30 questions?",
   "aiTestDescription": "We will calculate your compatibility with each candidate from your answers. It takes about 8 minutes.",
@@ -119,6 +138,14 @@
   "startRecording": "Start recording",
   "stopRecording": "Stop recording",
   "playRecording": "Play recording",
+  "voiceSubtitle": "Optional. 10–15 seconds is enough — voice says more about a person.",
+  "startRecordingHint": "Tap to start recording",
+  "recordedVoiceHint": "Listen to it. Record again or delete it if you do not like it — voice is optional.",
+  "reRecordVoice": "Record again",
+  "deleteVoice": "Delete",
+  "locationPermissionTitle": "Your location",
+  "locationPermissionSubtitle": "Location permission is required to show nearby candidates first. Your exact address will not be visible to anyone.",
+  "enableLocation": "Enable location",
   "skipLabel": "Skip",
   "faceTitle": "Verify your face",
   "faceHint": "Take a clear selfie with your face straight and eyes open.",

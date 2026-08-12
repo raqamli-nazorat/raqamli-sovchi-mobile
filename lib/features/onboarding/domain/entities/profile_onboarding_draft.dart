@@ -14,9 +14,12 @@ enum OnboardingStep {
   maritalStatus,
   photos,
   mainPhoto,
-  voiceIntro,
   faceVerification,
+  aboutMe,
+  voiceIntro,
+  locationPermission,
   success,
+  profileReady,
 }
 
 enum PhotoUploadStatus { pending, uploading, uploaded, failed }
@@ -133,6 +136,9 @@ final class ProfileOnboardingDraft extends Equatable {
     this.mainPhotoServerId,
     this.voiceIntroMetadata,
     this.faceVerificationStatus = FaceVerificationStatus.notStarted,
+    this.aboutMe,
+    this.latitude,
+    this.longitude,
     this.schemaVersion = 1,
   });
 
@@ -158,6 +164,9 @@ final class ProfileOnboardingDraft extends Equatable {
   final String? mainPhotoServerId;
   final VoiceIntroMetadata? voiceIntroMetadata;
   final FaceVerificationStatus faceVerificationStatus;
+  final String? aboutMe;
+  final double? latitude;
+  final double? longitude;
   final DateTime updatedAt;
   final int schemaVersion;
 
@@ -203,10 +212,15 @@ final class ProfileOnboardingDraft extends Equatable {
     String? mainPhotoServerId,
     VoiceIntroMetadata? voiceIntroMetadata,
     FaceVerificationStatus? faceVerificationStatus,
+    String? aboutMe,
+    double? latitude,
+    double? longitude,
     DateTime? updatedAt,
     bool clearDistrict = false,
     bool clearMainPhoto = false,
     bool clearVoiceIntro = false,
+    bool clearAboutMe = false,
+    bool clearLocation = false,
   }) {
     return ProfileOnboardingDraft(
       ownerUserId: ownerUserId,
@@ -237,6 +251,9 @@ final class ProfileOnboardingDraft extends Equatable {
           : voiceIntroMetadata ?? this.voiceIntroMetadata,
       faceVerificationStatus:
           faceVerificationStatus ?? this.faceVerificationStatus,
+      aboutMe: clearAboutMe ? null : aboutMe ?? this.aboutMe,
+      latitude: clearLocation ? null : latitude ?? this.latitude,
+      longitude: clearLocation ? null : longitude ?? this.longitude,
       updatedAt: updatedAt ?? DateTime.now().toUtc(),
       schemaVersion: schemaVersion,
     );
@@ -266,6 +283,9 @@ final class ProfileOnboardingDraft extends Equatable {
     mainPhotoServerId,
     voiceIntroMetadata,
     faceVerificationStatus,
+    aboutMe,
+    latitude,
+    longitude,
     updatedAt,
     schemaVersion,
   ];

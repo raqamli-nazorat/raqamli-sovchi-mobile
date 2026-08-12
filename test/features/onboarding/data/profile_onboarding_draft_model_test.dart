@@ -22,6 +22,9 @@ void main() {
       maritalStatusId: 'marital-1',
       childrenCount: 2,
       childrenNotLivingWithMe: true,
+      aboutMe: 'Oila qadriyatlari muhim.',
+      latitude: 41.3111,
+      longitude: 69.2797,
       profileServerId: 'profile-1',
       mainPhotoServerId: 'photo-1',
       photos: const [
@@ -47,5 +50,8 @@ void main() {
     expect(restored.maritalStatusId, 'marital-1');
     expect(restored.childrenCount, 2);
     expect(restored.childrenNotLivingWithMe, isTrue);
+    expect(restored.aboutMe, 'Oila qadriyatlari muhim.');
+    expect(restored.latitude, 41.3111);
+    expect(restored.longitude, 69.2797);
   });
 }

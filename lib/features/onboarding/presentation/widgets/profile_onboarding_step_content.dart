@@ -24,25 +24,20 @@ import 'onboarding_reference_bottom_sheet.dart';
 import 'onboarding_voice_recorder.dart';
 
 final class ProfileOnboardingStepContent extends StatefulWidget {
-  const ProfileOnboardingStepContent({
-    required this.step,
-    required this.state,
-    super.key,
-  });
+  const ProfileOnboardingStepContent({required this.step, required this.state, super.key});
 
   final OnboardingStep step;
   final ProfileOnboardingState state;
 
   @override
-  State<ProfileOnboardingStepContent> createState() =>
-      _ProfileOnboardingStepContentState();
+  State<ProfileOnboardingStepContent> createState() => _ProfileOnboardingStepContentState();
 }
 
-final class _ProfileOnboardingStepContentState
-    extends State<ProfileOnboardingStepContent> {
+final class _ProfileOnboardingStepContentState extends State<ProfileOnboardingStepContent> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _patronymicController = TextEditingController();
+  final _aboutMeController = TextEditingController();
   DateTime? _selectedBirthDate;
   int? _selectedHeight;
   int? _selectedWeight;
@@ -52,6 +47,7 @@ final class _ProfileOnboardingStepContentState
     _firstNameController.dispose();
     _lastNameController.dispose();
     _patronymicController.dispose();
+    _aboutMeController.dispose();
     super.dispose();
   }
 
@@ -72,38 +68,28 @@ final class _ProfileOnboardingStepContentState
       OnboardingStep.maritalStatus => _maritalStatus(l10n, draft, bloc),
       OnboardingStep.photos => _photos(l10n, draft, bloc),
       OnboardingStep.mainPhoto => _mainPhoto(l10n, draft, bloc),
-      OnboardingStep.voiceIntro => _voice(l10n, draft, bloc),
       OnboardingStep.faceVerification => _face(l10n, draft, bloc),
+      OnboardingStep.aboutMe => _aboutMe(l10n, draft, bloc),
+      OnboardingStep.voiceIntro => _voice(l10n, draft, bloc),
+      OnboardingStep.locationPermission => _locationPermission(l10n, draft, bloc),
       OnboardingStep.success => _success(l10n, bloc),
+      OnboardingStep.profileReady => _profileReady(l10n, bloc),
     };
     return Padding(
-      padding:
-          widget.step == OnboardingStep.candidateType ||
-              widget.step == OnboardingStep.pledge
-          ? const EdgeInsets.fromLTRB(
-              AppSpacing.xl,
-              AppSpacing.lg + AppSpacing.xs,
-              AppSpacing.xl,
-              AppSpacing.xl,
-            )
+      padding: widget.step == OnboardingStep.candidateType || widget.step == OnboardingStep.pledge
+          ? const EdgeInsets.fromLTRB(AppSpacing.xl, AppSpacing.lg + AppSpacing.xs, AppSpacing.xl, AppSpacing.xl)
           : const EdgeInsets.all(AppSpacing.xl),
       child: content,
     );
   }
 
-  Widget _candidateType(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _candidateType(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _FigmaStepLayout(
       title: l10n.candidateTypeTitle,
       subtitle: l10n.candidateTypeSubtitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.candidateType == null
-            ? null
-            : () => bloc.add(const CandidateTypeContinuePressed()),
+        onPressed: draft.candidateType == null ? null : () => bloc.add(const CandidateTypeContinuePressed()),
       ),
       child: Column(
         children: [
@@ -111,54 +97,38 @@ final class _ProfileOnboardingStepContentState
             label: l10n.groomCandidateTitle,
             detail: l10n.groomCandidateSubtitle,
             selected: draft.candidateType == CandidateType.groom,
-            onPressed: () =>
-                bloc.add(const CandidateTypeSaved(CandidateType.groom)),
+            onPressed: () => bloc.add(const CandidateTypeSaved(CandidateType.groom)),
           ),
           const SizedBox(height: AppSpacing.md),
           _SelectionCard(
             label: l10n.brideCandidateTitle,
             detail: l10n.brideCandidateSubtitle,
             selected: draft.candidateType == CandidateType.bride,
-            onPressed: () =>
-                bloc.add(const CandidateTypeSaved(CandidateType.bride)),
+            onPressed: () => bloc.add(const CandidateTypeSaved(CandidateType.bride)),
           ),
           const SizedBox(height: AppSpacing.md),
           _SelectionCard(
             label: l10n.representativeCandidateTitle,
             detail: l10n.representativeCandidateSubtitle,
             selected: draft.candidateType == CandidateType.representative,
-            onPressed: () => bloc.add(
-              const CandidateTypeSaved(CandidateType.representative),
-            ),
+            onPressed: () => bloc.add(const CandidateTypeSaved(CandidateType.representative)),
           ),
         ],
       ),
     );
   }
 
-  Widget _pledge(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _pledge(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _FigmaStepLayout(
       title: l10n.pledgeTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.pledgeStart,
-        onPressed: draft.pledgeAcceptedTerms
-            ? () => bloc.add(const PledgeContinuePressed())
-            : null,
+        onPressed: draft.pledgeAcceptedTerms ? () => bloc.add(const PledgeContinuePressed()) : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _PledgeCard(
-            points: [
-              l10n.pledgePointOne,
-              l10n.pledgePointTwo,
-              l10n.pledgePointThree,
-            ],
-          ),
+          _PledgeCard(points: [l10n.pledgePointOne, l10n.pledgePointTwo, l10n.pledgePointThree]),
           const SizedBox(height: AppSpacing.md),
           _AgreementRow(
             accepted: draft.pledgeAcceptedTerms,
@@ -170,26 +140,18 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
-  Widget _birthDate(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _birthDate(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final now = DateTime.now();
     final minimumDate = DateTime(now.year - 60, 1, 1);
     final maximumDate = DateTime(now.year - 18, 12, 31);
-    final selectedDate =
-        _selectedBirthDate ?? draft.birthDate ?? DateTime(now.year - 25, 1, 1);
+    final selectedDate = _selectedBirthDate ?? draft.birthDate ?? DateTime(now.year - 25, 1, 1);
     return _StepLayout(
       step: widget.step,
       title: l10n.birthDateTitle,
       subtitle: l10n.birthDateSubtitle,
       dateWheel: true,
       keyboardAware: true,
-      bottom: _FigmaPrimaryButton(
-        label: l10n.continueLabel,
-        onPressed: () => bloc.add(BirthDateSaved(selectedDate)),
-      ),
+      bottom: _FigmaPrimaryButton(label: l10n.continueLabel, onPressed: () => bloc.add(BirthDateSaved(selectedDate))),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -200,21 +162,13 @@ final class _ProfileOnboardingStepContentState
             onChanged: (value) => setState(() => _selectedBirthDate = value),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.birthDateHint,
-            textAlign: TextAlign.center,
-            style: AppTypography.onboardingBody,
-          ),
+          Text(l10n.birthDateHint, textAlign: TextAlign.center, style: AppTypography.onboardingBody),
         ],
       ),
     );
   }
 
-  Widget _identity(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _identity(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     if (_firstNameController.text.isEmpty && draft.firstName != null) {
       _firstNameController.text = draft.firstName!;
     }
@@ -231,59 +185,33 @@ final class _ProfileOnboardingStepContentState
       keyboardAware: true,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed:
-            _firstNameController.text.trim().isEmpty ||
-                _lastNameController.text.trim().isEmpty ||
-                _patronymicController.text.trim().isEmpty
+        onPressed: _firstNameController.text.trim().isEmpty || _lastNameController.text.trim().isEmpty || _patronymicController.text.trim().isEmpty
             ? null
             : () {
                 FocusScope.of(context).unfocus();
                 bloc.add(
-                  IdentitySaved(
-                    firstName: _firstNameController.text,
-                    lastName: _lastNameController.text,
-                    patronymic: _patronymicController.text,
-                  ),
+                  IdentitySaved(firstName: _firstNameController.text, lastName: _lastNameController.text, patronymic: _patronymicController.text),
                 );
               },
       ),
       child: Column(
         children: [
-          _OnboardingTextField(
-            label: l10n.firstNameLabel,
-            controller: _firstNameController,
-            onChanged: (_) => setState(() {}),
-          ),
+          _OnboardingTextField(label: l10n.firstNameLabel, controller: _firstNameController, onChanged: (_) => setState(() {})),
           const SizedBox(height: AppSpacing.md),
-          _OnboardingTextField(
-            label: l10n.lastNameLabel,
-            controller: _lastNameController,
-            onChanged: (_) => setState(() {}),
-          ),
+          _OnboardingTextField(label: l10n.lastNameLabel, controller: _lastNameController, onChanged: (_) => setState(() {})),
           const SizedBox(height: AppSpacing.md),
-          _OnboardingTextField(
-            label: l10n.patronymicLabel,
-            controller: _patronymicController,
-            onChanged: (_) => setState(() {}),
-          ),
+          _OnboardingTextField(label: l10n.patronymicLabel, controller: _patronymicController, onChanged: (_) => setState(() {})),
         ],
       ),
     );
   }
 
-  Widget _education(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _education(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final chips = widget.state.educationLevels
         .where((item) => item.id.isNotEmpty && item.name.isNotEmpty)
         .map(
-          (item) => _EducationChip(
-            label: item.name,
-            selected: draft.educationLevelId == item.id,
-            onPressed: () => bloc.add(EducationLevelSaved(item.id)),
-          ),
+          (item) =>
+              _EducationChip(label: item.name, selected: draft.educationLevelId == item.id, onPressed: () => bloc.add(EducationLevelSaved(item.id))),
         )
         .toList(growable: false);
     return _StepLayout(
@@ -291,33 +219,18 @@ final class _ProfileOnboardingStepContentState
       title: l10n.educationTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.educationLevelId?.isNotEmpty == true
-            ? () => bloc.add(const EducationContinuePressed())
-            : null,
+        onPressed: draft.educationLevelId?.isNotEmpty == true ? () => bloc.add(const EducationContinuePressed()) : null,
       ),
       child: switch (widget.state.educationStatus) {
-        ReferenceStatus.loading => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        ReferenceStatus.loading => const Center(child: CircularProgressIndicator()),
         ReferenceStatus.empty => const SizedBox.shrink(),
-        ReferenceStatus.failure => AppButton(
-          label: l10n.retry,
-          onPressed: () => bloc.add(const EducationLevelsRequested()),
-        ),
-        _ => Wrap(
-          spacing: AppSpacing.inline,
-          runSpacing: AppSpacing.inline,
-          children: chips,
-        ),
+        ReferenceStatus.failure => AppButton(label: l10n.retry, onPressed: () => bloc.add(const EducationLevelsRequested())),
+        _ => Wrap(spacing: AppSpacing.inline, runSpacing: AppSpacing.inline, children: chips),
       },
     );
   }
 
-  Widget _height(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _height(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final height = _selectedHeight ?? draft.heightCm ?? 179;
     final weight = _selectedWeight ?? draft.weightKg ?? 68;
     return _StepLayout(
@@ -344,11 +257,7 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
-  Widget _location(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _location(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final regionName = _selectedRegionName(draft);
     final districtName = _selectedDistrictName(draft);
     return _StepLayout(
@@ -356,9 +265,7 @@ final class _ProfileOnboardingStepContentState
       title: l10n.locationTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.regionId == null || draft.districtId == null
-            ? null
-            : () => bloc.add(const LocationContinuePressed()),
+        onPressed: draft.regionId == null || draft.districtId == null ? null : () => bloc.add(const LocationContinuePressed()),
       ),
       child: Column(
         children: [
@@ -371,15 +278,9 @@ final class _ProfileOnboardingStepContentState
           const SizedBox(height: AppSpacing.md),
           OnboardingLocationSelectorRow(
             label: l10n.districtLabel,
-            value:
-                districtName ??
-                (draft.regionId == null
-                    ? l10n.selectRegionFirstValue
-                    : l10n.unselectedValue),
+            value: districtName ?? (draft.regionId == null ? l10n.selectRegionFirstValue : l10n.unselectedValue),
             isPlaceholder: districtName == null,
-            onPressed: draft.regionId == null
-                ? null
-                : () => _showDistrictSheet(l10n, bloc),
+            onPressed: draft.regionId == null ? null : () => _showDistrictSheet(l10n, bloc),
           ),
         ],
       ),
@@ -389,25 +290,16 @@ final class _ProfileOnboardingStepContentState
   String? _selectedRegionName(ProfileOnboardingDraft draft) {
     final regionId = draft.regionId;
     if (regionId == null) return null;
-    return widget.state.regions
-        .where((item) => item.id == regionId)
-        .firstOrNull
-        ?.name;
+    return widget.state.regions.where((item) => item.id == regionId).firstOrNull?.name;
   }
 
   String? _selectedDistrictName(ProfileOnboardingDraft draft) {
     final districtId = draft.districtId;
     if (districtId == null) return null;
-    return widget.state.districts
-        .where((item) => item.id == districtId)
-        .firstOrNull
-        ?.name;
+    return widget.state.districts.where((item) => item.id == districtId).firstOrNull?.name;
   }
 
-  Future<void> _showRegionSheet(
-    AppLocalizations l10n,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Future<void> _showRegionSheet(AppLocalizations l10n, ProfileOnboardingBloc bloc) {
     if (bloc.state.regionStatus == ReferenceStatus.idle) {
       bloc.add(const RegionsRequested());
     }
@@ -448,12 +340,8 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
-  Future<void> _showDistrictSheet(
-    AppLocalizations l10n,
-    ProfileOnboardingBloc bloc,
-  ) {
-    if (bloc.state.draft?.regionId != null &&
-        bloc.state.districtStatus == ReferenceStatus.idle) {
+  Future<void> _showDistrictSheet(AppLocalizations l10n, ProfileOnboardingBloc bloc) {
+    if (bloc.state.draft?.regionId != null && bloc.state.districtStatus == ReferenceStatus.idle) {
       bloc.add(const DistrictsRequested());
     }
     return showModalBottomSheet<void>(
@@ -467,10 +355,7 @@ final class _ProfileOnboardingStepContentState
           builder: (context, state) {
             return OnboardingReferenceBottomSheet(
               title: l10n.districtSheetTitle,
-              subtitle: l10n.districtSheetSubtitle(
-                _selectedRegionName(state.draft!) ?? l10n.regionLabel,
-                state.districts.length,
-              ),
+              subtitle: l10n.districtSheetSubtitle(_selectedRegionName(state.draft!) ?? l10n.regionLabel, state.districts.length),
               status: state.districtStatus,
               onRetry: () => bloc.add(const DistrictsRequested()),
               confirmEnabled: state.draft?.districtId?.isNotEmpty == true,
@@ -498,11 +383,7 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
-  Widget _healthStatus(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _healthStatus(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final options = _orderedHealthStatuses(widget.state.healthStatuses);
     return _StepLayout(
       step: widget.step,
@@ -510,26 +391,16 @@ final class _ProfileOnboardingStepContentState
       subtitle: l10n.healthStatusSubtitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.healthStatusId?.isNotEmpty == true
-            ? () => bloc.add(const HealthStatusContinuePressed())
-            : null,
+        onPressed: draft.healthStatusId?.isNotEmpty == true ? () => bloc.add(const HealthStatusContinuePressed()) : null,
       ),
       child: switch (widget.state.healthStatusStatus) {
-        ReferenceStatus.loading => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        ReferenceStatus.failure => AppButton(
-          label: l10n.retry,
-          onPressed: () => bloc.add(const HealthStatusesRequested()),
-        ),
+        ReferenceStatus.loading => const Center(child: CircularProgressIndicator()),
+        ReferenceStatus.failure => AppButton(label: l10n.retry, onPressed: () => bloc.add(const HealthStatusesRequested())),
         ReferenceStatus.empty => const SizedBox.shrink(),
         _ => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.healthDisabilityHint,
-              style: AppTypography.onboardingBody,
-            ),
+            Text(l10n.healthDisabilityHint, style: AppTypography.onboardingBody),
             const SizedBox(height: AppSpacing.lg),
             ...options.map(
               (item) => Padding(
@@ -549,10 +420,7 @@ final class _ProfileOnboardingStepContentState
 
   List<HealthStatus> _orderedHealthStatuses(List<HealthStatus> statuses) {
     final ordered = [...statuses];
-    ordered.sort(
-      (left, right) =>
-          _healthStatusRank(left.name).compareTo(_healthStatusRank(right.name)),
-    );
+    ordered.sort((left, right) => _healthStatusRank(left.name).compareTo(_healthStatusRank(right.name)));
     return ordered;
   }
 
@@ -566,20 +434,12 @@ final class _ProfileOnboardingStepContentState
 
   bool _isDisabilityStatus(String name) {
     final normalized = name.toLowerCase();
-    return normalized.contains('nogiron') ||
-        normalized.contains('disab') ||
-        normalized.contains('инвалид');
+    return normalized.contains('nogiron') || normalized.contains('disab') || normalized.contains('инвалид');
   }
 
-  Widget _maritalStatus(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _maritalStatus(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     final options = _orderedMaritalStatuses(widget.state.maritalStatuses);
-    final selected = options
-        .where((item) => item.id == draft.maritalStatusId)
-        .firstOrNull;
+    final selected = options.where((item) => item.id == draft.maritalStatusId).firstOrNull;
     final isDivorced = selected != null && _isDivorcedStatus(selected.name);
     return _StepLayout(
       step: widget.step,
@@ -588,18 +448,11 @@ final class _ProfileOnboardingStepContentState
       keyboardAware: true,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.maritalStatusId?.isNotEmpty == true
-            ? () => bloc.add(const MaritalStatusContinuePressed())
-            : null,
+        onPressed: draft.maritalStatusId?.isNotEmpty == true ? () => bloc.add(const MaritalStatusContinuePressed()) : null,
       ),
       child: switch (widget.state.maritalStatusStatus) {
-        ReferenceStatus.loading => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        ReferenceStatus.failure => AppButton(
-          label: l10n.retry,
-          onPressed: () => bloc.add(const MaritalStatusesRequested()),
-        ),
+        ReferenceStatus.loading => const Center(child: CircularProgressIndicator()),
+        ReferenceStatus.failure => AppButton(label: l10n.retry, onPressed: () => bloc.add(const MaritalStatusesRequested())),
         ReferenceStatus.empty => const SizedBox.shrink(),
         _ => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -617,30 +470,19 @@ final class _ProfileOnboardingStepContentState
             ),
             if (isDivorced) ...[
               const SizedBox(height: AppSpacing.xs),
-              Text(
-                l10n.childrenCountLabel,
-                style: AppTypography.onboardingChip.copyWith(
-                  color: AppColors.bodyText,
-                ),
-              ),
+              Text(l10n.childrenCountLabel, style: AppTypography.onboardingChip.copyWith(color: AppColors.bodyText)),
               const SizedBox(height: AppSpacing.sm),
               _ChildrenCountControl(
                 count: draft.childrenCount,
                 enabled: !draft.childrenNotLivingWithMe,
                 decreaseLabel: l10n.decreaseChildrenLabel,
                 increaseLabel: l10n.increaseChildrenLabel,
-                onDecrease:
-                    draft.childrenNotLivingWithMe || draft.childrenCount == 0
+                onDecrease: draft.childrenNotLivingWithMe || draft.childrenCount == 0
                     ? null
-                    : () => bloc.add(
-                        ChildrenCountChanged(draft.childrenCount - 1),
-                      ),
-                onIncrease:
-                    draft.childrenNotLivingWithMe || draft.childrenCount >= 99
+                    : () => bloc.add(ChildrenCountChanged(draft.childrenCount - 1)),
+                onIncrease: draft.childrenNotLivingWithMe || draft.childrenCount >= 99
                     ? null
-                    : () => bloc.add(
-                        ChildrenCountChanged(draft.childrenCount + 1),
-                      ),
+                    : () => bloc.add(ChildrenCountChanged(draft.childrenCount + 1)),
               ),
               const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
               _ChildrenNotLivingCard(
@@ -648,8 +490,7 @@ final class _ProfileOnboardingStepContentState
                 detail: l10n.childrenNotLivingDetail,
                 value: draft.childrenNotLivingWithMe,
                 semanticLabel: l10n.childrenNotLivingTitle,
-                onChanged: (value) =>
-                    bloc.add(ChildrenNotLivingWithMeChanged(value)),
+                onChanged: (value) => bloc.add(ChildrenNotLivingWithMeChanged(value)),
               ),
             ],
           ],
@@ -660,9 +501,7 @@ final class _ProfileOnboardingStepContentState
 
   List<MaritalStatus> _orderedMaritalStatuses(List<MaritalStatus> statuses) {
     final ordered = [...statuses];
-    final divorcedIndex = ordered.indexWhere(
-      (item) => _isDivorcedStatus(item.name),
-    );
+    final divorcedIndex = ordered.indexWhere((item) => _isDivorcedStatus(item.name));
     if (divorcedIndex >= 0 && ordered.length > 1 && divorcedIndex != 1) {
       final divorced = ordered.removeAt(divorcedIndex);
       ordered.insert(1, divorced);
@@ -675,25 +514,17 @@ final class _ProfileOnboardingStepContentState
   }
 
   String _maritalStatusDetail(String name, AppLocalizations l10n) {
-    return _isDivorcedStatus(name)
-        ? l10n.maritalStatusDivorcedDetail
-        : l10n.maritalStatusFirstMarriageDetail;
+    return _isDivorcedStatus(name) ? l10n.maritalStatusDivorcedDetail : l10n.maritalStatusFirstMarriageDetail;
   }
 
-  Widget _photos(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _photos(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _StepLayout(
       title: l10n.photoTitle,
       subtitle: l10n.photoHint,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
-        onPressed: draft.photos.isEmpty || widget.state.isBusy
-            ? null
-            : () => bloc.add(const ProfilePhotosContinuePressed()),
+        onPressed: draft.photos.isEmpty || widget.state.isBusy ? null : () => bloc.add(const ProfilePhotosContinuePressed()),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -705,13 +536,9 @@ final class _ProfileOnboardingStepContentState
             retryLabel: l10n.retry,
             filledLabelBuilder: l10n.photoSlotFilledLabel,
             mainBadgeLabel: l10n.mainPhotoBadge,
-            onAdd: draft.photos.length >= 5 || widget.state.isBusy
-                ? null
-                : () => bloc.add(const ProfilePhotoPickRequested()),
-            onRemove: (localFilePath) =>
-                bloc.add(ProfilePhotoRemoveRequested(localFilePath)),
-            onRetry: (localFilePath) =>
-                bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
+            onAdd: draft.photos.length >= 5 || widget.state.isBusy ? null : () => bloc.add(const ProfilePhotoPickRequested()),
+            onRemove: (localFilePath) => bloc.add(ProfilePhotoRemoveRequested(localFilePath)),
+            onRetry: (localFilePath) => bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
           ),
           const SizedBox(height: AppSpacing.lg),
           Text(l10n.photoPrivacyHint, style: AppTypography.onboardingCardBody),
@@ -720,20 +547,14 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
-  Widget _mainPhoto(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _mainPhoto(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _StepLayout(
       title: l10n.mainPhotoSelectionHint,
       subtitle: l10n.mainPhotoSubtitle,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.confirmLabel,
-        onPressed: draft.hasMainPhoto && !widget.state.isBusy
-            ? () => bloc.add(const MainPhotoContinuePressed())
-            : null,
+        onPressed: draft.hasMainPhoto && !widget.state.isBusy ? () => bloc.add(const MainPhotoContinuePressed()) : null,
       ),
       child: OnboardingPhotoGrid(
         photos: draft.photos,
@@ -743,116 +564,149 @@ final class _ProfileOnboardingStepContentState
         filledLabelBuilder: l10n.photoSlotFilledLabel,
         mainBadgeLabel: l10n.mainPhotoBadge,
         onAdd: null,
-        onRemove: (localFilePath) =>
-            bloc.add(ProfilePhotoRemoveRequested(localFilePath)),
-        onRetry: (localFilePath) =>
-            bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
-        onMainSelected: widget.state.isBusy
-            ? null
-            : (serverId) => bloc.add(ProfilePhotoMainSelected(serverId)),
+        onRemove: (localFilePath) => bloc.add(ProfilePhotoRemoveRequested(localFilePath)),
+        onRetry: (localFilePath) => bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
+        onMainSelected: widget.state.isBusy ? null : (serverId) => bloc.add(ProfilePhotoMainSelected(serverId)),
         showRemoveButton: false,
         showMainBadge: true,
       ),
     );
   }
 
-  Widget _voice(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
+  Widget _voice(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _StepLayout(
       title: l10n.voiceTitle,
+      subtitle: l10n.voiceSubtitle,
       step: widget.step,
       bottom: Column(
         children: [
           _FigmaPrimaryButton(
             label: l10n.continueLabel,
-            onPressed:
-                widget.state.isVoiceRecording ||
-                    draft.voiceIntroMetadata?.uploaded != true ||
-                    widget.state.isBusy
-                ? null
-                : () => bloc.add(const VoiceIntroContinuePressed()),
+            onPressed: widget.state.isVoiceRecording || widget.state.isBusy ? null : () => bloc.add(const VoiceIntroContinuePressed()),
           ),
           const SizedBox(height: AppSpacing.md),
           _FigmaGhostButton(
             label: l10n.skipLabel,
-            onPressed: widget.state.isVoiceRecording || widget.state.isBusy
+            onPressed: widget.state.isVoiceRecording || widget.state.isVoicePlaying || widget.state.isBusy
                 ? null
-                : () => bloc.add(const VoiceIntroContinuePressed()),
+                : () => bloc.add(const VoiceIntroSkipped()),
           ),
         ],
       ),
       child: OnboardingVoiceRecorder(
         isRecording: widget.state.isVoiceRecording,
+        isPlaying: widget.state.isVoicePlaying,
         hasRecording: draft.voiceIntroMetadata != null,
-        recordLabel: widget.state.isVoiceRecording
-            ? l10n.stopRecording
-            : l10n.startRecording,
+        recordLabel: widget.state.isVoiceRecording ? l10n.stopRecording : l10n.startRecording,
         playLabel: l10n.playRecording,
-        hint: l10n.voiceShortHint,
-        onRecordPressed: () => bloc.add(
-          widget.state.isVoiceRecording
-              ? const VoiceRecordingStopped()
-              : const VoiceRecordingStarted(),
-        ),
-        onPlayPressed: draft.voiceIntroMetadata == null
-            ? null
-            : () => bloc.add(const VoicePlaybackRequested()),
+        reRecordLabel: l10n.reRecordVoice,
+        deleteLabel: l10n.deleteVoice,
+        hint: l10n.startRecordingHint,
+        recordingHint: l10n.recordedVoiceHint,
+        recordingDuration: _formatDuration(draft.voiceIntroMetadata?.duration),
+        onRecordPressed: () => bloc.add(widget.state.isVoiceRecording ? const VoiceRecordingStopped() : const VoiceRecordingStarted()),
+        onPlayPressed: draft.voiceIntroMetadata == null ? null : () => bloc.add(const VoicePlaybackRequested()),
+        onRewritePressed: widget.state.isVoicePlaying ? null : () => bloc.add(const VoiceRecordingStarted()),
+        onDeletePressed: widget.state.isVoicePlaying ? null : () => bloc.add(const VoiceIntroDeleted()),
       ),
     );
   }
 
-  Widget _face(
-    AppLocalizations l10n,
-    ProfileOnboardingDraft draft,
-    ProfileOnboardingBloc bloc,
-  ) {
-    final verifying =
-        draft.faceVerificationStatus == FaceVerificationStatus.verifying;
+  Widget _locationPermission(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
     return _StepLayout(
+      title: l10n.locationPermissionTitle,
+      subtitle: l10n.locationPermissionSubtitle,
+      step: widget.step,
+      bottom: _FigmaPrimaryButton(
+        label: l10n.enableLocation,
+        onPressed: widget.state.isLocationLoading || widget.state.isBusy ? null : () => bloc.add(const LocationPermissionRequested()),
+      ),
+      child: Container(
+        width: double.infinity,
+        height: 180,
+        decoration: BoxDecoration(color: AppColors.mutedSurface, borderRadius: BorderRadius.circular(AppRadius.lg)),
+        alignment: Alignment.center,
+        child: widget.state.isLocationLoading
+            ? const CircularProgressIndicator()
+            : const Icon(Icons.location_on_outlined, size: 48, color: AppColors.mutedText),
+      ),
+    );
+  }
+
+  Widget _aboutMe(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
+    if (_aboutMeController.text.isEmpty && draft.aboutMe != null) {
+      _aboutMeController.text = draft.aboutMe!;
+    }
+    final count = _aboutMeController.text.length;
+    return _StepLayout(
+      title: l10n.aboutMeTitle,
+      subtitle: l10n.aboutMeSubtitle,
+      step: widget.step,
+      keyboardAware: true,
+      bottom: Column(
+        children: [
+          _FigmaPrimaryButton(
+            label: l10n.continueLabel,
+            onPressed: widget.state.isBusy
+                ? null
+                : () {
+                    FocusScope.of(context).unfocus();
+                    bloc.add(AboutMeContinuePressed(_aboutMeController.text));
+                  },
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          _FigmaGhostButton(
+            label: l10n.skipLabel,
+            onPressed: widget.state.isBusy
+                ? null
+                : () {
+                    FocusScope.of(context).unfocus();
+                    _aboutMeController.clear();
+                    bloc.add(const AboutMeSkipPressed());
+                  },
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _AboutMeTextArea(controller: _aboutMeController, hint: l10n.aboutMeHint, onChanged: (_) => setState(() {})),
+          const SizedBox(height: AppSpacing.lg),
+          Text(l10n.aboutMeCounter(count), style: AppTypography.onboardingCardBody),
+        ],
+      ),
+    );
+  }
+
+  Widget _face(AppLocalizations l10n, ProfileOnboardingDraft draft, ProfileOnboardingBloc bloc) {
+    final verifying = draft.faceVerificationStatus == FaceVerificationStatus.verifying;
+    return _StepLayout(
+      step: widget.step,
       title: l10n.faceCaptureTitle,
       subtitle: l10n.faceCaptureSubtitle,
-      bottom: _FigmaPrimaryButton(
-        label: l10n.verifyFace,
-        onPressed: verifying
-            ? null
-            : () => bloc.add(const FaceVerificationRequested()),
-      ),
+      bottom: _FigmaPrimaryButton(label: l10n.takeSelfieLabel, onPressed: verifying ? null : () => bloc.add(const FaceVerificationRequested())),
       child: Column(
         children: [
           OnboardingFaceCamera(
-            key: ValueKey(
-              draft.faceVerificationStatus ==
-                      FaceVerificationStatus.retryableFailure
-                  ? 'face-camera-retry'
-                  : 'face-camera-live',
-            ),
+            key: ValueKey(draft.faceVerificationStatus == FaceVerificationStatus.retryableFailure ? 'face-camera-retry' : 'face-camera-live'),
             hint: l10n.faceHint,
+            cameraLabel: l10n.selfieCameraLabel,
             errorLabel: l10n.faceCameraError,
             retryLabel: l10n.retry,
             onCaptured: (path) => bloc.add(FaceSelfieCaptured(path)),
           ),
-          const SizedBox(height: AppSpacing.md),
+          const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final rule in [
-                l10n.faceRuleOne,
-                l10n.faceRuleTwo,
-                l10n.faceRuleThree,
-              ]) ...[
+              for (final rule in [l10n.faceRuleOne, l10n.faceRuleTwo, l10n.faceRuleThree]) ...[
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(Icons.circle, color: AppColors.primary, size: 6),
-                    const SizedBox(width: AppSpacing.sm),
+                    const _FaceRuleBullet(),
+                    const SizedBox(width: AppSpacing.inline),
                     Expanded(
-                      child: Text(
-                        rule,
-                        style: AppTypography.onboardingCardBody,
-                      ),
+                      child: Text(rule, style: AppTypography.onboardingCardBody.copyWith(color: AppColors.bodyText)),
                     ),
                   ],
                 ),
@@ -862,15 +716,25 @@ final class _ProfileOnboardingStepContentState
           ),
           const SizedBox(height: AppSpacing.sm),
           if (verifying) const CircularProgressIndicator(),
-          if (draft.faceVerificationStatus ==
-              FaceVerificationStatus.retryableFailure)
-            Text(l10n.faceRetryHint, style: AppTypography.onboardingBody),
+          if (draft.faceVerificationStatus == FaceVerificationStatus.retryableFailure) Text(l10n.faceRetryHint, style: AppTypography.onboardingBody),
         ],
       ),
     );
   }
 
   Widget _success(AppLocalizations l10n, ProfileOnboardingBloc bloc) {
+    return _PledgeConfirmationStep(
+      title: l10n.pledgeConfirmationTitle,
+      subtitle: l10n.pledgeConfirmationSubtitle,
+      pointOne: l10n.pledgeConfirmationPointOne,
+      pointTwo: l10n.pledgeConfirmationPointTwo,
+      pointThree: l10n.pledgeConfirmationPointThree,
+      buttonLabel: l10n.pledgeConfirmationButton,
+      onConfirm: () => bloc.add(const ProfileOnboardingFinalizationRequested()),
+    );
+  }
+
+  Widget _profileReady(AppLocalizations l10n, ProfileOnboardingBloc bloc) {
     return _SuccessStep(
       title: l10n.onboardingSuccessTitle,
       subtitle: l10n.onboardingSuccessSubtitle,
@@ -881,8 +745,8 @@ final class _ProfileOnboardingStepContentState
       aiPointThree: l10n.aiTestPointThree,
       startLabel: l10n.startAiTest,
       laterLabel: l10n.viewCandidatesLater,
-      onStart: () => bloc.add(const ProfileOnboardingFinalizationRequested()),
-      onLater: () => bloc.add(const ProfileOnboardingFinalizationRequested()),
+      onStart: () => bloc.add(const ProfileReadyHomeRequested()),
+      onLater: () => bloc.add(const ProfileReadyHomeRequested()),
     );
   }
 }
@@ -902,13 +766,8 @@ final class _FigmaGhostButton extends StatelessWidget {
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
           disabledForegroundColor: AppColors.mutedText,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg + AppSpacing.xs,
-            vertical: AppSpacing.lg,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.full),
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg + AppSpacing.xs, vertical: AppSpacing.lg),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.full)),
           textStyle: AppTypography.onboardingAction,
         ),
         child: Text(label),
@@ -917,13 +776,60 @@ final class _FigmaGhostButton extends StatelessWidget {
   }
 }
 
+final class _AboutMeTextArea extends StatelessWidget {
+  const _AboutMeTextArea({required this.controller, required this.hint, required this.onChanged});
+
+  final TextEditingController controller;
+  final String hint;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 132,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(color: AppColors.mutedSurface, borderRadius: BorderRadius.circular(AppRadius.lg)),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        maxLength: 300,
+        maxLines: null,
+        expands: true,
+        textAlignVertical: TextAlignVertical.top,
+        keyboardType: TextInputType.multiline,
+        textInputAction: TextInputAction.newline,
+        style: AppTypography.onboardingChip,
+        decoration: InputDecoration(
+          hintText: hint,
+          hintStyle: AppTypography.onboardingChip.copyWith(color: AppColors.placeholder),
+          border: InputBorder.none,
+          isDense: true,
+          counterText: '',
+          contentPadding: EdgeInsets.zero,
+        ),
+      ),
+    );
+  }
+}
+
+final class _FaceRuleBullet extends StatelessWidget {
+  const _FaceRuleBullet();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 16,
+      height: 16,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.primary),
+      ),
+    );
+  }
+}
+
 final class _HealthStatusOption extends StatelessWidget {
-  const _HealthStatusOption({
-    required this.label,
-    required this.selected,
-    required this.onPressed,
-    this.detail,
-  });
+  const _HealthStatusOption({required this.label, required this.selected, required this.onPressed, this.detail});
 
   final String label;
   final String? detail;
@@ -942,10 +848,7 @@ final class _HealthStatusOption extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(AppSpacing.lg),
           decoration: BoxDecoration(
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
-              width: selected ? 1.5 : 1,
-            ),
+            border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: selected ? 1.5 : 1),
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Row(
@@ -954,14 +857,8 @@ final class _HealthStatusOption extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      label,
-                      style: AppTypography.onboardingReferenceSelected,
-                    ),
-                    if (detail != null) ...[
-                      const SizedBox(height: AppSpacing.xs - 2),
-                      Text(detail!, style: AppTypography.onboardingCardBody),
-                    ],
+                    Text(label, style: AppTypography.onboardingReferenceSelected),
+                    if (detail != null) ...[const SizedBox(height: AppSpacing.xs - 2), Text(detail!, style: AppTypography.onboardingCardBody)],
                   ],
                 ),
               ),
@@ -987,10 +884,7 @@ final class _HealthRadio extends StatelessWidget {
       height: 18,
       decoration: BoxDecoration(
         color: selected ? AppColors.primary : Colors.transparent,
-        border: Border.all(
-          color: selected ? AppColors.primary : const Color(0xFFA3A3A3),
-          width: 1.5,
-        ),
+        border: Border.all(color: selected ? AppColors.primary : const Color(0xFFA3A3A3), width: 1.5),
         shape: BoxShape.circle,
       ),
     );
@@ -1019,11 +913,7 @@ final class _ChildrenCountControl extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _ChildrenCountAction(
-          label: decreaseLabel,
-          icon: Icons.remove,
-          onPressed: onDecrease,
-        ),
+        _ChildrenCountAction(label: decreaseLabel, icon: Icons.remove, onPressed: onDecrease),
         const SizedBox(width: AppSpacing.md),
         Container(
           constraints: const BoxConstraints(minWidth: 56, minHeight: 52),
@@ -1034,30 +924,17 @@ final class _ChildrenCountControl extends StatelessWidget {
             border: Border.all(color: AppColors.primary, width: 1.5),
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
-          child: Text(
-            '$count',
-            style: AppTypography.onboardingMeasurementValue.copyWith(
-              color: enabled ? AppColors.primary : AppColors.mutedText,
-            ),
-          ),
+          child: Text('$count', style: AppTypography.onboardingMeasurementValue.copyWith(color: enabled ? AppColors.primary : AppColors.mutedText)),
         ),
         const SizedBox(width: AppSpacing.md),
-        _ChildrenCountAction(
-          label: increaseLabel,
-          icon: Icons.add,
-          onPressed: onIncrease,
-        ),
+        _ChildrenCountAction(label: increaseLabel, icon: Icons.add, onPressed: onIncrease),
       ],
     );
   }
 }
 
 final class _ChildrenCountAction extends StatelessWidget {
-  const _ChildrenCountAction({
-    required this.label,
-    required this.icon,
-    required this.onPressed,
-  });
+  const _ChildrenCountAction({required this.label, required this.icon, required this.onPressed});
 
   final String label;
   final IconData icon;
@@ -1153,10 +1030,7 @@ final class _OnboardingToggle extends StatelessWidget {
       height: 26,
       padding: const EdgeInsets.all(3),
       alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-      decoration: BoxDecoration(
-        color: value ? AppColors.primary : AppColors.border,
-        borderRadius: BorderRadius.circular(AppRadius.full),
-      ),
+      decoration: BoxDecoration(color: value ? AppColors.primary : AppColors.border, borderRadius: BorderRadius.circular(AppRadius.full)),
       child: const DecoratedBox(
         decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
         child: SizedBox(width: 20, height: 20),
@@ -1190,27 +1064,13 @@ final class _StepLayout extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (step != null) ...[
-          _OnboardingWizardHeader(
-            step: step!,
-            onBack: () => context.read<ProfileOnboardingBloc>().add(
-              const OnboardingStepBackRequested(),
-            ),
-          ),
+          _OnboardingWizardHeader(step: step!, onBack: () => context.read<ProfileOnboardingBloc>().add(const OnboardingStepBackRequested())),
           const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
         ],
         Text(title, style: AppTypography.onboardingTitle),
-        if (subtitle != null) ...[
-          const SizedBox(height: AppSpacing.sm),
-          Text(subtitle!, style: AppTypography.onboardingBody),
-        ],
+        if (subtitle != null) ...[const SizedBox(height: AppSpacing.sm), Text(subtitle!, style: AppTypography.onboardingBody)],
         const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
-        if (dateWheel) ...[
-          child,
-          if (bottom != null) const Spacer(),
-        ] else ...[
-          child,
-          if (bottom != null) const Spacer(),
-        ],
+        if (dateWheel) ...[child, if (bottom != null) const Spacer()] else ...[child, if (bottom != null) const Spacer()],
         ..._optionalWidget(bottom),
       ],
     );
@@ -1234,11 +1094,7 @@ final class _StepLayout extends StatelessWidget {
 }
 
 final class _OnboardingTextField extends StatelessWidget {
-  const _OnboardingTextField({
-    required this.label,
-    required this.controller,
-    required this.onChanged,
-  });
+  const _OnboardingTextField({required this.label, required this.controller, required this.onChanged});
 
   final String label;
   final TextEditingController controller;
@@ -1248,10 +1104,7 @@ final class _OnboardingTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg,
-        vertical: 13,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 13),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: AppColors.border),
@@ -1268,11 +1121,7 @@ final class _OnboardingTextField extends StatelessWidget {
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             style: AppTypography.onboardingFieldValue,
-            decoration: const InputDecoration(
-              isDense: true,
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-            ),
+            decoration: const InputDecoration(isDense: true, border: InputBorder.none, contentPadding: EdgeInsets.zero),
           ),
         ],
       ),
@@ -1282,6 +1131,11 @@ final class _OnboardingTextField extends StatelessWidget {
 
 List<Widget> _optionalWidget(Widget? widget) {
   return widget == null ? const <Widget>[] : <Widget>[widget];
+}
+
+String _formatDuration(Duration? duration) {
+  final seconds = duration?.inSeconds ?? 0;
+  return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
 }
 
 final class _OnboardingWizardHeader extends StatelessWidget {
@@ -1302,8 +1156,11 @@ final class _OnboardingWizardHeader extends StatelessWidget {
       OnboardingStep.maritalStatus => .54,
       OnboardingStep.photos => .62,
       OnboardingStep.mainPhoto => .69,
-      OnboardingStep.voiceIntro => .77,
-      OnboardingStep.faceVerification => 1.0,
+      OnboardingStep.faceVerification => .77,
+      OnboardingStep.aboutMe => .85,
+      OnboardingStep.voiceIntro => .92,
+      OnboardingStep.locationPermission => .96,
+      OnboardingStep.success || OnboardingStep.profileReady => 1.0,
       _ => 0.0,
     };
     final percent = (progress * 100).round();
@@ -1311,11 +1168,7 @@ final class _OnboardingWizardHeader extends StatelessWidget {
       height: 36,
       child: Row(
         children: [
-          AppRoundIconButton(
-            icon: Assets.icons.icArrowLeft01Round,
-            semanticLabel: AppLocalizations.of(context).backLabel,
-            onPressed: onBack,
-          ),
+          AppRoundIconButton(icon: Assets.icons.icArrowLeft01Round, semanticLabel: AppLocalizations.of(context).backLabel, onPressed: onBack),
           const SizedBox(width: AppSpacing.md + AppSpacing.xs),
           Expanded(
             child: ClipRRect(
@@ -1345,12 +1198,7 @@ final class _OnboardingWizardHeader extends StatelessWidget {
 }
 
 final class _FigmaStepLayout extends StatelessWidget {
-  const _FigmaStepLayout({
-    required this.title,
-    required this.child,
-    required this.bottom,
-    this.subtitle,
-  });
+  const _FigmaStepLayout({required this.title, required this.child, required this.bottom, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -1363,10 +1211,7 @@ final class _FigmaStepLayout extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(title, style: AppTypography.onboardingTitle),
-        if (subtitle != null) ...[
-          const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
-          Text(subtitle!, style: AppTypography.onboardingBody),
-        ],
+        if (subtitle != null) ...[const SizedBox(height: AppSpacing.lg + AppSpacing.xs), Text(subtitle!, style: AppTypography.onboardingBody)],
         const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
         child,
         const Spacer(),
@@ -1393,16 +1238,69 @@ final class _FigmaPrimaryButton extends StatelessWidget {
           disabledBackgroundColor: AppColors.border,
           foregroundColor: Colors.white,
           disabledForegroundColor: AppColors.mutedText,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg + AppSpacing.xs,
-            vertical: AppSpacing.lg,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppRadius.full),
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg + AppSpacing.xs, vertical: AppSpacing.lg),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.full)),
           textStyle: AppTypography.onboardingAction,
         ),
         child: Text(label),
+      ),
+    );
+  }
+}
+
+final class _PledgeConfirmationStep extends StatelessWidget {
+  const _PledgeConfirmationStep({
+    required this.title,
+    required this.subtitle,
+    required this.pointOne,
+    required this.pointTwo,
+    required this.pointThree,
+    required this.buttonLabel,
+    required this.onConfirm,
+  });
+
+  final String title;
+  final String subtitle;
+  final String pointOne;
+  final String pointTwo;
+  final String pointThree;
+  final String buttonLabel;
+  final VoidCallback onConfirm;
+
+  @override
+  Widget build(BuildContext context) {
+    return _StepLayout(
+      step: OnboardingStep.success,
+      title: title,
+      subtitle: subtitle,
+      bottom: _FigmaPrimaryButton(label: buttonLabel, onPressed: onConfirm),
+      child: Column(
+        children: [
+          for (final point in [pointOne, pointTwo, pointThree]) ...[_PledgeConfirmationCard(label: point), const SizedBox(height: AppSpacing.sm)],
+        ],
+      ),
+    );
+  }
+}
+
+final class _PledgeConfirmationCard extends StatelessWidget {
+  const _PledgeConfirmationCard({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.md + AppSpacing.xs),
+      decoration: BoxDecoration(color: AppColors.mutedSurface, borderRadius: BorderRadius.circular(AppRadius.lg)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Icon(Icons.check_circle_rounded, color: AppColors.primary, size: 22),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(child: Text(label, style: AppTypography.onboardingCardBody)),
+        ],
       ),
     );
   }
@@ -1437,109 +1335,155 @@ final class _SuccessStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Center(
-          child: Container(
-            width: 64,
-            height: 64,
-            decoration: const BoxDecoration(
-              color: AppColors.primary,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_rounded,
-              color: Colors.white,
-              size: 32,
-            ),
-          ),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        Text(title, style: AppTypography.onboardingTitle),
-        const SizedBox(height: AppSpacing.sm),
-        Text(subtitle, style: AppTypography.onboardingBody),
-        const SizedBox(height: AppSpacing.lg),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.lg,
-            vertical: AppSpacing.lg,
-          ),
-          decoration: BoxDecoration(
-            color: AppColors.subtleSurface,
-            border: Border.all(color: AppColors.primary, width: 1.5),
-            borderRadius: BorderRadius.circular(AppRadius.xl),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm,
-                    vertical: AppSpacing.xs,
-                  ),
-                  child: Text(
-                    l10nAiBadge(context),
-                    style: AppTypography.onboardingCardBody.copyWith(
-                      color: Colors.white,
-                      fontSize: 10,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 28),
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
+                      child: Assets.icons.icVerifyCheck.svg(width: 32, height: 32, excludeFromSemantics: true),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Text(title, style: AppTypography.onboardingTitle.copyWith()),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(subtitle, style: AppTypography.onboardingBody.copyWith()),
+                  const SizedBox(height: 20),
+                  _AiTestOfferCard(title: aiTitle, description: aiDescription, pointOne: aiPointOne, pointTwo: aiPointTwo, pointThree: aiPointThree),
+                  const Spacer(),
+                  _FigmaPrimaryButton(label: startLabel, onPressed: onStart),
+                  const SizedBox(height: AppSpacing.md),
+                  // _FigmaGhostButton(label: laterLabel, onPressed: onLater),
+                  TextButton(onPressed: onLater, child: Text(laterLabel))
+                ],
               ),
-              const SizedBox(height: AppSpacing.md),
-              Text(aiTitle, style: AppTypography.onboardingCardTitle),
-              const SizedBox(height: AppSpacing.sm),
-              Text(aiDescription, style: AppTypography.onboardingCardBody),
-              const SizedBox(height: AppSpacing.md),
-              for (final point in [aiPointOne, aiPointTwo, aiPointThree]) ...[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Icon(
-                      Icons.check_circle_outline_rounded,
-                      color: AppColors.primary,
-                      size: 16,
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                    Expanded(
-                      child: Text(
-                        point,
-                        style: AppTypography.onboardingCardBody,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.sm),
-              ],
-            ],
+            ),
           ),
-        ),
-        const Spacer(),
-        _FigmaPrimaryButton(label: startLabel, onPressed: onStart),
-        const SizedBox(height: AppSpacing.md),
-        _FigmaGhostButton(label: laterLabel, onPressed: onLater),
-      ],
+        );
+      },
     );
   }
+}
 
-  String l10nAiBadge(BuildContext context) {
-    return AppLocalizations.of(context).aiTestBadge;
+final class _AiTestOfferCard extends StatelessWidget {
+  const _AiTestOfferCard({required this.title, required this.description, required this.pointOne, required this.pointTwo, required this.pointThree});
+
+  final String title;
+  final String description;
+  final String pointOne;
+  final String pointTwo;
+  final String pointThree;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: AppColors.primary, width: 1.5),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _AiBadge(),
+          const SizedBox(height: 15),
+          Text(title, style: AppTypography.onboardingTitle.copyWith(fontSize: 20, height: 32 / 25, letterSpacing: -0.2)),
+          const SizedBox(height: 15),
+          Text(description, style: AppTypography.onboardingBody.copyWith(fontSize: 13, height: 25 / 15)),
+          const SizedBox(height: 15),
+          _AiFeatureRow(icon: Assets.icons.icAi, label: pointOne),
+          const SizedBox(height: AppSpacing.md),
+          _AiFeatureRow(icon: Assets.icons.icPersons, label: pointTwo),
+          const SizedBox(height: AppSpacing.md),
+          _AiFeatureRow(icon: Assets.icons.icGlyph, label: pointThree),
+        ],
+      ),
+    );
+  }
+}
+
+final class _AiBadge extends StatelessWidget {
+  const _AiBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(AppRadius.full)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Assets.icons.icAi.svg(
+              width: 12,
+              height: 12,
+              colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+              excludeFromSemantics: true,
+            ),
+            const SizedBox(width: AppSpacing.sm),
+            Text(
+              AppLocalizations.of(context).aiTestBadge,
+              style: AppTypography.onboardingCardBody.copyWith(
+                color: Colors.white,
+                fontSize: 10,
+                height: 16 / 13,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.4,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _AiFeatureRow extends StatelessWidget {
+  const _AiFeatureRow({required this.icon, required this.label});
+
+  final SvgGenImage icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: 16,
+          height: 16,
+          child: Center(
+            child: icon.svg(
+              width: 16,
+              height: 16,
+              colorFilter: const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
+              excludeFromSemantics: true,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.inline),
+        Expanded(
+          child: Text(label, style: AppTypography.onboardingBody.copyWith(fontSize: 12, color: AppColors.bodyText)),
+        ),
+      ],
+    );
   }
 }
 
 final class _EducationChip extends StatelessWidget {
-  const _EducationChip({
-    required this.label,
-    required this.selected,
-    required this.onPressed,
-  });
+  const _EducationChip({required this.label, required this.selected, required this.onPressed});
 
   final String label;
   final bool selected;
@@ -1557,18 +1501,10 @@ final class _EducationChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
             color: selected ? AppColors.subtleSurface : Colors.white,
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
-              width: 1.5,
-            ),
+            border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: 1.5),
             borderRadius: BorderRadius.circular(AppRadius.full),
           ),
-          child: Text(
-            label,
-            style: AppTypography.onboardingChip.copyWith(
-              color: selected ? AppColors.primary : AppColors.bodyText,
-            ),
-          ),
+          child: Text(label, style: AppTypography.onboardingChip.copyWith(color: selected ? AppColors.primary : AppColors.bodyText)),
         ),
       ),
     );
@@ -1576,12 +1512,7 @@ final class _EducationChip extends StatelessWidget {
 }
 
 final class _SelectionCard extends StatelessWidget {
-  const _SelectionCard({
-    required this.label,
-    required this.detail,
-    required this.selected,
-    required this.onPressed,
-  });
+  const _SelectionCard({required this.label, required this.detail, required this.selected, required this.onPressed});
 
   final String label;
   final String detail;
@@ -1602,10 +1533,7 @@ final class _SelectionCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.card),
           decoration: BoxDecoration(
             color: selected ? AppColors.subtleSurface : Colors.white,
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
-              width: 1.5,
-            ),
+            border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: 1.5),
             borderRadius: BorderRadius.circular(AppRadius.xl),
           ),
           child: Column(
@@ -1652,21 +1580,13 @@ final class _PledgeCard extends StatelessWidget {
                       child: Container(
                         width: AppSpacing.sm,
                         height: AppSpacing.sm,
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
+                        decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.inline),
-                Expanded(
-                  child: Text(
-                    points[index],
-                    style: AppTypography.onboardingPledgeBody,
-                  ),
-                ),
+                Expanded(child: Text(points[index], style: AppTypography.onboardingPledgeBody)),
               ],
             ),
           ],
@@ -1677,11 +1597,7 @@ final class _PledgeCard extends StatelessWidget {
 }
 
 final class _AgreementRow extends StatelessWidget {
-  const _AgreementRow({
-    required this.accepted,
-    required this.label,
-    required this.onChanged,
-  });
+  const _AgreementRow({required this.accepted, required this.label, required this.onChanged});
 
   final bool accepted;
   final String label;
@@ -1702,20 +1618,13 @@ final class _AgreementRow extends StatelessWidget {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: accepted ? AppColors.primary : Colors.white,
-              border: Border.all(
-                color: accepted ? AppColors.primary : AppColors.border,
-                width: 1.5,
-              ),
+              border: Border.all(color: accepted ? AppColors.primary : AppColors.border, width: 1.5),
               borderRadius: BorderRadius.circular(AppRadius.sm - 2),
             ),
-            child: accepted
-                ? const Icon(Icons.check, size: 14, color: Colors.white)
-                : null,
+            child: accepted ? const Icon(Icons.check, size: 14, color: Colors.white) : null,
           ),
           const SizedBox(width: AppSpacing.md),
-          Expanded(
-            child: Text(label, style: AppTypography.onboardingPledgeBody),
-          ),
+          Expanded(child: Text(label, style: AppTypography.onboardingPledgeBody)),
         ],
       ),
     );

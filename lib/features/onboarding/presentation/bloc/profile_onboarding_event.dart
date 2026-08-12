@@ -266,8 +266,20 @@ final class VoiceIntroContinuePressed extends ProfileOnboardingEvent {
   const VoiceIntroContinuePressed();
 }
 
+final class VoiceIntroSkipped extends ProfileOnboardingEvent {
+  const VoiceIntroSkipped();
+}
+
+final class VoiceIntroDeleted extends ProfileOnboardingEvent {
+  const VoiceIntroDeleted();
+}
+
 final class VoicePlaybackRequested extends ProfileOnboardingEvent {
   const VoicePlaybackRequested();
+}
+
+final class LocationPermissionRequested extends ProfileOnboardingEvent {
+  const LocationPermissionRequested();
 }
 
 final class FaceVerificationRequested extends ProfileOnboardingEvent {
@@ -287,9 +299,26 @@ final class FaceVerificationPageOpened extends ProfileOnboardingEvent {
   const FaceVerificationPageOpened();
 }
 
+final class AboutMeContinuePressed extends ProfileOnboardingEvent {
+  const AboutMeContinuePressed(this.aboutMe);
+
+  final String aboutMe;
+
+  @override
+  List<Object?> get props => [aboutMe];
+}
+
+final class AboutMeSkipPressed extends ProfileOnboardingEvent {
+  const AboutMeSkipPressed();
+}
+
 final class ProfileOnboardingFinalizationRequested
     extends ProfileOnboardingEvent {
   const ProfileOnboardingFinalizationRequested();
+}
+
+final class ProfileReadyHomeRequested extends ProfileOnboardingEvent {
+  const ProfileReadyHomeRequested();
 }
 
 final class ProfileOnboardingCancelled extends ProfileOnboardingEvent {

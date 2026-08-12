@@ -13,7 +13,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get faceCaptureSubtitle =>
-      'Shundan keyin profilingizga ishonch ortadi.';
+      'Asosiy suratingiz bilan solishtiramiz. Selfi hech kimga ko‘rinmaydi va tekshiruvdan keyin o‘chiriladi.';
 
   @override
   String get selfieCameraLabel => 'selfi kamera';
@@ -26,6 +26,25 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get faceRuleThree => 'Telefonni ko‘z darajasida ushlang.';
+
+  @override
+  String get takeSelfieLabel => 'Selfi olish';
+
+  @override
+  String get aboutMeTitle => 'O‘zingiz haqingizda';
+
+  @override
+  String get aboutMeSubtitle =>
+      'Ixtiyoriy. Qisqacha yozing — nomzodlar shuni o‘qiydi.';
+
+  @override
+  String get aboutMeHint =>
+      'O‘zingiz, kasbingiz va oilaviy qadriyatlaringiz haqida 2–3 gap...';
+
+  @override
+  String aboutMeCounter(int count) {
+    return '$count / 300 belgi';
+  }
 
   @override
   String get mainPhotoSelectionHint => 'Asosiy suratni tanlang';
@@ -44,11 +63,33 @@ class AppLocalizationsUz extends AppLocalizations {
   String get faceCameraError => 'Kamera ishga tushmadi.';
 
   @override
-  String get onboardingSuccessTitle => 'Anketangiz tayyor!';
+  String get onboardingSuccessTitle => 'Profillingiz tayyor!';
 
   @override
   String get onboardingSuccessSubtitle =>
       'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.';
+
+  @override
+  String get pledgeConfirmationTitle => 'Niyatingizni tasdiqlang';
+
+  @override
+  String get pledgeConfirmationSubtitle =>
+      'Bu qadam majburiy. Tasdiqlagach profilingizda «Niyati jiddiy» belgisi paydo bo‘ladi.';
+
+  @override
+  String get pledgeConfirmationPointOne =>
+      'Ma’lumotlarim to‘g‘ri va o‘zimga tegishli.';
+
+  @override
+  String get pledgeConfirmationPointTwo =>
+      'Niyatim jiddiy — oila qurish uchun keldim.';
+
+  @override
+  String get pledgeConfirmationPointThree =>
+      'Suhbatdoshga hurmat bilan munosabatda bo‘laman.';
+
+  @override
+  String get pledgeConfirmationButton => 'Qasamni tasdiqlash';
 
   @override
   String get aiTestBadge => 'AI MOSLIK TESTI';
@@ -369,6 +410,33 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get playRecording => 'Yozuvni eshitish';
+
+  @override
+  String get voiceSubtitle =>
+      'Ixtiyoriy. 10–15 soniya yetarli — ovoz odam haqida ko‘proq narsani aytadi.';
+
+  @override
+  String get startRecordingHint => 'Yozishni boshlash uchun bosing';
+
+  @override
+  String get recordedVoiceHint =>
+      'Eshitib ko‘ring. Yoqmasa qayta yozing yoki o‘chiring — ovoz ixtiyoriy.';
+
+  @override
+  String get reRecordVoice => 'Qayta yozish';
+
+  @override
+  String get deleteVoice => 'O‘chirish';
+
+  @override
+  String get locationPermissionTitle => 'Joylashuvingiz';
+
+  @override
+  String get locationPermissionSubtitle =>
+      'Yaqin hududdagi nomzodlarni birinchi ko‘rsatish uchun joylashuv ruxsati kerak. Aniq manzil hech kimga ko‘rinmaydi.';
+
+  @override
+  String get enableLocation => 'Joylashuvni yoqish';
 
   @override
   String get skipLabel => 'O‘tkazib yuborish';

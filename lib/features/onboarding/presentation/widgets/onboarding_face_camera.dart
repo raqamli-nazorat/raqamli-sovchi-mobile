@@ -9,12 +9,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
-import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
 
 final class OnboardingFaceCamera extends StatefulWidget {
   const OnboardingFaceCamera({
     required this.hint,
+    required this.cameraLabel,
     required this.errorLabel,
     required this.retryLabel,
     required this.onCaptured,
@@ -22,6 +22,7 @@ final class OnboardingFaceCamera extends StatefulWidget {
   });
 
   final String hint;
+  final String cameraLabel;
   final String errorLabel;
   final String retryLabel;
   final ValueChanged<String> onCaptured;
@@ -47,6 +48,8 @@ final class _OnboardingFaceCameraState extends State<OnboardingFaceCamera>
   DateTime _lastDetect = DateTime.fromMillisecondsSinceEpoch(0);
   bool _detectorBusy = false;
   bool _initializing = true;
+  bool _initializingCamera = false;
+  bool _permissionRequestInFlight = false;
   bool _captured = false;
   String? _error;
   int _positiveStreak = 0;
@@ -67,28 +70,50 @@ final class _OnboardingFaceCameraState extends State<OnboardingFaceCamera>
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.paused) {
       unawaited(_disposeCamera());
-    } else if (state == AppLifecycleState.resumed && !_captured) {
+    } else if (state == AppLifecycleState.resumed &&
+        !_captured &&
+        !_initializingCamera &&
+        !_permissionRequestInFlight) {
       unawaited(_initialize());
     }
   }
 
   Future<void> _initialize() async {
     if (!mounted || _captured) return;
+    if (_initializingCamera || _permissionRequestInFlight) return;
+    _initializingCamera = true;
     setState(() {
       _initializing = true;
       _error = null;
     });
-    await _disposeCamera();
-    final permission = await Permission.camera.request();
-    if (!permission.isGranted && !permission.isLimited) {
-      if (mounted) {
-        setState(() {
-          _initializing = false;
-          _error = widget.errorLabel;
-        });
+    try {
+      await _disposeCamera();
+      final currentPermission = await Permission.camera.status;
+      _permissionRequestInFlight = !currentPermission.isGranted;
+      final permission = currentPermission.isGranted
+          ? currentPermission
+          : await Permission.camera.request();
+      _permissionRequestInFlight = false;
+      if (!permission.isGranted && !permission.isLimited) {
+        if (mounted) {
+          setState(() {
+            _initializing = false;
+            _error = widget.errorLabel;
+          });
+        }
+        return;
       }
-      return;
+      if (!currentPermission.isGranted) {
+        await Future<void>.delayed(const Duration(milliseconds: 250));
+      }
+      await _startCamera();
+    } finally {
+      _permissionRequestInFlight = false;
+      _initializingCamera = false;
     }
+  }
+
+  Future<void> _startCamera() async {
     try {
       final cameras = await availableCameras();
       if (cameras.isEmpty) throw StateError('no_camera');
@@ -105,19 +130,21 @@ final class _OnboardingFaceCameraState extends State<OnboardingFaceCamera>
             : ImageFormatGroup.bgra8888,
       );
       await controller.initialize();
+      if (mounted) {
+        _controller = controller;
+        _detector = FaceDetector(
+          options: FaceDetectorOptions(
+            performanceMode: FaceDetectorMode.fast,
+            minFaceSize: 0.15,
+          ),
+        );
+        await controller.startImageStream(_onCameraImage);
+        if (mounted) setState(() => _initializing = false);
+      }
       if (!mounted) {
         await controller.dispose();
         return;
       }
-      _controller = controller;
-      _detector = FaceDetector(
-        options: FaceDetectorOptions(
-          performanceMode: FaceDetectorMode.fast,
-          minFaceSize: 0.15,
-        ),
-      );
-      await controller.startImageStream(_onCameraImage);
-      if (mounted) setState(() => _initializing = false);
     } catch (_) {
       await _disposeCamera();
       if (mounted) {
@@ -247,37 +274,44 @@ final class _OnboardingFaceCameraState extends State<OnboardingFaceCamera>
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox.square(
-          dimension: 230,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: AppColors.mutedSurface,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.primary, width: 3),
-            ),
-            child: ClipOval(
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  if (live) _Preview(controller),
-                  if (!live)
-                    Center(
-                      child: _error != null
-                          ? Text(
-                              _error!,
-                              textAlign: TextAlign.center,
-                              style: AppTypography.onboardingCardBody,
-                            )
-                          : const CircularProgressIndicator(),
-                    ),
-                  if (live && _scanController != null)
-                    _ScanLine(controller: _scanController!),
-                ],
+        Semantics(
+          label: widget.hint,
+          child: SizedBox.square(
+            dimension: 230,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.mutedSurface,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.primary, width: 3),
+              ),
+              child: ClipOval(
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (live) _Preview(controller),
+                    if (!live)
+                      Center(
+                        child: _error != null
+                            ? Text(
+                                _error!,
+                                textAlign: TextAlign.center,
+                                style: AppTypography.onboardingCardBody,
+                              )
+                            : _initializing
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                widget.cameraLabel,
+                                style: AppTypography.onboardingSelectorLabel,
+                              ),
+                      ),
+                    if (live && _scanController != null)
+                      _ScanLine(controller: _scanController!),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.sm),
         if (_error != null)
           TextButton(
             onPressed: _initialize,
@@ -288,9 +322,7 @@ final class _OnboardingFaceCameraState extends State<OnboardingFaceCamera>
               ),
             ),
             child: Text(widget.retryLabel),
-          )
-        else
-          Text(widget.hint, style: AppTypography.onboardingCardBody),
+          ),
       ],
     );
   }

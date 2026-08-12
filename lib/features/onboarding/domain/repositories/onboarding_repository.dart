@@ -29,7 +29,14 @@ abstract interface class OnboardingRepository {
 
   Future<Either<Failure, void>> updateVoiceIntro(String localFilePath);
 
+  Future<Either<Failure, void>> updateProfileDetails({
+    String? aboutMe,
+    double? latitude,
+    double? longitude,
+  });
+
   Future<Either<Failure, void>> submitPledge({
+    required String userId,
     required bool acceptedTerms,
     required bool hasSeriousBadge,
   });

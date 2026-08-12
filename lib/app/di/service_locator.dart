@@ -39,11 +39,13 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/repositories/google_oauth_provider.dart';
 import '../../features/auth/domain/repositories/pin_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/onboarding/application/services/onboarding_location_service.dart';
 import '../../features/onboarding/application/services/onboarding_media_service.dart';
 import '../../features/onboarding/data/data_sources/onboarding_data_source.dart';
 import '../../features/onboarding/data/data_sources/onboarding_draft_data_source.dart';
 import '../../features/onboarding/data/repositories/onboarding_draft_repository_impl.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../features/onboarding/data/services/onboarding_location_service_impl.dart';
 import '../../features/onboarding/data/services/onboarding_media_service_impl.dart';
 import '../../features/onboarding/domain/repositories/onboarding_draft_repository.dart';
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
@@ -122,6 +124,9 @@ Future<void> configureDependencies() async {
       () => OnboardingDraftRepositoryImpl(serviceLocator()),
     )
     ..registerFactory<OnboardingMediaService>(DeviceOnboardingMediaService.new)
+    ..registerLazySingleton<OnboardingLocationService>(
+      DeviceOnboardingLocationService.new,
+    )
     ..registerLazySingleton<PinDataSource>(
       () => SecurePinDataSource(serviceLocator()),
     )
@@ -181,6 +186,7 @@ Future<void> configureDependencies() async {
         onboardingRepository: serviceLocator(),
         draftRepository: serviceLocator(),
         mediaService: serviceLocator(),
+        locationService: serviceLocator(),
         commitPendingAuthSession: serviceLocator(),
       ),
     )

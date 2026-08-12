@@ -31,6 +31,8 @@ final class ProfileOnboardingState extends Equatable {
     this.healthStatusStatus = ReferenceStatus.idle,
     this.maritalStatusStatus = ReferenceStatus.idle,
     this.isVoiceRecording = false,
+    this.isVoicePlaying = false,
+    this.isLocationLoading = false,
     this.failure,
   });
 
@@ -47,6 +49,8 @@ final class ProfileOnboardingState extends Equatable {
   final ReferenceStatus healthStatusStatus;
   final ReferenceStatus maritalStatusStatus;
   final bool isVoiceRecording;
+  final bool isVoicePlaying;
+  final bool isLocationLoading;
   final Failure? failure;
 
   bool get isBusy =>
@@ -67,6 +71,8 @@ final class ProfileOnboardingState extends Equatable {
     ReferenceStatus? healthStatusStatus,
     ReferenceStatus? maritalStatusStatus,
     bool? isVoiceRecording,
+    bool? isVoicePlaying,
+    bool? isLocationLoading,
     Failure? failure,
     bool clearFailure = false,
   }) {
@@ -84,6 +90,8 @@ final class ProfileOnboardingState extends Equatable {
       healthStatusStatus: healthStatusStatus ?? this.healthStatusStatus,
       maritalStatusStatus: maritalStatusStatus ?? this.maritalStatusStatus,
       isVoiceRecording: isVoiceRecording ?? this.isVoiceRecording,
+      isVoicePlaying: isVoicePlaying ?? this.isVoicePlaying,
+      isLocationLoading: isLocationLoading ?? this.isLocationLoading,
       failure: clearFailure ? null : failure ?? this.failure,
     );
   }
@@ -103,6 +111,8 @@ final class ProfileOnboardingState extends Equatable {
     healthStatusStatus,
     maritalStatusStatus,
     isVoiceRecording,
+    isVoicePlaying,
+    isLocationLoading,
     failure,
   ];
 }
