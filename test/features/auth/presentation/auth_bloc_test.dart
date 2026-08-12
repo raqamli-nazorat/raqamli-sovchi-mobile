@@ -53,6 +53,41 @@ void main() {
         status: AuthStatus.pinSetupRequired,
         session: session,
         phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
+    'restores a committed token session and authenticates after PIN unlock',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+    ),
+    act: (bloc) async {
+      bloc.add(const AuthStarted());
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const AuthPinUnlockRequested('1234'));
+    },
+    expect: () => [
+      const AuthState(status: AuthStatus.loading),
+      const AuthState(
+        status: AuthStatus.pinLocked,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.loading,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
       ),
     ],
   );
@@ -200,6 +235,35 @@ void main() {
         phoneNumber: '+998901234567',
       ),
       const AuthState(status: AuthStatus.unauthenticated),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
+    'routes a restored committed token session to home after PIN unlock',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinLocked,
+      session: session,
+      phoneNumber: '+998901234567',
+      profileOnboardingCompleted: true,
+    ),
+    act: (bloc) => bloc.add(const AuthPinUnlockRequested('1234')),
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
     ],
   );
 

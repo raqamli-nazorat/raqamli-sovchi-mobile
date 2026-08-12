@@ -22,6 +22,7 @@ final class AuthState extends Equatable {
     this.phoneNumber,
     this.failure,
     this.biometricAvailable = false,
+    this.profileOnboardingCompleted = false,
   });
 
   final AuthStatus status;
@@ -29,6 +30,7 @@ final class AuthState extends Equatable {
   final String? phoneNumber;
   final Failure? failure;
   final bool biometricAvailable;
+  final bool profileOnboardingCompleted;
 
   AuthState copyWith({
     AuthStatus? status,
@@ -39,6 +41,7 @@ final class AuthState extends Equatable {
     bool clearPhoneNumber = false,
     bool clearFailure = false,
     bool? biometricAvailable,
+    bool? profileOnboardingCompleted,
   }) {
     return AuthState(
       status: status ?? this.status,
@@ -46,6 +49,9 @@ final class AuthState extends Equatable {
       phoneNumber: clearPhoneNumber ? null : phoneNumber ?? this.phoneNumber,
       failure: clearFailure ? null : failure ?? this.failure,
       biometricAvailable: biometricAvailable ?? this.biometricAvailable,
+      profileOnboardingCompleted: clearSession
+          ? false
+          : profileOnboardingCompleted ?? this.profileOnboardingCompleted,
     );
   }
 
@@ -56,5 +62,6 @@ final class AuthState extends Equatable {
     phoneNumber,
     failure,
     biometricAvailable,
+    profileOnboardingCompleted,
   ];
 }

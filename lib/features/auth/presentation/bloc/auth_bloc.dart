@@ -405,6 +405,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
         status: AuthStatus.authenticated,
         session: session,
         phoneNumber: state.phoneNumber,
+        profileOnboardingCompleted: true,
       ),
     );
   }
@@ -495,6 +496,10 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit, {
     required String source,
   }) async {
+    final profileOnboardingCompleted = _isProfileOnboardingCompleted(
+      source,
+      session,
+    );
     final pinResult = await _hasPin();
     await pinResult.fold<Future<void>>(
       (failure) async {
@@ -504,6 +509,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
             status: AuthStatus.pinSetupRequired,
             session: session,
             failure: failure,
+            profileOnboardingCompleted: profileOnboardingCompleted,
           ),
         );
       },
@@ -514,6 +520,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
             status: hasPin ? AuthStatus.pinLocked : AuthStatus.pinSetupRequired,
             session: session,
             phoneNumber: session.phoneNumber ?? state.phoneNumber,
+            profileOnboardingCompleted: profileOnboardingCompleted,
           ),
         );
       },
@@ -525,7 +532,10 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit, {
     required String source,
   }) async {
-    final needsOnboarding = session.needsProfileOnboarding;
+    final profileOnboardingCompleted =
+        state.profileOnboardingCompleted || !session.needsProfileOnboarding;
+    final needsOnboarding =
+        !profileOnboardingCompleted && session.needsProfileOnboarding;
     _debugAuthGate(
       source,
       session,
@@ -537,6 +547,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
           status: AuthStatus.onboardingRequired,
           session: session,
           phoneNumber: session.phoneNumber ?? state.phoneNumber,
+          profileOnboardingCompleted: profileOnboardingCompleted,
         ),
       );
       return;
@@ -546,8 +557,15 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
         status: AuthStatus.authenticated,
         session: session,
         phoneNumber: session.phoneNumber ?? state.phoneNumber,
+        profileOnboardingCompleted: true,
       ),
     );
+  }
+
+  bool _isProfileOnboardingCompleted(String source, Session session) {
+    return state.profileOnboardingCompleted ||
+        source == 'restore' ||
+        !session.needsProfileOnboarding;
   }
 
   static const _validationFailure = Failure.validation();
