@@ -65,6 +65,8 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
       data: {
         'first_name': request.firstName,
         'last_name': request.lastName,
+        if (request.fatherName?.trim().isNotEmpty ?? false)
+          'father_name': request.fatherName!.trim(),
         'gender': request.gender,
         'candidate_type': request.candidateType.apiValue,
         'birth_year': request.birthYear,

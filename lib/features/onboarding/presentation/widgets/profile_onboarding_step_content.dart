@@ -42,6 +42,7 @@ final class _ProfileOnboardingStepContentState
     extends State<ProfileOnboardingStepContent> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _patronymicController = TextEditingController();
   DateTime? _selectedBirthDate;
   int? _selectedHeight;
   int? _selectedWeight;
@@ -50,6 +51,7 @@ final class _ProfileOnboardingStepContentState
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _patronymicController.dispose();
     super.dispose();
   }
 
@@ -215,6 +217,9 @@ final class _ProfileOnboardingStepContentState
     if (_lastNameController.text.isEmpty && draft.lastName != null) {
       _lastNameController.text = draft.lastName!;
     }
+    if (_patronymicController.text.isEmpty && draft.patronymic != null) {
+      _patronymicController.text = draft.patronymic!;
+    }
     return _StepLayout(
       step: widget.step,
       title: l10n.identityTitle,
@@ -223,12 +228,14 @@ final class _ProfileOnboardingStepContentState
         label: l10n.continueLabel,
         onPressed:
             _firstNameController.text.trim().isEmpty ||
-                _lastNameController.text.trim().isEmpty
+                _lastNameController.text.trim().isEmpty ||
+                _patronymicController.text.trim().isEmpty
             ? null
             : () => bloc.add(
                 IdentitySaved(
                   firstName: _firstNameController.text,
                   lastName: _lastNameController.text,
+                  patronymic: _patronymicController.text,
                 ),
               ),
       ),
@@ -243,6 +250,12 @@ final class _ProfileOnboardingStepContentState
           _OnboardingTextField(
             label: l10n.lastNameLabel,
             controller: _lastNameController,
+            onChanged: (_) => setState(() {}),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          _OnboardingTextField(
+            label: l10n.patronymicLabel,
+            controller: _patronymicController,
             onChanged: (_) => setState(() {}),
           ),
         ],
@@ -309,6 +322,8 @@ final class _ProfileOnboardingStepContentState
       child: OnboardingHeightWeightInput(
         height: height,
         weight: weight,
+        heightLabel: l10n.heightInputLabel,
+        weightLabel: l10n.weightInputLabel,
         heightUnit: l10n.heightUnit,
         weightUnit: l10n.weightUnit,
         decreaseHeightLabel: l10n.decreaseHeightLabel,
@@ -745,32 +760,35 @@ final class _OnboardingTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      textCapitalization: TextCapitalization.words,
-      textInputAction: TextInputAction.next,
-      style: AppTypography.onboardingName,
-      decoration: InputDecoration(
-        labelText: label,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-        labelStyle: AppTypography.onboardingSelectorLabel,
-        hintText: label,
-        hintStyle: AppTypography.onboardingName.copyWith(
-          color: AppColors.placeholder,
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.lg,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.border),
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
-          borderRadius: BorderRadius.circular(AppRadius.xl),
-        ),
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: 13,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: AppTypography.onboardingFieldLabel),
+          const SizedBox(height: AppSpacing.xs - 1),
+          TextField(
+            controller: controller,
+            onChanged: onChanged,
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+            style: AppTypography.onboardingFieldValue,
+            decoration: const InputDecoration(
+              isDense: true,
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -182,7 +182,8 @@ final class ProfileOnboardingBloc
     final draft = state.draft;
     if (draft == null ||
         event.firstName.trim().isEmpty ||
-        event.lastName.trim().isEmpty) {
+        event.lastName.trim().isEmpty ||
+        event.patronymic.trim().isEmpty) {
       emit(state.copyWith(failure: const Failure.validation()));
       return;
     }
@@ -190,6 +191,7 @@ final class ProfileOnboardingBloc
       draft.copyWith(
         firstName: event.firstName.trim(),
         lastName: event.lastName.trim(),
+        patronymic: event.patronymic.trim(),
         currentStep: OnboardingStep.birthDate,
       ),
       emit,
@@ -408,6 +410,7 @@ final class ProfileOnboardingBloc
     final request = ProfileBootstrapRequest(
       firstName: draft.firstName!,
       lastName: draft.lastName!,
+      fatherName: draft.patronymic,
       candidateType: draft.candidateType!,
       birthYear: draft.birthDate!.year,
       heightCm: draft.heightCm!,

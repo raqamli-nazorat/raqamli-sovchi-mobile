@@ -179,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your age is visible to candidates, not the exact date.';
 
   @override
-  String get identityTitle => 'Your name';
+  String get identityTitle => 'Your name and surname';
 
   @override
   String get identitySubtitle =>
@@ -190,6 +190,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lastNameLabel => 'Last name';
+
+  @override
+  String get patronymicLabel => 'Father\'s name';
 
   @override
   String get educationTitle => 'What is your education?';
@@ -204,10 +207,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heightLabel => 'Height (cm)';
 
   @override
+  String get heightInputLabel => 'Your height';
+
+  @override
   String get heightUnit => 'cm';
 
   @override
   String get weightLabel => 'Weight (kg)';
+
+  @override
+  String get weightInputLabel => 'Your weight';
 
   @override
   String get weightUnit => 'kg';

@@ -6,6 +6,7 @@ final class ProfileBootstrapRequest extends Equatable {
   const ProfileBootstrapRequest({
     required this.firstName,
     required this.lastName,
+    this.fatherName,
     required this.candidateType,
     required this.birthYear,
     required this.heightCm,
@@ -16,6 +17,7 @@ final class ProfileBootstrapRequest extends Equatable {
 
   final String firstName;
   final String lastName;
+  final String? fatherName;
   final CandidateType candidateType;
   final int birthYear;
   final int heightCm;
@@ -29,6 +31,7 @@ final class ProfileBootstrapRequest extends Equatable {
   List<Object?> get props => [
     firstName,
     lastName,
+    fatherName,
     candidateType,
     birthYear,
     heightCm,

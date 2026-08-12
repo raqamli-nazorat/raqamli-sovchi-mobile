@@ -415,7 +415,7 @@ abstract class AppLocalizations {
   /// No description provided for @identityTitle.
   ///
   /// In uz, this message translates to:
-  /// **'Ismingiz'**
+  /// **'Ismingiz va familiyangiz'**
   String get identityTitle;
 
   /// No description provided for @identitySubtitle.
@@ -427,14 +427,20 @@ abstract class AppLocalizations {
   /// No description provided for @firstNameLabel.
   ///
   /// In uz, this message translates to:
-  /// **'Ism'**
+  /// **'Ismingiz'**
   String get firstNameLabel;
 
   /// No description provided for @lastNameLabel.
   ///
   /// In uz, this message translates to:
-  /// **'Familiya'**
+  /// **'Familiyangiz'**
   String get lastNameLabel;
+
+  /// No description provided for @patronymicLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Otasining ismi'**
+  String get patronymicLabel;
 
   /// No description provided for @educationTitle.
   ///
@@ -460,6 +466,12 @@ abstract class AppLocalizations {
   /// **'Bo‘yi (sm)'**
   String get heightLabel;
 
+  /// No description provided for @heightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz'**
+  String get heightInputLabel;
+
   /// No description provided for @heightUnit.
   ///
   /// In uz, this message translates to:
@@ -471,6 +483,12 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Vazni (kg)'**
   String get weightLabel;
+
+  /// No description provided for @weightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vazningiz'**
+  String get weightInputLabel;
 
   /// No description provided for @weightUnit.
   ///

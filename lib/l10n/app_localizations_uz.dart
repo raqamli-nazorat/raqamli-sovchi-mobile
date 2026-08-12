@@ -178,17 +178,20 @@ class AppLocalizationsUz extends AppLocalizations {
       'Yoshingiz nomzodlarga ko‘rinadi, aniq sana emas.';
 
   @override
-  String get identityTitle => 'Ismingiz';
+  String get identityTitle => 'Ismingiz va familiyangiz';
 
   @override
   String get identitySubtitle =>
       'Pasportdagidek yozing — nomzodlar shu ismni ko‘radi.';
 
   @override
-  String get firstNameLabel => 'Ism';
+  String get firstNameLabel => 'Ismingiz';
 
   @override
-  String get lastNameLabel => 'Familiya';
+  String get lastNameLabel => 'Familiyangiz';
+
+  @override
+  String get patronymicLabel => 'Otasining ismi';
 
   @override
   String get educationTitle => 'Ma’lumotingiz qanday?';
@@ -203,10 +206,16 @@ class AppLocalizationsUz extends AppLocalizations {
   String get heightLabel => 'Bo‘yi (sm)';
 
   @override
+  String get heightInputLabel => 'Bo‘yingiz';
+
+  @override
   String get heightUnit => 'sm';
 
   @override
   String get weightLabel => 'Vazni (kg)';
+
+  @override
+  String get weightInputLabel => 'Vazningiz';
 
   @override
   String get weightUnit => 'kg';

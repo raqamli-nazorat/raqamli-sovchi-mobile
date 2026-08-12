@@ -179,7 +179,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Кандидаты увидят ваш возраст, но не точную дату рождения.';
 
   @override
-  String get identityTitle => 'Ваше имя';
+  String get identityTitle => 'Ваше имя и фамилия';
 
   @override
   String get identitySubtitle =>
@@ -190,6 +190,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get lastNameLabel => 'Фамилия';
+
+  @override
+  String get patronymicLabel => 'Отчество';
 
   @override
   String get educationTitle => 'Какое у вас образование?';
@@ -204,10 +207,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get heightLabel => 'Рост (см)';
 
   @override
+  String get heightInputLabel => 'Ваш рост';
+
+  @override
   String get heightUnit => 'см';
 
   @override
   String get weightLabel => 'Вес (кг)';
+
+  @override
+  String get weightInputLabel => 'Ваш вес';
 
   @override
   String get weightUnit => 'кг';

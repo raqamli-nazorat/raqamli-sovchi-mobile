@@ -58,13 +58,18 @@ final class OnboardingStepBackRequested extends ProfileOnboardingEvent {
 }
 
 final class IdentitySaved extends ProfileOnboardingEvent {
-  const IdentitySaved({required this.firstName, required this.lastName});
+  const IdentitySaved({
+    required this.firstName,
+    required this.lastName,
+    required this.patronymic,
+  });
 
   final String firstName;
   final String lastName;
+  final String patronymic;
 
   @override
-  List<Object?> get props => [firstName, lastName];
+  List<Object?> get props => [firstName, lastName, patronymic];
 }
 
 final class EducationLevelsRequested extends ProfileOnboardingEvent {

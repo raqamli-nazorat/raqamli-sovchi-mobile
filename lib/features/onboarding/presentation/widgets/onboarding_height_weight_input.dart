@@ -10,6 +10,8 @@ final class OnboardingHeightWeightInput extends StatefulWidget {
   const OnboardingHeightWeightInput({
     required this.height,
     required this.weight,
+    required this.heightLabel,
+    required this.weightLabel,
     required this.heightUnit,
     required this.weightUnit,
     required this.decreaseHeightLabel,
@@ -23,6 +25,8 @@ final class OnboardingHeightWeightInput extends StatefulWidget {
 
   final int height;
   final int weight;
+  final String heightLabel;
+  final String weightLabel;
   final String heightUnit;
   final String weightUnit;
   final String decreaseHeightLabel;
@@ -115,6 +119,7 @@ final class _OnboardingHeightWeightInputState
     return Column(
       children: [
         _MeasurementRow(
+          label: widget.heightLabel,
           valueController: _heightController,
           unit: widget.heightUnit,
           decreaseLabel: widget.decreaseHeightLabel,
@@ -125,8 +130,9 @@ final class _OnboardingHeightWeightInputState
           onIncrease: () => _changeHeight(widget.height + 1),
           onChanged: _handleHeightText,
         ),
-        const SizedBox(height: AppSpacing.lg + AppSpacing.sm),
+        const SizedBox(height: AppSpacing.lg),
         _MeasurementRow(
+          label: widget.weightLabel,
           valueController: _weightController,
           unit: widget.weightUnit,
           decreaseLabel: widget.decreaseWeightLabel,
@@ -144,6 +150,7 @@ final class _OnboardingHeightWeightInputState
 
 final class _MeasurementRow extends StatelessWidget {
   const _MeasurementRow({
+    required this.label,
     required this.valueController,
     required this.unit,
     required this.decreaseLabel,
@@ -156,6 +163,7 @@ final class _MeasurementRow extends StatelessWidget {
   });
 
   final TextEditingController valueController;
+  final String label;
   final String unit;
   final String decreaseLabel;
   final String increaseLabel;
@@ -167,57 +175,68 @@ final class _MeasurementRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _StepButton(
-          icon: Icons.remove,
-          semanticLabel: decreaseLabel,
-          enabled: canDecrease,
-          onPressed: onDecrease,
-        ),
-        const SizedBox(width: AppSpacing.lg + AppSpacing.sm - 2),
-        SizedBox(
-          width: 128,
-          child: TextField(
-            controller: valueController,
-            textAlign: TextAlign.center,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            onChanged: onChanged,
-            style: AppTypography.onboardingNumeric,
-            decoration: InputDecoration(
-              suffixText: unit,
-              suffixStyle: AppTypography.onboardingChip.copyWith(
-                color: AppColors.primary,
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.md,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: AppColors.primary,
-                  width: 1.5,
-                ),
-                borderRadius: BorderRadius.circular(AppRadius.xl),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: const BorderSide(
-                  color: AppColors.primary,
-                  width: 2,
-                ),
-                borderRadius: BorderRadius.circular(AppRadius.xl),
-              ),
-            ),
+        Text(
+          label,
+          style: AppTypography.onboardingSelectorValue.copyWith(
+            color: AppColors.bodyText,
           ),
         ),
-        const SizedBox(width: AppSpacing.lg + AppSpacing.sm - 2),
-        _StepButton(
-          icon: Icons.add,
-          semanticLabel: increaseLabel,
-          enabled: canIncrease,
-          onPressed: onIncrease,
+        const SizedBox(height: AppSpacing.sm + 2),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _StepButton(
+              icon: Icons.remove,
+              semanticLabel: decreaseLabel,
+              enabled: canDecrease,
+              onPressed: onDecrease,
+            ),
+            const SizedBox(width: AppSpacing.md),
+            SizedBox(
+              width: 92,
+              height: 48,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: AppColors.primary, width: 1.5),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 46,
+                      child: TextField(
+                        controller: valueController,
+                        textAlign: TextAlign.right,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: onChanged,
+                        style: AppTypography.onboardingMeasurementValue,
+                        decoration: const InputDecoration.collapsed(
+                          hintText: '',
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.xs),
+                    Text(unit, style: AppTypography.onboardingMeasurementUnit),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: AppSpacing.md),
+            _StepButton(
+              icon: Icons.add,
+              semanticLabel: increaseLabel,
+              enabled: canIncrease,
+              onPressed: onIncrease,
+            ),
+          ],
         ),
       ],
     );
@@ -250,11 +269,11 @@ final class _StepButton extends StatelessWidget {
           onTap: enabled ? onPressed : null,
           customBorder: const CircleBorder(),
           child: SizedBox.square(
-            dimension: 44,
+            dimension: 40,
             child: Icon(
               icon,
               color: enabled ? AppColors.text : AppColors.placeholder,
-              size: 24,
+              size: 20,
             ),
           ),
         ),

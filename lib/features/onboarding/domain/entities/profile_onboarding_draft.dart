@@ -115,6 +115,7 @@ final class ProfileOnboardingDraft extends Equatable {
     this.birthDate,
     this.firstName,
     this.lastName,
+    this.patronymic,
     this.educationLevelId,
     this.heightCm,
     this.weightKg,
@@ -135,6 +136,7 @@ final class ProfileOnboardingDraft extends Equatable {
   final DateTime? birthDate;
   final String? firstName;
   final String? lastName;
+  final String? patronymic;
   final String? educationLevelId;
   final int? heightCm;
   final int? weightKg;
@@ -154,6 +156,7 @@ final class ProfileOnboardingDraft extends Equatable {
       birthDate != null &&
       (firstName?.trim().isNotEmpty ?? false) &&
       (lastName?.trim().isNotEmpty ?? false) &&
+      (patronymic?.trim().isNotEmpty ?? false) &&
       (educationLevelId?.isNotEmpty ?? false) &&
       heightCm != null &&
       (regionId?.isNotEmpty ?? false) &&
@@ -172,6 +175,7 @@ final class ProfileOnboardingDraft extends Equatable {
     DateTime? birthDate,
     String? firstName,
     String? lastName,
+    String? patronymic,
     String? educationLevelId,
     int? heightCm,
     int? weightKg,
@@ -195,6 +199,7 @@ final class ProfileOnboardingDraft extends Equatable {
       birthDate: birthDate ?? this.birthDate,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
+      patronymic: patronymic ?? this.patronymic,
       educationLevelId: educationLevelId ?? this.educationLevelId,
       heightCm: heightCm ?? this.heightCm,
       weightKg: weightKg ?? this.weightKg,
@@ -224,6 +229,7 @@ final class ProfileOnboardingDraft extends Equatable {
     birthDate,
     firstName,
     lastName,
+    patronymic,
     educationLevelId,
     heightCm,
     weightKg,

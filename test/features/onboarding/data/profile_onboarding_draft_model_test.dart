@@ -13,6 +13,7 @@ void main() {
       birthDate: DateTime.utc(2000, 2, 29),
       firstName: 'Madina',
       lastName: 'Karimova',
+      patronymic: 'Baxtiyor qizi',
       heightCm: 179,
       weightKg: 68,
       profileServerId: 'profile-1',
@@ -35,5 +36,6 @@ void main() {
 
     expect(restored, draft);
     expect(restored.weightKg, 68);
+    expect(restored.patronymic, 'Baxtiyor qizi');
   });
 }

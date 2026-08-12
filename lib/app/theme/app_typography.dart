@@ -117,4 +117,32 @@ abstract final class AppTypography {
     fontWeight: FontWeight.w500,
     color: AppColors.text,
   );
+  static const onboardingFieldLabel = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 10,
+    height: 14 / 10,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+    color: AppColors.placeholder,
+  );
+  static const onboardingFieldValue = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    height: 19 / 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.text,
+  );
+  static const onboardingMeasurementValue = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 22,
+    height: 28 / 22,
+    fontWeight: FontWeight.w600,
+    color: AppColors.text,
+  );
+  static const onboardingMeasurementUnit = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 19 / 12,
+    color: AppColors.mutedText,
+  );
 }
