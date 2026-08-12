@@ -94,7 +94,41 @@ abstract final class AppTypography {
     fontSize: 12,
     height: 16 / 12,
     fontWeight: FontWeight.w600,
-    color: AppColors.primary,
+    color: AppColors.mutedText,
+  );
+  static const onboardingSheetTitle = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 20,
+    height: 27 / 20,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.3,
+    color: AppColors.text,
+  );
+  static const onboardingSheetCaption = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 19 / 12,
+    color: AppColors.mutedText,
+  );
+  static const onboardingReferenceOption = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w500,
+    color: AppColors.bodyText,
+  );
+  static const onboardingReferenceSelected = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w600,
+    color: AppColors.text,
+  );
+  static const onboardingSearch = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    height: 21 / 14,
+    color: AppColors.placeholder,
   );
   static const onboardingNumeric = TextStyle(
     fontFamily: 'Manrope',

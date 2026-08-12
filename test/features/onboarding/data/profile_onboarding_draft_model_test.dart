@@ -16,6 +16,12 @@ void main() {
       patronymic: 'Baxtiyor qizi',
       heightCm: 179,
       weightKg: 68,
+      regionId: 'region-1',
+      districtId: 'district-1',
+      healthStatusId: 'health-1',
+      maritalStatusId: 'marital-1',
+      childrenCount: 2,
+      childrenNotLivingWithMe: true,
       profileServerId: 'profile-1',
       mainPhotoServerId: 'photo-1',
       photos: const [
@@ -37,5 +43,9 @@ void main() {
     expect(restored, draft);
     expect(restored.weightKg, 68);
     expect(restored.patronymic, 'Baxtiyor qizi');
+    expect(restored.healthStatusId, 'health-1');
+    expect(restored.maritalStatusId, 'marital-1');
+    expect(restored.childrenCount, 2);
+    expect(restored.childrenNotLivingWithMe, isTrue);
   });
 }

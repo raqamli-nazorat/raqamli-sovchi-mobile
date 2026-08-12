@@ -53,6 +53,38 @@ final class DistrictModel {
   District toEntity() => District(id: id, name: name, regionId: regionId);
 }
 
+final class HealthStatusModel {
+  const HealthStatusModel({required this.id, required this.name});
+
+  factory HealthStatusModel.fromJson(Map<String, dynamic> json) {
+    return HealthStatusModel(
+      id: (json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+    );
+  }
+
+  final String id;
+  final String name;
+
+  HealthStatus toEntity() => HealthStatus(id: id, name: name);
+}
+
+final class MaritalStatusModel {
+  const MaritalStatusModel({required this.id, required this.name});
+
+  factory MaritalStatusModel.fromJson(Map<String, dynamic> json) {
+    return MaritalStatusModel(
+      id: (json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+    );
+  }
+
+  final String id;
+  final String name;
+
+  MaritalStatus toEntity() => MaritalStatus(id: id, name: name);
+}
+
 final class ReferencePageModel<T> {
   const ReferencePageModel({
     required this.items,

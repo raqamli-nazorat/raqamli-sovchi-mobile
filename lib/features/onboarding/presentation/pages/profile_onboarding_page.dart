@@ -92,6 +92,18 @@ final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
               state.regionStatus == ReferenceStatus.idle) {
             context.read<ProfileOnboardingBloc>().add(const RegionsRequested());
           }
+          if (step == OnboardingStep.healthStatus &&
+              state.healthStatusStatus == ReferenceStatus.idle) {
+            context.read<ProfileOnboardingBloc>().add(
+              const HealthStatusesRequested(),
+            );
+          }
+          if (step == OnboardingStep.maritalStatus &&
+              state.maritalStatusStatus == ReferenceStatus.idle) {
+            context.read<ProfileOnboardingBloc>().add(
+              const MaritalStatusesRequested(),
+            );
+          }
         }
         if (state.status == ProfileOnboardingStatus.completed) {
           context.read<AuthBloc>().add(const AuthOnboardingCompleted());

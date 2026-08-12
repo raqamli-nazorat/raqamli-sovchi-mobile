@@ -31,6 +31,26 @@ final class District extends Equatable {
   List<Object?> get props => [id, name, regionId];
 }
 
+final class HealthStatus extends Equatable {
+  const HealthStatus({required this.id, required this.name});
+
+  final String id;
+  final String name;
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
+final class MaritalStatus extends Equatable {
+  const MaritalStatus({required this.id, required this.name});
+
+  final String id;
+  final String name;
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
 final class ReferencePage<T> extends Equatable {
   const ReferencePage({
     required this.items,

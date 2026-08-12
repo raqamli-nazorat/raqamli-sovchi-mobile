@@ -10,12 +10,14 @@ final class OnboardingLocationSelectorRow extends StatelessWidget {
     required this.label,
     required this.value,
     required this.onPressed,
+    this.isPlaceholder = false,
     super.key,
   });
 
   final String label;
   final String? value;
   final VoidCallback? onPressed;
+  final bool isPlaceholder;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,9 @@ final class OnboardingLocationSelectorRow extends StatelessWidget {
                       Text(
                         value!,
                         style: AppTypography.onboardingSelectorValue.copyWith(
-                          color: enabled ? AppColors.text : AppColors.mutedText,
+                          color: isPlaceholder || enabled
+                              ? AppColors.text
+                              : AppColors.mutedText,
                         ),
                       ),
                     ],

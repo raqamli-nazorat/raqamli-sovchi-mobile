@@ -123,12 +123,13 @@ final class RegionSaved extends ProfileOnboardingEvent {
 }
 
 final class DistrictsRequested extends ProfileOnboardingEvent {
-  const DistrictsRequested({this.loadNextPage = false});
+  const DistrictsRequested({this.loadNextPage = false, this.search});
 
   final bool loadNextPage;
+  final String? search;
 
   @override
-  List<Object?> get props => [loadNextPage];
+  List<Object?> get props => [loadNextPage, search];
 }
 
 final class DistrictSaved extends ProfileOnboardingEvent {
@@ -138,6 +139,72 @@ final class DistrictSaved extends ProfileOnboardingEvent {
 
   @override
   List<Object?> get props => [districtId];
+}
+
+final class HealthStatusesRequested extends ProfileOnboardingEvent {
+  const HealthStatusesRequested({this.loadNextPage = false});
+
+  final bool loadNextPage;
+
+  @override
+  List<Object?> get props => [loadNextPage];
+}
+
+final class LocationContinuePressed extends ProfileOnboardingEvent {
+  const LocationContinuePressed();
+}
+
+final class HealthStatusSaved extends ProfileOnboardingEvent {
+  const HealthStatusSaved(this.healthStatusId);
+
+  final String healthStatusId;
+
+  @override
+  List<Object?> get props => [healthStatusId];
+}
+
+final class HealthStatusContinuePressed extends ProfileOnboardingEvent {
+  const HealthStatusContinuePressed();
+}
+
+final class MaritalStatusesRequested extends ProfileOnboardingEvent {
+  const MaritalStatusesRequested({this.loadNextPage = false});
+
+  final bool loadNextPage;
+
+  @override
+  List<Object?> get props => [loadNextPage];
+}
+
+final class MaritalStatusSaved extends ProfileOnboardingEvent {
+  const MaritalStatusSaved(this.maritalStatusId);
+
+  final String maritalStatusId;
+
+  @override
+  List<Object?> get props => [maritalStatusId];
+}
+
+final class MaritalStatusContinuePressed extends ProfileOnboardingEvent {
+  const MaritalStatusContinuePressed();
+}
+
+final class ChildrenCountChanged extends ProfileOnboardingEvent {
+  const ChildrenCountChanged(this.count);
+
+  final int count;
+
+  @override
+  List<Object?> get props => [count];
+}
+
+final class ChildrenNotLivingWithMeChanged extends ProfileOnboardingEvent {
+  const ChildrenNotLivingWithMeChanged(this.value);
+
+  final bool value;
+
+  @override
+  List<Object?> get props => [value];
 }
 
 final class ProfileBootstrapRequested extends ProfileOnboardingEvent {
@@ -181,6 +248,14 @@ final class VoiceRecordingStarted extends ProfileOnboardingEvent {
 
 final class VoiceIntroStepRequested extends ProfileOnboardingEvent {
   const VoiceIntroStepRequested();
+}
+
+final class ProfilePhotosContinuePressed extends ProfileOnboardingEvent {
+  const ProfilePhotosContinuePressed();
+}
+
+final class MainPhotoContinuePressed extends ProfileOnboardingEvent {
+  const MainPhotoContinuePressed();
 }
 
 final class VoiceRecordingStopped extends ProfileOnboardingEvent {

@@ -12,6 +12,8 @@ import '../../domain/repositories/onboarding_repository.dart';
 import 'profile_onboarding_event.dart';
 import 'profile_onboarding_state.dart';
 
+const _maxProfilePhotos = 5;
+
 final class ProfileOnboardingBloc
     extends Bloc<ProfileOnboardingEvent, ProfileOnboardingState> {
   ProfileOnboardingBloc({
@@ -42,12 +44,23 @@ final class ProfileOnboardingBloc
     on<RegionSaved>(_onRegionSaved);
     on<DistrictsRequested>(_onDistrictsRequested);
     on<DistrictSaved>(_onDistrictSaved);
+    on<HealthStatusesRequested>(_onHealthStatusesRequested);
+    on<LocationContinuePressed>(_onLocationContinuePressed);
+    on<HealthStatusSaved>(_onHealthStatusSaved);
+    on<HealthStatusContinuePressed>(_onHealthStatusContinuePressed);
+    on<MaritalStatusesRequested>(_onMaritalStatusesRequested);
+    on<MaritalStatusSaved>(_onMaritalStatusSaved);
+    on<MaritalStatusContinuePressed>(_onMaritalStatusContinuePressed);
+    on<ChildrenCountChanged>(_onChildrenCountChanged);
+    on<ChildrenNotLivingWithMeChanged>(_onChildrenNotLivingWithMeChanged);
     on<ProfileBootstrapRequested>(_onProfileBootstrapRequested);
     on<ProfilePhotoPickRequested>(_onProfilePhotoPickRequested);
     on<ProfilePhotoUploadRetryRequested>(_onProfilePhotoUploadRetryRequested);
     on<ProfilePhotoMainSelected>(_onProfilePhotoMainSelected);
     on<ProfilePhotoRemoveRequested>(_onProfilePhotoRemoveRequested);
     on<VoiceIntroStepRequested>(_onVoiceIntroStepRequested);
+    on<ProfilePhotosContinuePressed>(_onProfilePhotosContinuePressed);
+    on<MainPhotoContinuePressed>(_onMainPhotoContinuePressed);
     on<VoiceRecordingStarted>(_onVoiceRecordingStarted);
     on<VoiceRecordingStopped>(_onVoiceRecordingStopped);
     on<VoiceIntroContinuePressed>(_onVoiceIntroContinuePressed);
@@ -68,7 +81,10 @@ final class ProfileOnboardingBloc
   int _educationPage = 0;
   int _regionPage = 0;
   int _districtPage = 0;
+  int _healthStatusPage = 0;
+  int _maritalStatusPage = 0;
   String? _districtRegionRequest;
+  String _districtSearch = '';
   bool _faceVerificationInFlight = false;
 
   Future<void> _onStarted(
@@ -82,14 +98,14 @@ final class ProfileOnboardingBloc
       ),
     );
     final result = await _draftRepository.load(event.ownerUserId);
-    result.fold(
-      (failure) => emit(
+    await result.fold<Future<void>>(
+      (failure) async => emit(
         state.copyWith(
           status: ProfileOnboardingStatus.editing,
           failure: failure,
         ),
       ),
-      (draft) => emit(
+      (draft) async => emit(
         ProfileOnboardingState(
           status: draft?.candidateType == CandidateType.representative
               ? ProfileOnboardingStatus.representativeFlow
@@ -313,6 +329,7 @@ final class ProfileOnboardingBloc
     if (draft == null || event.regionId.isEmpty) return;
     _districtPage = 0;
     _districtRegionRequest = event.regionId;
+    _districtSearch = '';
     await _save(
       draft.copyWith(
         regionId: event.regionId,
@@ -330,7 +347,10 @@ final class ProfileOnboardingBloc
   ) async {
     final regionId = state.draft?.regionId;
     if (regionId == null || regionId.isEmpty) return;
-    final page = event.loadNextPage ? _districtPage + 1 : 1;
+    final search = event.search ?? _districtSearch;
+    final isNewSearch = search != _districtSearch;
+    final page = event.loadNextPage && !isNewSearch ? _districtPage + 1 : 1;
+    _districtSearch = search;
     final requestId = regionId;
     _districtRegionRequest = requestId;
     emit(
@@ -342,8 +362,10 @@ final class ProfileOnboardingBloc
     final result = await _onboardingRepository.getDistricts(
       regionId: regionId,
       page: page,
+      search: search,
     );
     if (_districtRegionRequest != requestId ||
+        _districtSearch != search ||
         state.draft?.regionId != requestId) {
       return;
     }
@@ -356,7 +378,7 @@ final class ProfileOnboardingBloc
       ),
       (response) {
         _districtPage = page;
-        final items = event.loadNextPage
+        final items = event.loadNextPage && !isNewSearch
             ? [...state.districts, ...response.items]
             : response.items;
         emit(
@@ -381,6 +403,199 @@ final class ProfileOnboardingBloc
       draft.copyWith(
         districtId: event.districtId,
         currentStep: OnboardingStep.location,
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _onHealthStatusesRequested(
+    HealthStatusesRequested event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final page = event.loadNextPage ? _healthStatusPage + 1 : 1;
+    emit(
+      state.copyWith(
+        healthStatusStatus: ReferenceStatus.loading,
+        clearFailure: true,
+      ),
+    );
+    final result = await _onboardingRepository.getHealthStatuses(page);
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        state.copyWith(
+          healthStatusStatus: ReferenceStatus.failure,
+          failure: failure,
+        ),
+      ),
+      (response) async {
+        _healthStatusPage = page;
+        final items = event.loadNextPage
+            ? [...state.healthStatuses, ...response.items]
+            : response.items;
+        var nextDraft = state.draft;
+        if (items.isNotEmpty && (nextDraft?.healthStatusId?.isEmpty ?? true)) {
+          final defaultStatus = items.firstWhere(
+            (item) => !item.name.toLowerCase().contains('nogiron'),
+            orElse: () => items.first,
+          );
+          nextDraft = nextDraft?.copyWith(healthStatusId: defaultStatus.id);
+        }
+        if (nextDraft != state.draft) {
+          await _save(nextDraft!, emit);
+        }
+        emit(
+          state.copyWith(
+            draft: nextDraft,
+            healthStatuses: items,
+            healthStatusStatus: items.isEmpty
+                ? ReferenceStatus.empty
+                : ReferenceStatus.loaded,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onLocationContinuePressed(
+    LocationContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if ((draft?.regionId?.isEmpty ?? true) ||
+        (draft?.districtId?.isEmpty ?? true)) {
+      return;
+    }
+    await _save(
+      draft!.copyWith(currentStep: OnboardingStep.healthStatus),
+      emit,
+    );
+  }
+
+  Future<void> _onHealthStatusSaved(
+    HealthStatusSaved event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || event.healthStatusId.isEmpty) return;
+    await _save(
+      draft.copyWith(
+        healthStatusId: event.healthStatusId,
+        currentStep: OnboardingStep.healthStatus,
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _onHealthStatusContinuePressed(
+    HealthStatusContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.healthStatusId?.isEmpty ?? true) return;
+    await _save(
+      draft!.copyWith(currentStep: OnboardingStep.maritalStatus),
+      emit,
+    );
+  }
+
+  Future<void> _onMaritalStatusesRequested(
+    MaritalStatusesRequested event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final page = event.loadNextPage ? _maritalStatusPage + 1 : 1;
+    emit(
+      state.copyWith(
+        maritalStatusStatus: ReferenceStatus.loading,
+        clearFailure: true,
+      ),
+    );
+    final result = await _onboardingRepository.getMaritalStatuses(page);
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        state.copyWith(
+          maritalStatusStatus: ReferenceStatus.failure,
+          failure: failure,
+        ),
+      ),
+      (response) async {
+        _maritalStatusPage = page;
+        final items = event.loadNextPage
+            ? [...state.maritalStatuses, ...response.items]
+            : response.items;
+        var nextDraft = state.draft;
+        if (items.isNotEmpty && (nextDraft?.maritalStatusId?.isEmpty ?? true)) {
+          final defaultStatus = items.firstWhere(
+            (item) => !_isDivorcedStatus(item.name),
+            orElse: () => items.first,
+          );
+          nextDraft = nextDraft?.copyWith(maritalStatusId: defaultStatus.id);
+        }
+        if (nextDraft != state.draft) {
+          await _save(nextDraft!, emit);
+        }
+        emit(
+          state.copyWith(
+            draft: nextDraft,
+            maritalStatuses: items,
+            maritalStatusStatus: items.isEmpty
+                ? ReferenceStatus.empty
+                : ReferenceStatus.loaded,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onMaritalStatusSaved(
+    MaritalStatusSaved event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || event.maritalStatusId.isEmpty) return;
+    await _save(
+      draft.copyWith(
+        maritalStatusId: event.maritalStatusId,
+        currentStep: OnboardingStep.maritalStatus,
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _onMaritalStatusContinuePressed(
+    MaritalStatusContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.maritalStatusId?.isEmpty ?? true) return;
+    add(const ProfileBootstrapRequested());
+  }
+
+  Future<void> _onChildrenCountChanged(
+    ChildrenCountChanged event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null) return;
+    if (draft.childrenNotLivingWithMe) {
+      if (draft.childrenCount != 0) {
+        await _save(draft.copyWith(childrenCount: 0), emit);
+      }
+      return;
+    }
+    final count = event.count.clamp(0, 99);
+    await _save(draft.copyWith(childrenCount: count), emit);
+  }
+
+  Future<void> _onChildrenNotLivingWithMeChanged(
+    ChildrenNotLivingWithMeChanged event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null) return;
+    await _save(
+      draft.copyWith(
+        childrenNotLivingWithMe: event.value,
+        childrenCount: event.value ? 0 : draft.childrenCount,
       ),
       emit,
     );
@@ -414,9 +629,14 @@ final class ProfileOnboardingBloc
       candidateType: draft.candidateType!,
       birthYear: draft.birthDate!.year,
       heightCm: draft.heightCm!,
+      weightKg: draft.weightKg,
       regionId: draft.regionId!,
       districtId: draft.districtId!,
       educationLevelId: draft.educationLevelId!,
+      maritalStatusId: draft.maritalStatusId!,
+      hasChildren: draft.childrenCount > 0 || draft.childrenNotLivingWithMe,
+      childrenCount: draft.childrenNotLivingWithMe ? 0 : draft.childrenCount,
+      healthStatusId: draft.healthStatusId,
     );
     final result = await _onboardingRepository.createProfile(request);
     await result.fold<Future<void>>(
@@ -457,6 +677,10 @@ final class ProfileOnboardingBloc
     );
   }
 
+  bool _isDivorcedStatus(String name) {
+    return name.trim().toLowerCase() == 'ajrashgan';
+  }
+
   Future<void> _onProfilePhotoPickRequested(
     ProfilePhotoPickRequested event,
     Emitter<ProfileOnboardingState> emit,
@@ -466,7 +690,7 @@ final class ProfileOnboardingBloc
       emit(state.copyWith(failure: const Failure.validation()));
       return;
     }
-    if (draft.photos.length >= 4) {
+    if (draft.photos.length >= _maxProfilePhotos) {
       emit(state.copyWith(failure: const Failure.validation()));
       return;
     }
@@ -475,7 +699,7 @@ final class ProfileOnboardingBloc
       if (filePath == null) return;
       final usedOrders = draft.photos.map((photo) => photo.order).toSet();
       final order = Iterable<int>.generate(
-        4,
+        _maxProfilePhotos,
         (index) => index + 1,
       ).firstWhere((value) => !usedOrders.contains(value));
       final photo = OnboardingPhotoDraft(
@@ -516,6 +740,9 @@ final class ProfileOnboardingBloc
       clearUploadFailure: true,
     );
     await _save(draft.copyWith(photos: uploading), emit);
+    if (state.status != ProfileOnboardingStatus.submitting) {
+      emit(state.copyWith(status: ProfileOnboardingStatus.submitting));
+    }
     final photo = uploading[index];
     final result = await _onboardingRepository.uploadPhoto(
       profileId: profileId,
@@ -599,9 +826,21 @@ final class ProfileOnboardingBloc
   ) async {
     final draft = state.draft;
     if (draft == null) return;
+    if (event.serverId == draft.mainPhotoServerId) return;
+    emit(
+      state.copyWith(
+        status: ProfileOnboardingStatus.submitting,
+        clearFailure: true,
+      ),
+    );
     final result = await _onboardingRepository.setMainPhoto(event.serverId);
     await result.fold<Future<void>>(
-      (failure) async => emit(state.copyWith(failure: failure)),
+      (failure) async => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          failure: failure,
+        ),
+      ),
       (photo) async {
         final updated = draft.photos
             .map((item) => item.copyWith(isMain: item.serverId == photo.id))
@@ -665,6 +904,15 @@ final class ProfileOnboardingBloc
   Future<void> _onVoiceIntroStepRequested(
     VoiceIntroStepRequested event,
     Emitter<ProfileOnboardingState> emit,
+  ) => _continueAfterPhotos(emit);
+
+  Future<void> _onProfilePhotosContinuePressed(
+    ProfilePhotosContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) => _continueAfterPhotos(emit);
+
+  Future<void> _continueAfterPhotos(
+    Emitter<ProfileOnboardingState> emit,
   ) async {
     final draft = state.draft;
     if (draft == null || draft.photos.isEmpty) {
@@ -689,6 +937,9 @@ final class ProfileOnboardingBloc
           continue;
         }
         await _uploadPhoto(photo.localFilePath, emit);
+        if (state.status != ProfileOnboardingStatus.submitting) {
+          emit(state.copyWith(status: ProfileOnboardingStatus.submitting));
+        }
         final uploadedPhoto = state.draft?.photos
             .where((item) => item.localFilePath == photo.localFilePath)
             .firstOrNull;
@@ -711,9 +962,21 @@ final class ProfileOnboardingBloc
       return;
     }
     await _save(
-      updatedDraft.copyWith(currentStep: OnboardingStep.voiceIntro),
+      updatedDraft.copyWith(currentStep: OnboardingStep.mainPhoto),
       emit,
     );
+  }
+
+  Future<void> _onMainPhotoContinuePressed(
+    MainPhotoContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || !draft.hasUploadedPhotos || !draft.hasMainPhoto) {
+      emit(state.copyWith(failure: const Failure.validation()));
+      return;
+    }
+    await _save(draft.copyWith(currentStep: OnboardingStep.voiceIntro), emit);
   }
 
   Future<void> _onVoiceRecordingStopped(

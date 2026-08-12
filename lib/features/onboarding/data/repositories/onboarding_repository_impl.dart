@@ -122,12 +122,46 @@ final class OnboardingRepositoryImpl implements OnboardingRepository {
   Future<Either<Failure, ReferencePage<District>>> getDistricts({
     required String regionId,
     required int page,
+    String? search,
   }) {
     return _call(() async {
       final result = await _dataSource.getDistricts(
         regionId: regionId,
         page: page,
+        search: search,
       );
+      return ReferencePage(
+        items: result.items
+            .map((item) => item.toEntity())
+            .toList(growable: false),
+        page: result.page,
+        hasNextPage: result.hasNextPage,
+      );
+    });
+  }
+
+  @override
+  Future<Either<Failure, ReferencePage<HealthStatus>>> getHealthStatuses(
+    int page,
+  ) {
+    return _call(() async {
+      final result = await _dataSource.getHealthStatuses(page);
+      return ReferencePage(
+        items: result.items
+            .map((item) => item.toEntity())
+            .toList(growable: false),
+        page: result.page,
+        hasNextPage: result.hasNextPage,
+      );
+    });
+  }
+
+  @override
+  Future<Either<Failure, ReferencePage<MaritalStatus>>> getMaritalStatuses(
+    int page,
+  ) {
+    return _call(() async {
+      final result = await _dataSource.getMaritalStatuses(page);
       return ReferencePage(
         items: result.items
             .map((item) => item.toEntity())

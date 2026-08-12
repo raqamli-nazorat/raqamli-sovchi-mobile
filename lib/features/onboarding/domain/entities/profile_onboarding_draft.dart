@@ -10,7 +10,10 @@ enum OnboardingStep {
   education,
   height,
   location,
+  healthStatus,
+  maritalStatus,
   photos,
+  mainPhoto,
   voiceIntro,
   faceVerification,
   success,
@@ -121,6 +124,10 @@ final class ProfileOnboardingDraft extends Equatable {
     this.weightKg,
     this.regionId,
     this.districtId,
+    this.healthStatusId,
+    this.maritalStatusId,
+    this.childrenCount = 0,
+    this.childrenNotLivingWithMe = false,
     this.profileServerId,
     this.photos = const [],
     this.mainPhotoServerId,
@@ -142,6 +149,10 @@ final class ProfileOnboardingDraft extends Equatable {
   final int? weightKg;
   final String? regionId;
   final String? districtId;
+  final String? healthStatusId;
+  final String? maritalStatusId;
+  final int childrenCount;
+  final bool childrenNotLivingWithMe;
   final String? profileServerId;
   final List<OnboardingPhotoDraft> photos;
   final String? mainPhotoServerId;
@@ -160,7 +171,9 @@ final class ProfileOnboardingDraft extends Equatable {
       (educationLevelId?.isNotEmpty ?? false) &&
       heightCm != null &&
       (regionId?.isNotEmpty ?? false) &&
-      (districtId?.isNotEmpty ?? false);
+      (districtId?.isNotEmpty ?? false) &&
+      (healthStatusId?.isNotEmpty ?? false) &&
+      (maritalStatusId?.isNotEmpty ?? false);
 
   bool get hasUploadedPhotos =>
       photos.isNotEmpty &&
@@ -181,6 +194,10 @@ final class ProfileOnboardingDraft extends Equatable {
     int? weightKg,
     String? regionId,
     String? districtId,
+    String? healthStatusId,
+    String? maritalStatusId,
+    int? childrenCount,
+    bool? childrenNotLivingWithMe,
     String? profileServerId,
     List<OnboardingPhotoDraft>? photos,
     String? mainPhotoServerId,
@@ -205,6 +222,11 @@ final class ProfileOnboardingDraft extends Equatable {
       weightKg: weightKg ?? this.weightKg,
       regionId: regionId ?? this.regionId,
       districtId: clearDistrict ? null : districtId ?? this.districtId,
+      healthStatusId: healthStatusId ?? this.healthStatusId,
+      maritalStatusId: maritalStatusId ?? this.maritalStatusId,
+      childrenCount: childrenCount ?? this.childrenCount,
+      childrenNotLivingWithMe:
+          childrenNotLivingWithMe ?? this.childrenNotLivingWithMe,
       profileServerId: profileServerId ?? this.profileServerId,
       photos: photos ?? this.photos,
       mainPhotoServerId: clearMainPhoto
@@ -235,6 +257,10 @@ final class ProfileOnboardingDraft extends Equatable {
     weightKg,
     regionId,
     districtId,
+    healthStatusId,
+    maritalStatusId,
+    childrenCount,
+    childrenNotLivingWithMe,
     profileServerId,
     photos,
     mainPhotoServerId,

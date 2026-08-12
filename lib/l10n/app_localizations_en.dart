@@ -30,6 +30,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainPhotoSelectionHint => 'Select your main photo';
 
   @override
+  String get mainPhotoSubtitle =>
+      'This photo appears first on your profile and is compared with your selfie.';
+
+  @override
+  String get mainPhotoBadge => 'MAIN';
+
+  @override
   String get faceRetryHint => 'The selfie did not match. Please try again.';
 
   @override
@@ -172,7 +179,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get birthDateTitle => 'Your birth year';
 
   @override
-  String get birthDateHint => 'You must be between 18 and 60 years old.';
+  String get birthDateHint => 'Users under 18 cannot register.';
 
   @override
   String get birthDateSubtitle =>
@@ -243,18 +250,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get districtLabel => 'District';
 
   @override
+  String get regionSheetTitle => 'Select a region';
+
+  @override
+  String regionSheetCount(Object count) {
+    return '$count regions';
+  }
+
+  @override
+  String get districtSheetTitle => 'Select a district / city';
+
+  @override
+  String districtSheetSubtitle(Object count, Object region) {
+    return '$region · $count districts';
+  }
+
+  @override
+  String get locationSearchPlaceholder => 'Search by district name';
+
+  @override
+  String get selectLabel => 'Select';
+
+  @override
+  String get unselectedValue => 'Not selected';
+
+  @override
+  String get selectRegionFirstValue => 'Select a region first';
+
+  @override
+  String get healthStatusTitle => 'Your health status';
+
+  @override
+  String get healthStatusSubtitle =>
+      'This information is used only for compatibility matching.';
+
+  @override
+  String get healthHealthyLabel => 'Healthy';
+
+  @override
+  String get healthDisabilityLabel => 'Has a disability';
+
+  @override
+  String get healthDisabilityHint =>
+      'You can briefly explain it in the next step';
+
+  @override
+  String get maritalStatusTitle => 'Your marital status';
+
+  @override
+  String get maritalStatusDivorcedHint =>
+      'When you select «Divorced», the number of children is required.';
+
+  @override
+  String get maritalStatusFirstMarriageDetail => 'Never married';
+
+  @override
+  String get maritalStatusDivorcedDetail =>
+      'The number of children will be requested';
+
+  @override
+  String get childrenCountLabel => 'Number of your children';
+
+  @override
+  String get decreaseChildrenLabel => 'Decrease children count';
+
+  @override
+  String get increaseChildrenLabel => 'Increase children count';
+
+  @override
+  String get childrenNotLivingTitle => 'Children do not live with me';
+
+  @override
+  String get childrenNotLivingDetail =>
+      'The profile will show that you have children without details';
+
+  @override
   String get photoTitle => 'Add your photos';
 
   @override
-  String get photoHint =>
-      'Add up to four clear photos. Select one as the main photo.';
+  String get photoHint => 'Up to 5 photos. Only people you allow can see them.';
 
   @override
   String get photoPrivacyHint =>
-      'You can add up to 4 photos. Your photos are hidden by default — you decide who can see them.';
+      'At least 1 photo is required. Your face must be clearly visible.';
 
   @override
-  String get photoSlotAddLabel => '+ Add photo';
+  String get photoSlotAddLabel => 'photo';
 
   @override
   String photoSlotFilledLabel(int order) {

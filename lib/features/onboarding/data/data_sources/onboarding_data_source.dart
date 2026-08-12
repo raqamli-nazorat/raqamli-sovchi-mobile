@@ -39,7 +39,12 @@ abstract interface class OnboardingDataSource {
   Future<ReferencePageModel<DistrictModel>> getDistricts({
     required String regionId,
     required int page,
+    String? search,
   });
+
+  Future<ReferencePageModel<HealthStatusModel>> getHealthStatuses(int page);
+
+  Future<ReferencePageModel<MaritalStatusModel>> getMaritalStatuses(int page);
 }
 
 final class RemoteOnboardingDataSource implements OnboardingDataSource {
@@ -53,6 +58,8 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
   static const _educationLevelsPath = '/api/v1/references/education-levels/';
   static const _regionsPath = '/api/v1/locations/region/';
   static const _districtsPath = '/api/v1/locations/district/';
+  static const _healthStatusesPath = '/api/v1/references/health-statuses/';
+  static const _maritalStatusesPath = '/api/v1/references/marital-statuses/';
 
   final ApiClient _client;
 
@@ -66,14 +73,20 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
         'first_name': request.firstName,
         'last_name': request.lastName,
         if (request.fatherName?.trim().isNotEmpty ?? false)
-          'father_name': request.fatherName!.trim(),
+          'middle_name': request.fatherName!.trim(),
         'gender': request.gender,
         'candidate_type': request.candidateType.apiValue,
         'birth_year': request.birthYear,
         'height': request.heightCm,
+        if (request.weightKg != null) 'weight': request.weightKg,
         'region': request.regionId,
         'district': request.districtId,
+        if (request.healthStatusId != null)
+          'health_status': request.healthStatusId,
         'education_level': request.educationLevelId,
+        'marital_status': request.maritalStatusId,
+        'has_children': request.hasChildren,
+        'children_count': request.childrenCount,
       },
     );
     return ProfileBootstrapModel.fromJson(_payload(response.data));
@@ -203,15 +216,56 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
   Future<ReferencePageModel<DistrictModel>> getDistricts({
     required String regionId,
     required int page,
+    String? search,
   }) async {
     final response = await _client.get<Map<String, dynamic>>(
       _districtsPath,
-      queryParameters: {'region': regionId, 'page': page},
+      queryParameters: {
+        'region': regionId,
+        'page': page,
+        if (search?.trim().isNotEmpty ?? false) 'search': search!.trim(),
+      },
     );
     final responsePage = _referencePage(response.data, page);
     return ReferencePageModel(
       items: responsePage.items
           .map(DistrictModel.fromJson)
+          .toList(growable: false),
+      page: page,
+      hasNextPage: responsePage.hasNextPage,
+    );
+  }
+
+  @override
+  Future<ReferencePageModel<HealthStatusModel>> getHealthStatuses(
+    int page,
+  ) async {
+    final response = await _client.get<Map<String, dynamic>>(
+      _healthStatusesPath,
+      queryParameters: {'page': page},
+    );
+    final responsePage = _referencePage(response.data, page);
+    return ReferencePageModel(
+      items: responsePage.items
+          .map(HealthStatusModel.fromJson)
+          .toList(growable: false),
+      page: page,
+      hasNextPage: responsePage.hasNextPage,
+    );
+  }
+
+  @override
+  Future<ReferencePageModel<MaritalStatusModel>> getMaritalStatuses(
+    int page,
+  ) async {
+    final response = await _client.get<Map<String, dynamic>>(
+      _maritalStatusesPath,
+      queryParameters: {'page': page},
+    );
+    final responsePage = _referencePage(response.data, page);
+    return ReferencePageModel(
+      items: responsePage.items
+          .map(MaritalStatusModel.fromJson)
           .toList(growable: false),
       page: page,
       hasNextPage: responsePage.hasNextPage,

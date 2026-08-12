@@ -13,6 +13,11 @@ final class ProfileBootstrapRequest extends Equatable {
     required this.regionId,
     required this.districtId,
     required this.educationLevelId,
+    required this.maritalStatusId,
+    required this.hasChildren,
+    required this.childrenCount,
+    this.weightKg,
+    this.healthStatusId,
   });
 
   final String firstName;
@@ -21,9 +26,14 @@ final class ProfileBootstrapRequest extends Equatable {
   final CandidateType candidateType;
   final int birthYear;
   final int heightCm;
+  final int? weightKg;
   final String regionId;
   final String districtId;
   final String educationLevelId;
+  final String maritalStatusId;
+  final bool hasChildren;
+  final int childrenCount;
+  final String? healthStatusId;
 
   String get gender => candidateType == CandidateType.groom ? 'male' : 'female';
 
@@ -38,6 +48,11 @@ final class ProfileBootstrapRequest extends Equatable {
     regionId,
     districtId,
     educationLevelId,
+    maritalStatusId,
+    hasChildren,
+    childrenCount,
+    weightKg,
+    healthStatusId,
   ];
 }
 

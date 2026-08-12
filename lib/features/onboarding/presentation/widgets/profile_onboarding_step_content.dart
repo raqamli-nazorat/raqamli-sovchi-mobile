@@ -10,6 +10,7 @@ import '../../../../core/ui/widgets/app_round_icon_button.dart';
 import '../../../../gen/assets.gen.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/candidate_type.dart';
+import '../../domain/entities/onboarding_reference.dart';
 import '../../domain/entities/profile_onboarding_draft.dart';
 import '../bloc/profile_onboarding_bloc.dart';
 import '../bloc/profile_onboarding_event.dart';
@@ -19,7 +20,6 @@ import 'onboarding_face_camera.dart';
 import 'onboarding_height_weight_input.dart';
 import 'onboarding_location_selector_row.dart';
 import 'onboarding_photo_grid.dart';
-import 'onboarding_photo_selector.dart';
 import 'onboarding_reference_bottom_sheet.dart';
 import 'onboarding_voice_recorder.dart';
 
@@ -68,7 +68,10 @@ final class _ProfileOnboardingStepContentState
       OnboardingStep.education => _education(l10n, draft, bloc),
       OnboardingStep.height => _height(l10n, draft, bloc),
       OnboardingStep.location => _location(l10n, draft, bloc),
+      OnboardingStep.healthStatus => _healthStatus(l10n, draft, bloc),
+      OnboardingStep.maritalStatus => _maritalStatus(l10n, draft, bloc),
       OnboardingStep.photos => _photos(l10n, draft, bloc),
+      OnboardingStep.mainPhoto => _mainPhoto(l10n, draft, bloc),
       OnboardingStep.voiceIntro => _voice(l10n, draft, bloc),
       OnboardingStep.faceVerification => _face(l10n, draft, bloc),
       OnboardingStep.success => _success(l10n, bloc),
@@ -182,6 +185,7 @@ final class _ProfileOnboardingStepContentState
       title: l10n.birthDateTitle,
       subtitle: l10n.birthDateSubtitle,
       dateWheel: true,
+      keyboardAware: true,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed: () => bloc.add(BirthDateSaved(selectedDate)),
@@ -232,13 +236,16 @@ final class _ProfileOnboardingStepContentState
                 _lastNameController.text.trim().isEmpty ||
                 _patronymicController.text.trim().isEmpty
             ? null
-            : () => bloc.add(
-                IdentitySaved(
-                  firstName: _firstNameController.text,
-                  lastName: _lastNameController.text,
-                  patronymic: _patronymicController.text,
-                ),
-              ),
+            : () {
+                FocusScope.of(context).unfocus();
+                bloc.add(
+                  IdentitySaved(
+                    firstName: _firstNameController.text,
+                    lastName: _lastNameController.text,
+                    patronymic: _patronymicController.text,
+                  ),
+                );
+              },
       ),
       child: Column(
         children: [
@@ -351,19 +358,25 @@ final class _ProfileOnboardingStepContentState
         label: l10n.continueLabel,
         onPressed: draft.regionId == null || draft.districtId == null
             ? null
-            : () => bloc.add(const ProfileBootstrapRequested()),
+            : () => bloc.add(const LocationContinuePressed()),
       ),
       child: Column(
         children: [
           OnboardingLocationSelectorRow(
             label: l10n.regionLabel,
-            value: regionName,
+            value: regionName ?? l10n.unselectedValue,
+            isPlaceholder: regionName == null,
             onPressed: () => _showRegionSheet(l10n, bloc),
           ),
           const SizedBox(height: AppSpacing.md),
           OnboardingLocationSelectorRow(
             label: l10n.districtLabel,
-            value: districtName,
+            value:
+                districtName ??
+                (draft.regionId == null
+                    ? l10n.selectRegionFirstValue
+                    : l10n.unselectedValue),
+            isPlaceholder: districtName == null,
             onPressed: draft.regionId == null
                 ? null
                 : () => _showDistrictSheet(l10n, bloc),
@@ -401,20 +414,22 @@ final class _ProfileOnboardingStepContentState
     return showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: bloc,
         child: BlocBuilder<ProfileOnboardingBloc, ProfileOnboardingState>(
           builder: (context, state) {
             return OnboardingReferenceBottomSheet(
-              title: l10n.regionLabel,
+              title: l10n.regionSheetTitle,
+              subtitle: l10n.regionSheetCount(state.regions.length),
               status: state.regionStatus,
               onRetry: () => bloc.add(const RegionsRequested()),
-              child: ListView.separated(
+              confirmEnabled: state.draft?.regionId?.isNotEmpty == true,
+              onConfirm: () => Navigator.of(context).pop(),
+              child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: state.regions.length,
-                separatorBuilder: (_, _) =>
-                    const Divider(height: 1, color: AppColors.border),
                 itemBuilder: (context, index) {
                   final item = state.regions[index];
                   return OnboardingReferenceOptionTile(
@@ -422,7 +437,6 @@ final class _ProfileOnboardingStepContentState
                     selected: state.draft?.regionId == item.id,
                     onPressed: () {
                       bloc.add(RegionSaved(item.id));
-                      Navigator.of(context).pop();
                     },
                   );
                 },
@@ -445,20 +459,27 @@ final class _ProfileOnboardingStepContentState
     return showModalBottomSheet<void>(
       context: context,
       useSafeArea: true,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(
         value: bloc,
         child: BlocBuilder<ProfileOnboardingBloc, ProfileOnboardingState>(
           builder: (context, state) {
             return OnboardingReferenceBottomSheet(
-              title: l10n.districtLabel,
+              title: l10n.districtSheetTitle,
+              subtitle: l10n.districtSheetSubtitle(
+                _selectedRegionName(state.draft!) ?? l10n.regionLabel,
+                state.districts.length,
+              ),
               status: state.districtStatus,
               onRetry: () => bloc.add(const DistrictsRequested()),
-              child: ListView.separated(
+              confirmEnabled: state.draft?.districtId?.isNotEmpty == true,
+              onConfirm: () => Navigator.of(context).pop(),
+              searchPlaceholder: l10n.locationSearchPlaceholder,
+              onSearch: (value) => bloc.add(DistrictsRequested(search: value)),
+              child: ListView.builder(
                 shrinkWrap: true,
                 itemCount: state.districts.length,
-                separatorBuilder: (_, _) =>
-                    const Divider(height: 1, color: AppColors.border),
                 itemBuilder: (context, index) {
                   final item = state.districts[index];
                   return OnboardingReferenceOptionTile(
@@ -466,7 +487,6 @@ final class _ProfileOnboardingStepContentState
                     selected: state.draft?.districtId == item.id,
                     onPressed: () {
                       bloc.add(DistrictSaved(item.id));
-                      Navigator.of(context).pop();
                     },
                   );
                 },
@@ -478,6 +498,188 @@ final class _ProfileOnboardingStepContentState
     );
   }
 
+  Widget _healthStatus(
+    AppLocalizations l10n,
+    ProfileOnboardingDraft draft,
+    ProfileOnboardingBloc bloc,
+  ) {
+    final options = _orderedHealthStatuses(widget.state.healthStatuses);
+    return _StepLayout(
+      step: widget.step,
+      title: l10n.healthStatusTitle,
+      subtitle: l10n.healthStatusSubtitle,
+      bottom: _FigmaPrimaryButton(
+        label: l10n.continueLabel,
+        onPressed: draft.healthStatusId?.isNotEmpty == true
+            ? () => bloc.add(const HealthStatusContinuePressed())
+            : null,
+      ),
+      child: switch (widget.state.healthStatusStatus) {
+        ReferenceStatus.loading => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        ReferenceStatus.failure => AppButton(
+          label: l10n.retry,
+          onPressed: () => bloc.add(const HealthStatusesRequested()),
+        ),
+        ReferenceStatus.empty => const SizedBox.shrink(),
+        _ => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.healthDisabilityHint,
+              style: AppTypography.onboardingBody,
+            ),
+            const SizedBox(height: AppSpacing.lg),
+            ...options.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: _HealthStatusOption(
+                  label: item.name,
+                  selected: draft.healthStatusId == item.id,
+                  onPressed: () => bloc.add(HealthStatusSaved(item.id)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      },
+    );
+  }
+
+  List<HealthStatus> _orderedHealthStatuses(List<HealthStatus> statuses) {
+    final ordered = [...statuses];
+    ordered.sort(
+      (left, right) =>
+          _healthStatusRank(left.name).compareTo(_healthStatusRank(right.name)),
+    );
+    return ordered;
+  }
+
+  int _healthStatusRank(String name) {
+    final normalized = name.toLowerCase();
+    if (normalized.contains('sog') || normalized.contains('healthy')) {
+      return 0;
+    }
+    return _isDisabilityStatus(name) ? 2 : 1;
+  }
+
+  bool _isDisabilityStatus(String name) {
+    final normalized = name.toLowerCase();
+    return normalized.contains('nogiron') ||
+        normalized.contains('disab') ||
+        normalized.contains('инвалид');
+  }
+
+  Widget _maritalStatus(
+    AppLocalizations l10n,
+    ProfileOnboardingDraft draft,
+    ProfileOnboardingBloc bloc,
+  ) {
+    final options = _orderedMaritalStatuses(widget.state.maritalStatuses);
+    final selected = options
+        .where((item) => item.id == draft.maritalStatusId)
+        .firstOrNull;
+    final isDivorced = selected != null && _isDivorcedStatus(selected.name);
+    return _StepLayout(
+      step: widget.step,
+      title: l10n.maritalStatusTitle,
+      subtitle: isDivorced ? l10n.maritalStatusDivorcedHint : null,
+      keyboardAware: true,
+      bottom: _FigmaPrimaryButton(
+        label: l10n.continueLabel,
+        onPressed: draft.maritalStatusId?.isNotEmpty == true
+            ? () => bloc.add(const MaritalStatusContinuePressed())
+            : null,
+      ),
+      child: switch (widget.state.maritalStatusStatus) {
+        ReferenceStatus.loading => const Center(
+          child: CircularProgressIndicator(),
+        ),
+        ReferenceStatus.failure => AppButton(
+          label: l10n.retry,
+          onPressed: () => bloc.add(const MaritalStatusesRequested()),
+        ),
+        ReferenceStatus.empty => const SizedBox.shrink(),
+        _ => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...options.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: _HealthStatusOption(
+                  label: item.name,
+                  detail: _maritalStatusDetail(item.name, l10n),
+                  selected: draft.maritalStatusId == item.id,
+                  onPressed: () => bloc.add(MaritalStatusSaved(item.id)),
+                ),
+              ),
+            ),
+            if (isDivorced) ...[
+              const SizedBox(height: AppSpacing.xs),
+              Text(
+                l10n.childrenCountLabel,
+                style: AppTypography.onboardingChip.copyWith(
+                  color: AppColors.bodyText,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              _ChildrenCountControl(
+                count: draft.childrenCount,
+                enabled: !draft.childrenNotLivingWithMe,
+                decreaseLabel: l10n.decreaseChildrenLabel,
+                increaseLabel: l10n.increaseChildrenLabel,
+                onDecrease:
+                    draft.childrenNotLivingWithMe || draft.childrenCount == 0
+                    ? null
+                    : () => bloc.add(
+                        ChildrenCountChanged(draft.childrenCount - 1),
+                      ),
+                onIncrease:
+                    draft.childrenNotLivingWithMe || draft.childrenCount >= 99
+                    ? null
+                    : () => bloc.add(
+                        ChildrenCountChanged(draft.childrenCount + 1),
+                      ),
+              ),
+              const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
+              _ChildrenNotLivingCard(
+                title: l10n.childrenNotLivingTitle,
+                detail: l10n.childrenNotLivingDetail,
+                value: draft.childrenNotLivingWithMe,
+                semanticLabel: l10n.childrenNotLivingTitle,
+                onChanged: (value) =>
+                    bloc.add(ChildrenNotLivingWithMeChanged(value)),
+              ),
+            ],
+          ],
+        ),
+      },
+    );
+  }
+
+  List<MaritalStatus> _orderedMaritalStatuses(List<MaritalStatus> statuses) {
+    final ordered = [...statuses];
+    final divorcedIndex = ordered.indexWhere(
+      (item) => _isDivorcedStatus(item.name),
+    );
+    if (divorcedIndex >= 0 && ordered.length > 1 && divorcedIndex != 1) {
+      final divorced = ordered.removeAt(divorcedIndex);
+      ordered.insert(1, divorced);
+    }
+    return ordered;
+  }
+
+  bool _isDivorcedStatus(String name) {
+    return name.trim().toLowerCase() == 'ajrashgan';
+  }
+
+  String _maritalStatusDetail(String name, AppLocalizations l10n) {
+    return _isDivorcedStatus(name)
+        ? l10n.maritalStatusDivorcedDetail
+        : l10n.maritalStatusFirstMarriageDetail;
+  }
+
   Widget _photos(
     AppLocalizations l10n,
     ProfileOnboardingDraft draft,
@@ -485,12 +687,13 @@ final class _ProfileOnboardingStepContentState
   ) {
     return _StepLayout(
       title: l10n.photoTitle,
+      subtitle: l10n.photoHint,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed: draft.photos.isEmpty || widget.state.isBusy
             ? null
-            : () => bloc.add(const VoiceIntroStepRequested()),
+            : () => bloc.add(const ProfilePhotosContinuePressed()),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,7 +704,8 @@ final class _ProfileOnboardingStepContentState
             removeLabel: l10n.removePhoto,
             retryLabel: l10n.retry,
             filledLabelBuilder: l10n.photoSlotFilledLabel,
-            onAdd: draft.photos.length >= 4 || widget.state.isBusy
+            mainBadgeLabel: l10n.mainPhotoBadge,
+            onAdd: draft.photos.length >= 5 || widget.state.isBusy
                 ? null
                 : () => bloc.add(const ProfilePhotoPickRequested()),
             onRemove: (localFilePath) =>
@@ -510,12 +714,44 @@ final class _ProfileOnboardingStepContentState
                 bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
           ),
           const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.photoPrivacyHint,
-            textAlign: TextAlign.center,
-            style: AppTypography.onboardingBody,
-          ),
+          Text(l10n.photoPrivacyHint, style: AppTypography.onboardingCardBody),
         ],
+      ),
+    );
+  }
+
+  Widget _mainPhoto(
+    AppLocalizations l10n,
+    ProfileOnboardingDraft draft,
+    ProfileOnboardingBloc bloc,
+  ) {
+    return _StepLayout(
+      title: l10n.mainPhotoSelectionHint,
+      subtitle: l10n.mainPhotoSubtitle,
+      step: widget.step,
+      bottom: _FigmaPrimaryButton(
+        label: l10n.confirmLabel,
+        onPressed: draft.hasMainPhoto && !widget.state.isBusy
+            ? () => bloc.add(const MainPhotoContinuePressed())
+            : null,
+      ),
+      child: OnboardingPhotoGrid(
+        photos: draft.photos,
+        addLabel: l10n.photoSlotAddLabel,
+        removeLabel: l10n.removePhoto,
+        retryLabel: l10n.retry,
+        filledLabelBuilder: l10n.photoSlotFilledLabel,
+        mainBadgeLabel: l10n.mainPhotoBadge,
+        onAdd: null,
+        onRemove: (localFilePath) =>
+            bloc.add(ProfilePhotoRemoveRequested(localFilePath)),
+        onRetry: (localFilePath) =>
+            bloc.add(ProfilePhotoUploadRetryRequested(localFilePath)),
+        onMainSelected: widget.state.isBusy
+            ? null
+            : (serverId) => bloc.add(ProfilePhotoMainSelected(serverId)),
+        showRemoveButton: false,
+        showMainBadge: true,
       ),
     );
   }
@@ -625,20 +861,6 @@ final class _ProfileOnboardingStepContentState
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              l10n.mainPhotoSelectionHint,
-              style: AppTypography.onboardingCardBody,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          OnboardingPhotoSelector(
-            photos: draft.photos,
-            onSelected: (serverId) =>
-                bloc.add(ProfilePhotoMainSelected(serverId)),
-          ),
-          const SizedBox(height: AppSpacing.md),
           if (verifying) const CircularProgressIndicator(),
           if (draft.faceVerificationStatus ==
               FaceVerificationStatus.retryableFailure)
@@ -695,6 +917,254 @@ final class _FigmaGhostButton extends StatelessWidget {
   }
 }
 
+final class _HealthStatusOption extends StatelessWidget {
+  const _HealthStatusOption({
+    required this.label,
+    required this.selected,
+    required this.onPressed,
+    this.detail,
+  });
+
+  final String label;
+  final String? detail;
+  final bool selected;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: selected ? AppColors.primary : AppColors.border,
+              width: selected ? 1.5 : 1,
+            ),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: AppTypography.onboardingReferenceSelected,
+                    ),
+                    if (detail != null) ...[
+                      const SizedBox(height: AppSpacing.xs - 2),
+                      Text(detail!, style: AppTypography.onboardingCardBody),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              _HealthRadio(selected: selected),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _HealthRadio extends StatelessWidget {
+  const _HealthRadio({required this.selected});
+
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 18,
+      height: 18,
+      decoration: BoxDecoration(
+        color: selected ? AppColors.primary : Colors.transparent,
+        border: Border.all(
+          color: selected ? AppColors.primary : const Color(0xFFA3A3A3),
+          width: 1.5,
+        ),
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+}
+
+final class _ChildrenCountControl extends StatelessWidget {
+  const _ChildrenCountControl({
+    required this.count,
+    required this.enabled,
+    required this.decreaseLabel,
+    required this.increaseLabel,
+    required this.onDecrease,
+    required this.onIncrease,
+  });
+
+  final int count;
+  final bool enabled;
+  final String decreaseLabel;
+  final String increaseLabel;
+  final VoidCallback? onDecrease;
+  final VoidCallback? onIncrease;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _ChildrenCountAction(
+          label: decreaseLabel,
+          icon: Icons.remove,
+          onPressed: onDecrease,
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Container(
+          constraints: const BoxConstraints(minWidth: 56, minHeight: 52),
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: AppColors.primary, width: 1.5),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: Text(
+            '$count',
+            style: AppTypography.onboardingMeasurementValue.copyWith(
+              color: enabled ? AppColors.primary : AppColors.mutedText,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        _ChildrenCountAction(
+          label: increaseLabel,
+          icon: Icons.add,
+          onPressed: onIncrease,
+        ),
+      ],
+    );
+  }
+}
+
+final class _ChildrenCountAction extends StatelessWidget {
+  const _ChildrenCountAction({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      enabled: onPressed != null,
+      label: label,
+      child: IconButton.filled(
+        onPressed: onPressed,
+        icon: Icon(icon),
+        style: IconButton.styleFrom(
+          backgroundColor: AppColors.mutedSurface,
+          disabledBackgroundColor: AppColors.mutedSurface,
+          foregroundColor: AppColors.bodyText,
+          disabledForegroundColor: AppColors.mutedText,
+          fixedSize: const Size(40, 40),
+          minimumSize: const Size(40, 40),
+          padding: EdgeInsets.zero,
+        ),
+      ),
+    );
+  }
+}
+
+final class _ChildrenNotLivingCard extends StatelessWidget {
+  const _ChildrenNotLivingCard({
+    required this.title,
+    required this.detail,
+    required this.value,
+    required this.semanticLabel,
+    required this.onChanged,
+  });
+
+  final String title;
+  final String detail;
+  final bool value;
+  final String semanticLabel;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      toggled: value,
+      label: semanticLabel,
+      child: InkWell(
+        onTap: () => onChanged(!value),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: AppColors.border),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: AppTypography.onboardingCardTitle),
+                    const SizedBox(height: AppSpacing.xs - 2),
+                    Text(detail, style: AppTypography.onboardingCardBody),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              _OnboardingToggle(value: value),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+final class _OnboardingToggle extends StatelessWidget {
+  const _OnboardingToggle({required this.value});
+
+  final bool value;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 160),
+      width: 44,
+      height: 26,
+      padding: const EdgeInsets.all(3),
+      alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+      decoration: BoxDecoration(
+        color: value ? AppColors.primary : AppColors.border,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: const DecoratedBox(
+        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        child: SizedBox(width: 20, height: 20),
+      ),
+    );
+  }
+}
+
 final class _StepLayout extends StatelessWidget {
   const _StepLayout({
     required this.title,
@@ -735,10 +1205,8 @@ final class _StepLayout extends StatelessWidget {
         ],
         const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
         if (dateWheel) ...[
-          Expanded(
-            child: Align(alignment: Alignment.bottomCenter, child: child),
-          ),
-          const SizedBox(height: AppSpacing.xxl),
+          child,
+          if (bottom != null) const Spacer(),
         ] else ...[
           child,
           if (bottom != null) const Spacer(),
@@ -829,8 +1297,11 @@ final class _OnboardingWizardHeader extends StatelessWidget {
       OnboardingStep.birthDate => .15,
       OnboardingStep.education => .23,
       OnboardingStep.height => .31,
-      OnboardingStep.location => .46,
+      OnboardingStep.location => .38,
+      OnboardingStep.healthStatus => .46,
+      OnboardingStep.maritalStatus => .54,
       OnboardingStep.photos => .62,
+      OnboardingStep.mainPhoto => .69,
       OnboardingStep.voiceIntro => .77,
       OnboardingStep.faceVerification => 1.0,
       _ => 0.0,

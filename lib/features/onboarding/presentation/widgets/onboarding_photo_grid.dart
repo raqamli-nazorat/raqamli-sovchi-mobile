@@ -8,6 +8,8 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_typography.dart';
 import '../../domain/entities/profile_onboarding_draft.dart';
 
+const _photoGridMaxSlots = 5;
+
 final class OnboardingPhotoGrid extends StatelessWidget {
   const OnboardingPhotoGrid({
     required this.photos,
@@ -20,6 +22,9 @@ final class OnboardingPhotoGrid extends StatelessWidget {
     required this.onRetry,
     this.onMainSelected,
     this.showActions = true,
+    this.showRemoveButton = true,
+    this.showMainBadge = false,
+    this.mainBadgeLabel = '',
     super.key,
   });
 
@@ -33,6 +38,9 @@ final class OnboardingPhotoGrid extends StatelessWidget {
   final ValueChanged<String> onRetry;
   final ValueChanged<String>? onMainSelected;
   final bool showActions;
+  final bool showRemoveButton;
+  final bool showMainBadge;
+  final String mainBadgeLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -40,36 +48,50 @@ final class OnboardingPhotoGrid extends StatelessWidget {
       ..sort((a, b) => a.order.compareTo(b.order));
     return LayoutBuilder(
       builder: (context, constraints) {
-        final slotWidth = (constraints.maxWidth - AppSpacing.md) / 2;
-        final slotHeight = (slotWidth * 1.28).clamp(164.0, 212.0);
+        const gap = AppSpacing.inline;
+        final slotWidth = ((constraints.maxWidth - gap * 2) / 3)
+            .clamp(84.0, 104.0)
+            .toDouble();
+        final slotHeight = slotWidth * 140 / 104;
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (var row = 0; row < 2; row++) ...[
               Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (var column = 0; column < 2; column++) ...[
-                    if (column > 0) const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: SizedBox(
-                        height: slotHeight,
-                        child: _PhotoSlot(
-                          photo: _photoAt(sortedPhotos, row * 2 + column),
-                          addLabel: addLabel,
-                          removeLabel: removeLabel,
-                          retryLabel: retryLabel,
-                          filledLabelBuilder: filledLabelBuilder,
-                          onAdd: onAdd,
-                          onRemove: onRemove,
-                          onRetry: onRetry,
-                          onMainSelected: onMainSelected,
-                          showActions: showActions,
+                  for (
+                    var column = 0;
+                    column < (row == 0 ? 3 : 2);
+                    column++
+                  ) ...[
+                    if (column > 0) const SizedBox(width: gap),
+                    SizedBox(
+                      width: slotWidth,
+                      height: slotHeight,
+                      child: _PhotoSlot(
+                        photo: _photoAt(
+                          sortedPhotos,
+                          row == 0 ? column : column + 3,
                         ),
+                        addLabel: addLabel,
+                        removeLabel: removeLabel,
+                        retryLabel: retryLabel,
+                        filledLabelBuilder: filledLabelBuilder,
+                        onAdd: onAdd,
+                        onRemove: onRemove,
+                        onRetry: onRetry,
+                        onMainSelected: onMainSelected,
+                        showActions: showActions,
+                        showRemoveButton: showRemoveButton,
+                        showMainBadge: showMainBadge,
+                        mainBadgeLabel: mainBadgeLabel,
                       ),
                     ),
                   ],
                 ],
               ),
-              if (row == 0) const SizedBox(height: AppSpacing.md),
+              if (row == 0) const SizedBox(height: gap),
             ],
           ],
         );
@@ -81,6 +103,7 @@ final class OnboardingPhotoGrid extends StatelessWidget {
     List<OnboardingPhotoDraft> sortedPhotos,
     int index,
   ) {
+    if (index >= _photoGridMaxSlots) return null;
     if (index >= sortedPhotos.length) return null;
     return sortedPhotos[index];
   }
@@ -98,6 +121,9 @@ final class _PhotoSlot extends StatelessWidget {
     required this.onRetry,
     required this.onMainSelected,
     required this.showActions,
+    required this.showRemoveButton,
+    required this.showMainBadge,
+    required this.mainBadgeLabel,
   });
 
   final OnboardingPhotoDraft? photo;
@@ -110,6 +136,9 @@ final class _PhotoSlot extends StatelessWidget {
   final ValueChanged<String> onRetry;
   final ValueChanged<String>? onMainSelected;
   final bool showActions;
+  final bool showRemoveButton;
+  final bool showMainBadge;
+  final String mainBadgeLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +147,7 @@ final class _PhotoSlot extends StatelessWidget {
       return _DashedBorder(
         color: AppColors.border,
         child: Material(
-          color: Colors.white,
+          color: AppColors.subtleSurface,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           child: InkWell(
             onTap: onAdd,
@@ -127,11 +156,11 @@ final class _PhotoSlot extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Icon(Icons.add, color: AppColors.mutedText, size: 22),
-                const SizedBox(height: AppSpacing.sm),
+                const SizedBox(height: AppSpacing.xs + 2),
                 Text(
                   addLabel,
                   textAlign: TextAlign.center,
-                  style: AppTypography.onboardingCardBody.copyWith(
+                  style: AppTypography.onboardingSelectorLabel.copyWith(
                     color: AppColors.mutedText,
                   ),
                 ),
@@ -154,10 +183,9 @@ final class _PhotoSlot extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             color: AppColors.subtleSurface,
-            border: Border.all(
-              color: currentPhoto.isMain ? AppColors.primary : AppColors.border,
-              width: currentPhoto.isMain ? 2 : 1.5,
-            ),
+            border: showMainBadge && currentPhoto.isMain
+                ? Border.all(color: AppColors.primary, width: 2)
+                : null,
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           clipBehavior: Clip.antiAlias,
@@ -184,34 +212,53 @@ final class _PhotoSlot extends StatelessWidget {
                     ),
                   ),
                 ),
-              if (showActions)
+              if (showActions && showRemoveButton)
                 Positioned(
                   top: AppSpacing.xs,
                   right: AppSpacing.xs,
-                  child: IconButton(
-                    tooltip: removeLabel,
-                    onPressed: uploading
-                        ? null
-                        : () => onRemove(currentPhoto.localFilePath),
-                    icon: const Icon(Icons.close_rounded),
-                    color: AppColors.text,
+                  child: Semantics(
+                    button: true,
+                    label: removeLabel,
+                    child: GestureDetector(
+                      onTap: uploading
+                          ? null
+                          : () => onRemove(currentPhoto.localFilePath),
+                      child: Icon(
+                        Icons.cancel_rounded,
+                        color: uploading
+                            ? AppColors.mutedText
+                            : AppColors.danger,
+                        size: 20,
+                      ),
+                    ),
                   ),
                 ),
-              if (currentPhoto.isMain)
-                const Positioned(
-                  top: AppSpacing.sm,
-                  left: AppSpacing.sm,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(3),
-                      child: Icon(
-                        Icons.check_rounded,
-                        color: Colors.white,
-                        size: 14,
+              if (showMainBadge && currentPhoto.isMain)
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  top: 58,
+                  child: Align(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: 3,
+                        ),
+                        child: Text(
+                          mainBadgeLabel,
+                          textAlign: TextAlign.center,
+                          style: AppTypography.onboardingFieldLabel.copyWith(
+                            color: Colors.white,
+                            fontSize: 10,
+                            height: 14 / 10,
+                            letterSpacing: 0.8,
+                          ),
+                        ),
                       ),
                     ),
                   ),

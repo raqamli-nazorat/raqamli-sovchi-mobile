@@ -43,5 +43,14 @@ abstract interface class OnboardingRepository {
   Future<Either<Failure, ReferencePage<District>>> getDistricts({
     required String regionId,
     required int page,
+    String? search,
   });
+
+  Future<Either<Failure, ReferencePage<HealthStatus>>> getHealthStatuses(
+    int page,
+  );
+
+  Future<Either<Failure, ReferencePage<MaritalStatus>>> getMaritalStatuses(
+    int page,
+  );
 }

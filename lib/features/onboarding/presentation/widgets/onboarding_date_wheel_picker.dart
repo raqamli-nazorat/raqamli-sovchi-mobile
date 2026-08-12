@@ -21,11 +21,10 @@ final class OnboardingDateWheelPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context).languageCode;
     final days = List<String>.generate(31, (index) => '${index + 1}');
     final months = List<String>.generate(
       12,
-      (index) => DateFormat.MMMM(locale).format(DateTime(2000, index + 1)),
+      (index) => DateFormat.MMMM('en').format(DateTime(2000, index + 1)),
     );
     final years = List<String>.generate(
       maximumDate.year - minimumDate.year + 1,
@@ -33,7 +32,7 @@ final class OnboardingDateWheelPicker extends StatelessWidget {
     );
 
     return SizedBox(
-      height: 208,
+      height: 244,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Stack(
@@ -43,10 +42,10 @@ final class OnboardingDateWheelPicker extends StatelessWidget {
                 child: Align(
                   alignment: Alignment.center,
                   child: Container(
-                    height: 48,
+                    height: 58,
                     decoration: BoxDecoration(
-                      color: AppColors.mutedSurface,
-                      borderRadius: BorderRadius.circular(AppRadius.xl - 4),
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
                     ),
                   ),
                 ),
@@ -149,7 +148,7 @@ final class _DateWheelColumnState extends State<_DateWheelColumn> {
   Widget build(BuildContext context) {
     return ListWheelScrollView.useDelegate(
       controller: _controller,
-      itemExtent: 40,
+      itemExtent: 48,
       diameterRatio: 100,
       perspective: 0.001,
       physics: const FixedExtentScrollPhysics(),

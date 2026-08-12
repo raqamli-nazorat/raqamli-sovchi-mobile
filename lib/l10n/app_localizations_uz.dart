@@ -31,6 +31,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get mainPhotoSelectionHint => 'Asosiy suratni tanlang';
 
   @override
+  String get mainPhotoSubtitle =>
+      'Profilingizda birinchi shu surat ko‘rinadi va selfi bilan solishtiriladi.';
+
+  @override
+  String get mainPhotoBadge => 'ASOSIY';
+
+  @override
   String get faceRetryHint => 'Selfi mos kelmadi. Qayta urinib ko‘ring.';
 
   @override
@@ -171,7 +178,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get birthDateTitle => 'Tug‘ilgan yilingiz';
 
   @override
-  String get birthDateHint => 'Yoshingiz 18 dan 60 gacha bo‘lishi kerak.';
+  String get birthDateHint =>
+      '18 yoshdan kichik foydalanuvchilar ro‘yxatdan o‘ta olmaydi.';
 
   @override
   String get birthDateSubtitle =>
@@ -242,18 +250,92 @@ class AppLocalizationsUz extends AppLocalizations {
   String get districtLabel => 'Tuman yoki shahar';
 
   @override
+  String get regionSheetTitle => 'Viloyatni tanlang';
+
+  @override
+  String regionSheetCount(Object count) {
+    return '$count ta hudud';
+  }
+
+  @override
+  String get districtSheetTitle => 'Tuman / shaharni tanlang';
+
+  @override
+  String districtSheetSubtitle(Object count, Object region) {
+    return '$region · $count ta tuman';
+  }
+
+  @override
+  String get locationSearchPlaceholder => 'Tuman nomi bo‘yicha qidirish';
+
+  @override
+  String get selectLabel => 'Tanlash';
+
+  @override
+  String get unselectedValue => 'Tanlanmagan';
+
+  @override
+  String get selectRegionFirstValue => 'Avval viloyatni tanlang';
+
+  @override
+  String get healthStatusTitle => 'Sog‘liqlik darajangiz';
+
+  @override
+  String get healthStatusSubtitle =>
+      'Bu ma’lumot faqat moslikni hisoblashda ishlatiladi.';
+
+  @override
+  String get healthHealthyLabel => 'Sog‘lom';
+
+  @override
+  String get healthDisabilityLabel => 'Nogironligi bor';
+
+  @override
+  String get healthDisabilityHint =>
+      'Keyingi qadamda qisqacha izohlashingiz mumkin';
+
+  @override
+  String get maritalStatusTitle => 'Oilaviy holatingiz';
+
+  @override
+  String get maritalStatusDivorcedHint =>
+      '«Ajrashgan» tanlanganda farzandlar soni majburiy bo‘ladi.';
+
+  @override
+  String get maritalStatusFirstMarriageDetail => 'Avval turmush qurmagan';
+
+  @override
+  String get maritalStatusDivorcedDetail => 'Farzandlar soni so‘raladi';
+
+  @override
+  String get childrenCountLabel => 'Farzandlaringiz soni';
+
+  @override
+  String get decreaseChildrenLabel => 'Farzandlar sonini kamaytirish';
+
+  @override
+  String get increaseChildrenLabel => 'Farzandlar sonini oshirish';
+
+  @override
+  String get childrenNotLivingTitle => 'Farzandlar men bilan yashamaydi';
+
+  @override
+  String get childrenNotLivingDetail =>
+      'Profilda «farzandi bor» deb ko‘rsatiladi, tafsilot yozilmaydi';
+
+  @override
   String get photoTitle => 'Suratlaringizni qo‘shing';
 
   @override
   String get photoHint =>
-      '4 tagacha aniq surat qo‘shing va bittasini asosiy qiling.';
+      '5 tagacha surat. Ularni faqat siz ruxsat bergan odam ko‘radi.';
 
   @override
   String get photoPrivacyHint =>
-      '4 tagacha surat qo‘shsangiz bo‘ladi. Suratlaringiz sukut bo‘yicha yopiq — kimga ochishni o‘zingiz hal qilasiz.';
+      'Kamida 1 ta surat kerak. Yuz aniq ko‘rinishi shart.';
 
   @override
-  String get photoSlotAddLabel => '+ surat qo‘shish';
+  String get photoSlotAddLabel => 'surat';
 
   @override
   String photoSlotFilledLabel(int order) {

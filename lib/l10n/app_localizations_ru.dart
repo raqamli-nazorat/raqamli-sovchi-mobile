@@ -30,6 +30,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get mainPhotoSelectionHint => 'Выберите главное фото';
 
   @override
+  String get mainPhotoSubtitle =>
+      'Это фото будет первым в профиле и будет сравниваться с селфи.';
+
+  @override
+  String get mainPhotoBadge => 'ГЛАВНОЕ';
+
+  @override
   String get faceRetryHint => 'Селфи не совпало. Попробуйте ещё раз.';
 
   @override
@@ -172,7 +179,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get birthDateTitle => 'Ваш год рождения';
 
   @override
-  String get birthDateHint => 'Возраст должен быть от 18 до 60 лет.';
+  String get birthDateHint =>
+      'Пользователи младше 18 лет не могут зарегистрироваться.';
 
   @override
   String get birthDateSubtitle =>
@@ -243,18 +251,92 @@ class AppLocalizationsRu extends AppLocalizations {
   String get districtLabel => 'Район или город';
 
   @override
+  String get regionSheetTitle => 'Выберите регион';
+
+  @override
+  String regionSheetCount(Object count) {
+    return '$count регионов';
+  }
+
+  @override
+  String get districtSheetTitle => 'Выберите район / город';
+
+  @override
+  String districtSheetSubtitle(Object count, Object region) {
+    return '$region · $count районов';
+  }
+
+  @override
+  String get locationSearchPlaceholder => 'Поиск по названию района';
+
+  @override
+  String get selectLabel => 'Выбрать';
+
+  @override
+  String get unselectedValue => 'Не выбрано';
+
+  @override
+  String get selectRegionFirstValue => 'Сначала выберите регион';
+
+  @override
+  String get healthStatusTitle => 'Состояние здоровья';
+
+  @override
+  String get healthStatusSubtitle =>
+      'Эта информация используется только для расчёта совместимости.';
+
+  @override
+  String get healthHealthyLabel => 'Здоров';
+
+  @override
+  String get healthDisabilityLabel => 'Есть инвалидность';
+
+  @override
+  String get healthDisabilityHint =>
+      'На следующем шаге можно кратко объяснить это';
+
+  @override
+  String get maritalStatusTitle => 'Ваше семейное положение';
+
+  @override
+  String get maritalStatusDivorcedHint =>
+      'При выборе «Разведён(а)» количество детей обязательно.';
+
+  @override
+  String get maritalStatusFirstMarriageDetail => 'Ранее не состоял(а) в браке';
+
+  @override
+  String get maritalStatusDivorcedDetail => 'Будет запрошено количество детей';
+
+  @override
+  String get childrenCountLabel => 'Количество ваших детей';
+
+  @override
+  String get decreaseChildrenLabel => 'Уменьшить количество детей';
+
+  @override
+  String get increaseChildrenLabel => 'Увеличить количество детей';
+
+  @override
+  String get childrenNotLivingTitle => 'Дети не живут со мной';
+
+  @override
+  String get childrenNotLivingDetail =>
+      'В профиле будет указано, что у вас есть дети, без подробностей';
+
+  @override
   String get photoTitle => 'Добавьте фотографии';
 
   @override
   String get photoHint =>
-      'Добавьте до четырёх чётких фотографий и выберите главную.';
+      'До 5 фотографий. Их увидят только те, кому вы разрешите.';
 
   @override
   String get photoPrivacyHint =>
-      'Можно добавить до 4 фотографий. По умолчанию они скрыты — вы сами решаете, кому их открыть.';
+      'Нужна минимум 1 фотография. Лицо должно быть хорошо видно.';
 
   @override
-  String get photoSlotAddLabel => '+ добавить фото';
+  String get photoSlotAddLabel => 'фото';
 
   @override
   String photoSlotFilledLabel(int order) {

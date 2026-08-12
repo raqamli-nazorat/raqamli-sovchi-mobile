@@ -142,6 +142,18 @@ abstract class AppLocalizations {
   /// **'Asosiy suratni tanlang'**
   String get mainPhotoSelectionHint;
 
+  /// No description provided for @mainPhotoSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profilingizda birinchi shu surat ko‘rinadi va selfi bilan solishtiriladi.'**
+  String get mainPhotoSubtitle;
+
+  /// No description provided for @mainPhotoBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'ASOSIY'**
+  String get mainPhotoBadge;
+
   /// No description provided for @faceRetryHint.
   ///
   /// In uz, this message translates to:
@@ -403,7 +415,7 @@ abstract class AppLocalizations {
   /// No description provided for @birthDateHint.
   ///
   /// In uz, this message translates to:
-  /// **'Yoshingiz 18 dan 60 gacha bo‘lishi kerak.'**
+  /// **'18 yoshdan kichik foydalanuvchilar ro‘yxatdan o‘ta olmaydi.'**
   String get birthDateHint;
 
   /// No description provided for @birthDateSubtitle.
@@ -538,6 +550,138 @@ abstract class AppLocalizations {
   /// **'Tuman yoki shahar'**
   String get districtLabel;
 
+  /// No description provided for @regionSheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Viloyatni tanlang'**
+  String get regionSheetTitle;
+
+  /// No description provided for @regionSheetCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta hudud'**
+  String regionSheetCount(Object count);
+
+  /// No description provided for @districtSheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman / shaharni tanlang'**
+  String get districtSheetTitle;
+
+  /// No description provided for @districtSheetSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'{region} · {count} ta tuman'**
+  String districtSheetSubtitle(Object count, Object region);
+
+  /// No description provided for @locationSearchPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman nomi bo‘yicha qidirish'**
+  String get locationSearchPlaceholder;
+
+  /// No description provided for @selectLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlash'**
+  String get selectLabel;
+
+  /// No description provided for @unselectedValue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlanmagan'**
+  String get unselectedValue;
+
+  /// No description provided for @selectRegionFirstValue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval viloyatni tanlang'**
+  String get selectRegionFirstValue;
+
+  /// No description provided for @healthStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sog‘liqlik darajangiz'**
+  String get healthStatusTitle;
+
+  /// No description provided for @healthStatusSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ma’lumot faqat moslikni hisoblashda ishlatiladi.'**
+  String get healthStatusSubtitle;
+
+  /// No description provided for @healthHealthyLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sog‘lom'**
+  String get healthHealthyLabel;
+
+  /// No description provided for @healthDisabilityLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nogironligi bor'**
+  String get healthDisabilityLabel;
+
+  /// No description provided for @healthDisabilityHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi qadamda qisqacha izohlashingiz mumkin'**
+  String get healthDisabilityHint;
+
+  /// No description provided for @maritalStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oilaviy holatingiz'**
+  String get maritalStatusTitle;
+
+  /// No description provided for @maritalStatusDivorcedHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'«Ajrashgan» tanlanganda farzandlar soni majburiy bo‘ladi.'**
+  String get maritalStatusDivorcedHint;
+
+  /// No description provided for @maritalStatusFirstMarriageDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval turmush qurmagan'**
+  String get maritalStatusFirstMarriageDetail;
+
+  /// No description provided for @maritalStatusDivorcedDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar soni so‘raladi'**
+  String get maritalStatusDivorcedDetail;
+
+  /// No description provided for @childrenCountLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlaringiz soni'**
+  String get childrenCountLabel;
+
+  /// No description provided for @decreaseChildrenLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar sonini kamaytirish'**
+  String get decreaseChildrenLabel;
+
+  /// No description provided for @increaseChildrenLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar sonini oshirish'**
+  String get increaseChildrenLabel;
+
+  /// No description provided for @childrenNotLivingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar men bilan yashamaydi'**
+  String get childrenNotLivingTitle;
+
+  /// No description provided for @childrenNotLivingDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profilda «farzandi bor» deb ko‘rsatiladi, tafsilot yozilmaydi'**
+  String get childrenNotLivingDetail;
+
   /// No description provided for @photoTitle.
   ///
   /// In uz, this message translates to:
@@ -547,19 +691,19 @@ abstract class AppLocalizations {
   /// No description provided for @photoHint.
   ///
   /// In uz, this message translates to:
-  /// **'4 tagacha aniq surat qo‘shing va bittasini asosiy qiling.'**
+  /// **'5 tagacha surat. Ularni faqat siz ruxsat bergan odam ko‘radi.'**
   String get photoHint;
 
   /// No description provided for @photoPrivacyHint.
   ///
   /// In uz, this message translates to:
-  /// **'4 tagacha surat qo‘shsangiz bo‘ladi. Suratlaringiz sukut bo‘yicha yopiq — kimga ochishni o‘zingiz hal qilasiz.'**
+  /// **'Kamida 1 ta surat kerak. Yuz aniq ko‘rinishi shart.'**
   String get photoPrivacyHint;
 
   /// No description provided for @photoSlotAddLabel.
   ///
   /// In uz, this message translates to:
-  /// **'+ surat qo‘shish'**
+  /// **'surat'**
   String get photoSlotAddLabel;
 
   /// No description provided for @photoSlotFilledLabel.
