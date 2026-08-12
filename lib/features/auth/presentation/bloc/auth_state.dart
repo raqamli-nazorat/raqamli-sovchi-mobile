@@ -11,8 +11,7 @@ enum AuthStatus {
   telegramPending,
   pinSetupRequired,
   pinLocked,
-  candidateTypeRequired,
-  pledgeRequired,
+  onboardingRequired,
   authenticated,
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../../core/errors/either.dart';
 import '../../../../core/errors/exception_mapper.dart';
 import '../../../../core/errors/failure.dart';
+import '../../../../core/security/auth_session_manager.dart';
 import '../../domain/entities/current_user.dart';
 import '../../domain/entities/google_authorization_result.dart';
 import '../../domain/entities/session.dart';
@@ -17,13 +18,15 @@ import '../models/auth_session_model.dart';
 
 final class AuthRepositoryImpl implements AuthRepository {
   const AuthRepositoryImpl(
-    this._dataSource, {
+    this._dataSource,
+    this._sessionManager, {
     TelegramAuthDataSource? telegram,
     GoogleAuthDataSource? google,
   }) : _telegram = telegram,
        _google = google;
 
   final AuthDataSource _dataSource;
+  final AuthSessionManager _sessionManager;
   final TelegramAuthDataSource? _telegram;
   final GoogleAuthDataSource? _google;
 
@@ -73,6 +76,7 @@ final class AuthRepositoryImpl implements AuthRepository {
         phoneNumber: phoneNumber,
         otp: otp,
       );
+      _stageSession(model);
       return Right<Failure, Session>(model.toEntity());
     } on DioException catch (error) {
       return Left<Failure, Session>(mapDioException(error));
@@ -147,9 +151,12 @@ final class AuthRepositoryImpl implements AuthRepository {
           'Telegram auth data source is not configured.',
         );
       }
-      return Right<Failure, TelegramAuthStatus>(
-        (await telegram.getSessionStatus(sessionId)).toEntity(),
-      );
+      final status = await telegram.getSessionStatus(sessionId);
+      final session = status.session;
+      if (status.status == 'authenticated' && session != null) {
+        _stageSession(session);
+      }
+      return Right<Failure, TelegramAuthStatus>(status.toEntity());
     } on DioException catch (error) {
       return Left<Failure, TelegramAuthStatus>(mapDioException(error));
     } on AuthContractException {
@@ -166,6 +173,7 @@ final class AuthRepositoryImpl implements AuthRepository {
   ) async {
     try {
       final model = await call();
+      _stageSession(model);
       _debugGoogleAuthLog('repository.sessionCall.success');
       return Right<Failure, Session>(model.toEntity());
     } on DioException catch (error) {
@@ -187,6 +195,15 @@ final class AuthRepositoryImpl implements AuthRepository {
         Failure.unknown(technicalReason: error.toString()),
       );
     }
+  }
+
+  void _stageSession(AuthSessionModel model) {
+    if (model.accessToken.isEmpty) return;
+    _sessionManager.stage(
+      accessToken: model.accessToken,
+      refreshToken: model.refreshToken,
+      userId: model.userId,
+    );
   }
 
   @override

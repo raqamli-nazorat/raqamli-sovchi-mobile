@@ -9,6 +9,66 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
+  String get faceCaptureTitle => 'Bir marta selfi olamiz';
+
+  @override
+  String get faceCaptureSubtitle =>
+      'Shundan keyin profilingizga ishonch ortadi.';
+
+  @override
+  String get selfieCameraLabel => 'selfi kamera';
+
+  @override
+  String get faceRuleOne => 'Yuzingizni doira ichiga joylashtiring.';
+
+  @override
+  String get faceRuleTwo => 'Yuzingiz yaxshi ko‘rinsin — shu yetarli.';
+
+  @override
+  String get faceRuleThree => 'Telefonni ko‘z darajasida ushlang.';
+
+  @override
+  String get mainPhotoSelectionHint => 'Asosiy suratni tanlang';
+
+  @override
+  String get faceRetryHint => 'Selfi mos kelmadi. Qayta urinib ko‘ring.';
+
+  @override
+  String get faceCameraError => 'Kamera ishga tushmadi.';
+
+  @override
+  String get onboardingSuccessTitle => 'Anketangiz tayyor!';
+
+  @override
+  String get onboardingSuccessSubtitle =>
+      'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.';
+
+  @override
+  String get aiTestBadge => 'AI MOSLIK TESTI';
+
+  @override
+  String get aiTestTitle => '30 ta savolga javob berasizmi?';
+
+  @override
+  String get aiTestDescription =>
+      'Javoblaringiz asosida har bir nomzod bilan qanchalik mos kelishingizni hisoblaymiz. Taxminan 8 daqiqa.';
+
+  @override
+  String get aiTestPointOne => 'AI tahlili — 8 daqiqada tayyor';
+
+  @override
+  String get aiTestPointTwo => 'Mos juftlar avtomatik tanlanadi';
+
+  @override
+  String get aiTestPointThree => 'Javoblaringiz hech kimga ko‘rsatilmaydi';
+
+  @override
+  String get startAiTest => 'Ha, testni boshlayman';
+
+  @override
+  String get viewCandidatesLater => 'Keyinroq — avval nomzodlarni ko‘raman';
+
+  @override
   String get appTitle => 'Raqamli Sovchi';
 
   @override
@@ -101,6 +161,146 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get pledgeStart => 'Anketani boshlash';
+
+  @override
+  String onboardingProgress(Object current, Object total) {
+    return '$total bosqichdan $current-bosqich';
+  }
+
+  @override
+  String get birthDateTitle => 'Tug‘ilgan yilingiz';
+
+  @override
+  String get birthDateHint => 'Yoshingiz 18 dan 60 gacha bo‘lishi kerak.';
+
+  @override
+  String get birthDateSubtitle =>
+      'Yoshingiz nomzodlarga ko‘rinadi, aniq sana emas.';
+
+  @override
+  String get identityTitle => 'Ismingiz';
+
+  @override
+  String get identitySubtitle =>
+      'Pasportdagidek yozing — nomzodlar shu ismni ko‘radi.';
+
+  @override
+  String get firstNameLabel => 'Ism';
+
+  @override
+  String get lastNameLabel => 'Familiya';
+
+  @override
+  String get educationTitle => 'Ma’lumotingiz qanday?';
+
+  @override
+  String get heightTitle => 'Bo‘yingiz';
+
+  @override
+  String get heightWeightTitle => 'Bo‘yingiz va vazningiz';
+
+  @override
+  String get heightLabel => 'Bo‘yi (sm)';
+
+  @override
+  String get heightUnit => 'sm';
+
+  @override
+  String get weightLabel => 'Vazni (kg)';
+
+  @override
+  String get weightUnit => 'kg';
+
+  @override
+  String get decreaseHeightLabel => 'Bo‘yni kamaytirish';
+
+  @override
+  String get increaseHeightLabel => 'Bo‘yni oshirish';
+
+  @override
+  String get decreaseWeightLabel => 'Vaznni kamaytirish';
+
+  @override
+  String get increaseWeightLabel => 'Vaznni oshirish';
+
+  @override
+  String get locationTitle => 'Qayerda yashaysiz?';
+
+  @override
+  String get regionLabel => 'Viloyat';
+
+  @override
+  String get districtLabel => 'Tuman yoki shahar';
+
+  @override
+  String get photoTitle => 'Suratlaringizni qo‘shing';
+
+  @override
+  String get photoHint =>
+      '4 tagacha aniq surat qo‘shing va bittasini asosiy qiling.';
+
+  @override
+  String get photoPrivacyHint =>
+      '4 tagacha surat qo‘shsangiz bo‘ladi. Suratlaringiz sukut bo‘yicha yopiq — kimga ochishni o‘zingiz hal qilasiz.';
+
+  @override
+  String get photoSlotAddLabel => '+ surat qo‘shish';
+
+  @override
+  String photoSlotFilledLabel(int order) {
+    return 'surat $order ✓';
+  }
+
+  @override
+  String get addPhoto => 'Surat qo‘shish';
+
+  @override
+  String get setMainPhoto => 'Asosiy qilish';
+
+  @override
+  String get removePhoto => 'O‘chirish';
+
+  @override
+  String get voiceTitle => 'Ovozli tanishtiruv';
+
+  @override
+  String get voiceHint => 'AAC/M4A formatda 30 soniyagacha yozing.';
+
+  @override
+  String get voiceShortHint =>
+      '10–15 soniya yetarli. Ovoz odam haqida suratdan ko‘ra ko‘proq narsani aytadi.';
+
+  @override
+  String get startRecording => 'Yozishni boshlash';
+
+  @override
+  String get stopRecording => 'Yozishni to‘xtatish';
+
+  @override
+  String get playRecording => 'Yozuvni eshitish';
+
+  @override
+  String get skipLabel => 'O‘tkazib yuborish';
+
+  @override
+  String get faceTitle => 'Yuzingizni tasdiqlang';
+
+  @override
+  String get faceHint =>
+      'Yuzingiz to‘g‘ri qaragan va ko‘zlaringiz ochiq holda selfie oling.';
+
+  @override
+  String get verifyFace => 'Yuzni tasdiqlash';
+
+  @override
+  String get finishOnboarding => 'Yakunlash va profilni ochish';
+
+  @override
+  String get representativeFlowMessage =>
+      'Vakil oqimi alohida anketa bo‘lib, keyinroq ochiladi.';
+
+  @override
+  String get backLabel => 'Orqaga';
 
   @override
   String get temporaryOtpHint =>

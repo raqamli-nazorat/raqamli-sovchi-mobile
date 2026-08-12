@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/errors/failure.dart';
 import '../../../../core/security/biometric_auth_service.dart';
-import '../../../onboarding/application/use_cases/submit_pledge.dart';
-import '../../../onboarding/application/use_cases/update_candidate_type.dart';
 import '../../application/use_cases/authenticate_biometric.dart';
 import '../../application/use_cases/check_biometric_availability.dart';
+import '../../application/use_cases/clear_auth_session.dart';
+import '../../application/use_cases/clear_pending_auth_session.dart';
 import '../../application/use_cases/clear_pin.dart';
 import '../../application/use_cases/create_pin.dart';
 import '../../application/use_cases/create_telegram_auth_session.dart';
@@ -41,8 +41,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required ClearPinUseCase clearPin,
     required SignOutUseCase signOut,
     required DeleteAccountUseCase deleteAccount,
-    UpdateCandidateTypeUseCase? updateCandidateType,
-    SubmitPledgeUseCase? submitPledge,
+    required ClearAuthSessionUseCase clearAuthSession,
+    required ClearPendingAuthSessionUseCase clearPendingAuthSession,
     this.telegramPollingInterval = const Duration(seconds: 2),
   }) : _restoreSession = restoreSession,
        _requestPhoneOtp = requestPhoneOtp,
@@ -58,8 +58,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _clearPin = clearPin,
        _signOut = signOut,
        _deleteAccount = deleteAccount,
-       _updateCandidateType = updateCandidateType,
-       _submitPledge = submitPledge,
+       _clearAuthSession = clearAuthSession,
+       _clearPendingAuthSession = clearPendingAuthSession,
        super(const AuthState()) {
     on<AuthStarted>(_onStarted);
     on<AuthPhoneSubmitted>(_onPhoneSubmitted);
@@ -72,8 +72,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthApplicationResumed>(_onApplicationResumed);
     on<AuthPinCreated>(_onPinCreated);
     on<AuthPinUnlockRequested>(_onPinUnlockRequested);
-    on<AuthCandidateTypeSelected>(_onCandidateTypeSelected);
-    on<AuthPledgeSubmitted>(_onPledgeSubmitted);
+    on<AuthOnboardingCompleted>(_onOnboardingCompleted);
     on<AuthSignOutRequested>(_onSignOutRequested);
     on<AuthDeleteAccountRequested>(_onDeleteAccountRequested);
     on<AuthFlowCancelled>(_onFlowCancelled);
@@ -93,8 +92,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final ClearPinUseCase _clearPin;
   final SignOutUseCase _signOut;
   final DeleteAccountUseCase _deleteAccount;
-  final UpdateCandidateTypeUseCase? _updateCandidateType;
-  final SubmitPledgeUseCase? _submitPledge;
+  final ClearAuthSessionUseCase _clearAuthSession;
+  final ClearPendingAuthSessionUseCase _clearPendingAuthSession;
   final Duration telegramPollingInterval;
   Timer? _telegramPollingTimer;
   String? _telegramSessionId;
@@ -102,18 +101,24 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   bool _telegramStatusRequestInFlight = false;
 
   Future<void> _onStarted(AuthStarted event, Emitter<AuthState> emit) async {
+    _debugAuthEvent('restore.started');
     emit(const AuthState(status: AuthStatus.loading));
     final result = await _restoreSession();
     await result.fold(
       (failure) async {
+        _debugAuthEvent('restore.failure type=${failure.type.name}');
         emit(AuthState(status: AuthStatus.unauthenticated, failure: failure));
       },
       (session) async {
         if (session == null) {
+          await _clearPin();
+          _debugAuthEvent(
+            'restore.emptySession -> clearPin -> unauthenticated',
+          );
           emit(const AuthState(status: AuthStatus.unauthenticated));
           return;
         }
-        await _emitPinGate(session, emit);
+        await _emitPinGate(session, emit, source: 'restore');
       },
     );
   }
@@ -123,6 +128,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     _stopTelegramPolling();
+    _clearPendingAuthSession();
     if (!RegExp(r'^\+998\d{9}$').hasMatch(event.phoneNumber)) {
       emit(
         const AuthState(
@@ -167,7 +173,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     await result.fold(
       (failure) async =>
           emit(state.copyWith(status: AuthStatus.otpPending, failure: failure)),
-      (session) async => _emitPinGate(session, emit),
+      (session) async => _emitPinGate(session, emit, source: 'phone'),
     );
   }
 
@@ -177,6 +183,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     _debugGoogleAuthLog('bloc.googleRequested');
     _stopTelegramPolling();
+    _clearPendingAuthSession();
     emit(const AuthState(status: AuthStatus.loading));
     final result = await _signInWithGoogle();
     await result.fold(
@@ -186,7 +193,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (session) async {
         _debugGoogleAuthLog('bloc.googleSuccess.emitPinGate');
-        await _emitPinGate(session, emit);
+        await _emitPinGate(session, emit, source: 'google');
       },
     );
   }
@@ -196,6 +203,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     _stopTelegramPolling();
+    _clearPendingAuthSession();
     emit(const AuthState(status: AuthStatus.loading));
     final result = await _createTelegramAuthSession();
     result.fold(
@@ -244,7 +252,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (status.isPending) return;
           _stopTelegramPolling();
           if (status.isAuthenticated && status.session != null) {
-            await _emitPinGate(status.session!, emit);
+            await _emitPinGate(status.session!, emit, source: 'telegram');
             return;
           }
           emit(
@@ -286,7 +294,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (outcome) async {
         switch (outcome) {
           case BiometricUnlockOutcome.authenticated:
-            await _emitPostPinGate(state.session!, emit);
+            await _emitPostPinGate(state.session!, emit, source: 'biometric');
           case BiometricUnlockOutcome.noSession:
             emit(
               state.copyWith(
@@ -310,7 +318,9 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (sessionId != null) {
       add(AuthTelegramStatusCheckRequested(sessionId));
     }
-    if (state.status != AuthStatus.authenticated || state.session == null) {
+    if ((state.status != AuthStatus.authenticated &&
+            state.status != AuthStatus.onboardingRequired) ||
+        state.session == null) {
       return;
     }
     final result = await _hasPin();
@@ -331,14 +341,24 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthPinCreated event,
     Emitter<AuthState> emit,
   ) async {
+    _debugAuthEvent(
+      'pin-created.submitted pinLength=${event.pin.length} '
+      'sessionPresent=${state.session != null}',
+    );
     if (event.pin.length != 4 || state.session == null) return;
     emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
     final result = await _createPin(event.pin);
-    result.fold(
-      (failure) => emit(
-        state.copyWith(status: AuthStatus.pinSetupRequired, failure: failure),
-      ),
-      (_) => _emitPostPinGate(state.session!, emit),
+    await result.fold<Future<void>>(
+      (failure) async {
+        _debugAuthEvent('pin-created.failure type=${failure.type.name}');
+        emit(
+          state.copyWith(status: AuthStatus.pinSetupRequired, failure: failure),
+        );
+      },
+      (_) async {
+        _debugAuthEvent('pin-created.saved');
+        await _emitPostPinGate(state.session!, emit, source: 'pin-created');
+      },
     );
   }
 
@@ -346,15 +366,22 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthPinUnlockRequested event,
     Emitter<AuthState> emit,
   ) async {
+    _debugAuthEvent(
+      'pin-unlock.submitted pinLength=${event.pin.length} '
+      'sessionPresent=${state.session != null}',
+    );
     if (event.pin.length != 4 || state.session == null) return;
     emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
     final result = await _verifyPin(event.pin);
-    result.fold(
-      (failure) =>
-          emit(state.copyWith(status: AuthStatus.pinLocked, failure: failure)),
+    await result.fold<Future<void>>(
+      (failure) async {
+        _debugAuthEvent('pin-unlock.failure type=${failure.type.name}');
+        emit(state.copyWith(status: AuthStatus.pinLocked, failure: failure));
+      },
       (isValid) async {
+        _debugAuthEvent('pin-unlock.verified isValid=$isValid');
         if (isValid) {
-          await _emitPostPinGate(state.session!, emit);
+          await _emitPostPinGate(state.session!, emit, source: 'pin-unlock');
           return;
         }
         emit(
@@ -367,61 +394,17 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  Future<void> _onCandidateTypeSelected(
-    AuthCandidateTypeSelected event,
+  void _onOnboardingCompleted(
+    AuthOnboardingCompleted event,
     Emitter<AuthState> emit,
-  ) async {
+  ) {
     final session = state.session;
-    final updateCandidateType = _updateCandidateType;
-    if (session == null || updateCandidateType == null) return;
-
-    emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
-    final result = await updateCandidateType(event.candidateType.apiValue);
-    result.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: AuthStatus.candidateTypeRequired,
-          failure: failure,
-        ),
-      ),
-      (_) => emit(
-        AuthState(
-          status: AuthStatus.pledgeRequired,
-          session: session.copyWith(
-            candidateType: event.candidateType.apiValue,
-          ),
-          phoneNumber: state.phoneNumber,
-        ),
-      ),
-    );
-  }
-
-  Future<void> _onPledgeSubmitted(
-    AuthPledgeSubmitted event,
-    Emitter<AuthState> emit,
-  ) async {
-    final session = state.session;
-    final submitPledge = _submitPledge;
-    if (session == null || submitPledge == null || !event.acceptedTerms) {
-      return;
-    }
-
-    emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
-    final result = await submitPledge(
-      userId: session.userId,
-      acceptedTerms: event.acceptedTerms,
-      hasSeriousBadge: event.hasSeriousBadge,
-    );
-    result.fold(
-      (failure) => emit(
-        state.copyWith(status: AuthStatus.pledgeRequired, failure: failure),
-      ),
-      (_) => emit(
-        AuthState(
-          status: AuthStatus.authenticated,
-          session: session,
-          phoneNumber: state.phoneNumber,
-        ),
+    if (session == null) return;
+    emit(
+      AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: state.phoneNumber,
       ),
     );
   }
@@ -433,15 +416,21 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _stopTelegramPolling();
     emit(const AuthState(status: AuthStatus.loading));
     final result = await _signOut();
+    final clearAuthResult = await _clearAuthSession();
     final clearPinResult = await _clearPin();
     result.fold(
       (failure) =>
           emit(AuthState(status: AuthStatus.unauthenticated, failure: failure)),
-      (_) => clearPinResult.fold(
+      (_) => clearAuthResult.fold(
         (failure) => emit(
           AuthState(status: AuthStatus.unauthenticated, failure: failure),
         ),
-        (_) => emit(const AuthState(status: AuthStatus.unauthenticated)),
+        (_) => clearPinResult.fold(
+          (failure) => emit(
+            AuthState(status: AuthStatus.unauthenticated, failure: failure),
+          ),
+          (_) => emit(const AuthState(status: AuthStatus.unauthenticated)),
+        ),
       ),
     );
   }
@@ -453,11 +442,25 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     _stopTelegramPolling();
     emit(state.copyWith(status: AuthStatus.loading, clearFailure: true));
     final result = await _deleteAccount();
+    final deleteFailure = result.fold<Failure?>(
+      (failure) => failure,
+      (_) => null,
+    );
+    if (deleteFailure != null) {
+      emit(
+        state.copyWith(
+          status: AuthStatus.authenticated,
+          failure: deleteFailure,
+        ),
+      );
+      return;
+    }
+
+    final clearAuthResult = await _clearAuthSession();
     final clearPinResult = await _clearPin();
-    result.fold(
-      (failure) => emit(
-        state.copyWith(status: AuthStatus.authenticated, failure: failure),
-      ),
+    clearAuthResult.fold(
+      (failure) =>
+          emit(AuthState(status: AuthStatus.unauthenticated, failure: failure)),
       (_) => clearPinResult.fold(
         (failure) => emit(
           AuthState(status: AuthStatus.unauthenticated, failure: failure),
@@ -468,7 +471,9 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void _onFlowCancelled(AuthFlowCancelled event, Emitter<AuthState> emit) {
+    _debugAuthEvent('flow-cancelled -> unauthenticated');
     _stopTelegramPolling();
+    _clearPendingAuthSession();
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
 
@@ -485,17 +490,25 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     return super.close();
   }
 
-  Future<void> _emitPinGate(Session session, Emitter<AuthState> emit) async {
+  Future<void> _emitPinGate(
+    Session session,
+    Emitter<AuthState> emit, {
+    required String source,
+  }) async {
     final pinResult = await _hasPin();
-    pinResult.fold(
-      (failure) => emit(
-        AuthState(
-          status: AuthStatus.pinSetupRequired,
-          session: session,
-          failure: failure,
-        ),
-      ),
+    await pinResult.fold<Future<void>>(
+      (failure) async {
+        _debugAuthGate(source, session, hasPin: null);
+        emit(
+          AuthState(
+            status: AuthStatus.pinSetupRequired,
+            session: session,
+            failure: failure,
+          ),
+        );
+      },
       (hasPin) async {
+        _debugAuthGate(source, session, hasPin: hasPin);
         emit(
           AuthState(
             status: hasPin ? AuthStatus.pinLocked : AuthStatus.pinSetupRequired,
@@ -509,12 +522,19 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _emitPostPinGate(
     Session session,
-    Emitter<AuthState> emit,
-  ) async {
-    if (session.needsCandidateType) {
+    Emitter<AuthState> emit, {
+    required String source,
+  }) async {
+    final needsOnboarding = session.needsProfileOnboarding;
+    _debugAuthGate(
+      source,
+      session,
+      decision: needsOnboarding ? 'onboarding' : 'authenticated',
+    );
+    if (needsOnboarding) {
       emit(
         AuthState(
-          status: AuthStatus.candidateTypeRequired,
+          status: AuthStatus.onboardingRequired,
           session: session,
           phoneNumber: session.phoneNumber ?? state.phoneNumber,
         ),
@@ -536,4 +556,27 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
 void _debugGoogleAuthLog(String message) {
   if (!kDebugMode) return;
   debugPrint('[GoogleAuth] $message');
+}
+
+void _debugAuthEvent(String message) {
+  if (!kDebugMode) return;
+  debugPrint('[AuthFlow] $message');
+}
+
+void _debugAuthGate(
+  String source,
+  Session session, {
+  bool? hasPin,
+  String? decision,
+}) {
+  if (!kDebugMode) return;
+  debugPrint(
+    '[AuthGate] source=$source '
+    'status="${session.status ?? 'null'}" '
+    'profileInfoNull=${session.profileInfo == null} '
+    'candidateTypePresent=${session.candidateType?.isNotEmpty == true} '
+    'needsOnboarding=${session.needsProfileOnboarding} '
+    'decision=${decision ?? 'pending'} '
+    'hasPin=${hasPin?.toString() ?? 'unknown'}',
+  );
 }

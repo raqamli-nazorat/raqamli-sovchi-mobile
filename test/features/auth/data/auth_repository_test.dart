@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/core/network/api_client.dart';
+import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
 import 'package:raqamli_sovchi/core/security/token_store.dart';
 import 'package:raqamli_sovchi/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:raqamli_sovchi/features/auth/data/repositories/auth_repository_impl.dart';
@@ -9,6 +10,7 @@ void main() {
   test('temporary repository maps OTP session to domain session', () async {
     final repository = AuthRepositoryImpl(
       TemporaryAuthDataSource(_MemoryTokenStore()),
+      DefaultAuthSessionManager(_MemoryTokenStore()),
     );
 
     await repository.requestPhoneOtp('+998901234567');
@@ -24,7 +26,7 @@ void main() {
   });
 
   test(
-    'remote phone auth stores returned tokens only after OTP confirmation',
+    'remote phone auth leaves returned tokens out of persistent storage',
     () async {
       final tokenStore = _MemoryTokenStore();
       final apiClient = _RecordingApiClient({
@@ -70,8 +72,8 @@ void main() {
 
       expect(session.userId, 'user-1');
       expect(session.phoneNumber, '+998901234567');
-      expect(tokenStore.accessToken, 'access-token');
-      expect(tokenStore.refreshToken, 'refresh-token');
+      expect(tokenStore.accessToken, isNull);
+      expect(tokenStore.refreshToken, isNull);
     },
   );
 

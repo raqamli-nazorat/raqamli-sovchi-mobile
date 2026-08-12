@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../config/app_config.dart';
-import '../security/token_store.dart';
+import '../security/auth_session_manager.dart';
 import 'auth_interceptor.dart';
 
 abstract interface class ApiClient {
@@ -46,9 +46,9 @@ abstract interface class ApiClient {
 }
 
 final class DioApiClient implements ApiClient {
-  DioApiClient({required TokenStore tokenStore, Dio? client})
+  DioApiClient({required AuthSessionManager authSessionManager, Dio? client})
     : _dio = client ?? _createDefaultClient() {
-    _dio.interceptors.add(AuthInterceptor(tokenStore));
+    _dio.interceptors.add(AuthInterceptor(authSessionManager));
   }
 
   final Dio _dio;

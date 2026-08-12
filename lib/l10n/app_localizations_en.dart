@@ -9,6 +9,65 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get faceCaptureTitle => 'Take one selfie';
+
+  @override
+  String get faceCaptureSubtitle => 'This makes your profile more trustworthy.';
+
+  @override
+  String get selfieCameraLabel => 'selfie camera';
+
+  @override
+  String get faceRuleOne => 'Place your face inside the circle.';
+
+  @override
+  String get faceRuleTwo => 'Make sure your face is visible.';
+
+  @override
+  String get faceRuleThree => 'Hold the phone at eye level.';
+
+  @override
+  String get mainPhotoSelectionHint => 'Select your main photo';
+
+  @override
+  String get faceRetryHint => 'The selfie did not match. Please try again.';
+
+  @override
+  String get faceCameraError => 'The camera could not be started.';
+
+  @override
+  String get onboardingSuccessTitle => 'Your profile is ready!';
+
+  @override
+  String get onboardingSuccessSubtitle =>
+      'Everything is saved. You can now see candidates who may be a good fit.';
+
+  @override
+  String get aiTestBadge => 'AI COMPATIBILITY TEST';
+
+  @override
+  String get aiTestTitle => 'Ready to answer 30 questions?';
+
+  @override
+  String get aiTestDescription =>
+      'We will calculate your compatibility with each candidate from your answers. It takes about 8 minutes.';
+
+  @override
+  String get aiTestPointOne => 'AI analysis is ready in 8 minutes';
+
+  @override
+  String get aiTestPointTwo => 'Compatible matches are selected automatically';
+
+  @override
+  String get aiTestPointThree => 'Your answers are not shown to anyone';
+
+  @override
+  String get startAiTest => 'Yes, start the test';
+
+  @override
+  String get viewCandidatesLater => 'Later — show me candidates first';
+
+  @override
   String get appTitle => 'Digital Matchmaker';
 
   @override
@@ -103,6 +162,146 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pledgeStart => 'Start questionnaire';
+
+  @override
+  String onboardingProgress(Object current, Object total) {
+    return 'Step $current of $total';
+  }
+
+  @override
+  String get birthDateTitle => 'Your birth year';
+
+  @override
+  String get birthDateHint => 'You must be between 18 and 60 years old.';
+
+  @override
+  String get birthDateSubtitle =>
+      'Your age is visible to candidates, not the exact date.';
+
+  @override
+  String get identityTitle => 'Your name';
+
+  @override
+  String get identitySubtitle =>
+      'Write it as it appears in your passport. Candidates will see this name.';
+
+  @override
+  String get firstNameLabel => 'First name';
+
+  @override
+  String get lastNameLabel => 'Last name';
+
+  @override
+  String get educationTitle => 'What is your education?';
+
+  @override
+  String get heightTitle => 'Your height';
+
+  @override
+  String get heightWeightTitle => 'Your height and weight';
+
+  @override
+  String get heightLabel => 'Height (cm)';
+
+  @override
+  String get heightUnit => 'cm';
+
+  @override
+  String get weightLabel => 'Weight (kg)';
+
+  @override
+  String get weightUnit => 'kg';
+
+  @override
+  String get decreaseHeightLabel => 'Decrease height';
+
+  @override
+  String get increaseHeightLabel => 'Increase height';
+
+  @override
+  String get decreaseWeightLabel => 'Decrease weight';
+
+  @override
+  String get increaseWeightLabel => 'Increase weight';
+
+  @override
+  String get locationTitle => 'Where do you live?';
+
+  @override
+  String get regionLabel => 'Region';
+
+  @override
+  String get districtLabel => 'District';
+
+  @override
+  String get photoTitle => 'Add your photos';
+
+  @override
+  String get photoHint =>
+      'Add up to four clear photos. Select one as the main photo.';
+
+  @override
+  String get photoPrivacyHint =>
+      'You can add up to 4 photos. Your photos are hidden by default — you decide who can see them.';
+
+  @override
+  String get photoSlotAddLabel => '+ Add photo';
+
+  @override
+  String photoSlotFilledLabel(int order) {
+    return 'photo $order ✓';
+  }
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get setMainPhoto => 'Set as main';
+
+  @override
+  String get removePhoto => 'Remove';
+
+  @override
+  String get voiceTitle => 'Introduce yourself by voice';
+
+  @override
+  String get voiceHint => 'Record up to 30 seconds in AAC/M4A format.';
+
+  @override
+  String get voiceShortHint =>
+      '10–15 seconds is enough. Voice says more about a person than a photo.';
+
+  @override
+  String get startRecording => 'Start recording';
+
+  @override
+  String get stopRecording => 'Stop recording';
+
+  @override
+  String get playRecording => 'Play recording';
+
+  @override
+  String get skipLabel => 'Skip';
+
+  @override
+  String get faceTitle => 'Verify your face';
+
+  @override
+  String get faceHint =>
+      'Take a clear selfie with your face straight and eyes open.';
+
+  @override
+  String get verifyFace => 'Verify face';
+
+  @override
+  String get finishOnboarding => 'Finish and open profile';
+
+  @override
+  String get representativeFlowMessage =>
+      'The representative flow has its own questionnaire and will be available separately.';
+
+  @override
+  String get backLabel => 'Back';
 
   @override
   String get temporaryOtpHint => 'Development adapter: use 1234';

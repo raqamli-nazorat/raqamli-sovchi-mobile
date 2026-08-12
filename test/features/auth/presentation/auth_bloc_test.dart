@@ -2,10 +2,13 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/core/errors/either.dart';
 import 'package:raqamli_sovchi/core/errors/failure.dart';
+import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
 import 'package:raqamli_sovchi/core/security/biometric_auth_service.dart';
 import 'package:raqamli_sovchi/core/security/token_store.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/authenticate_biometric.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/check_biometric_availability.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_auth_session.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_pending_auth_session.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_telegram_auth_session.dart';
@@ -29,11 +32,6 @@ import 'package:raqamli_sovchi/features/auth/domain/repositories/pin_repository.
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_state.dart';
-import 'package:raqamli_sovchi/features/onboarding/application/use_cases/submit_pledge.dart';
-import 'package:raqamli_sovchi/features/onboarding/application/use_cases/update_candidate_type.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/entities/candidate_type.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/entities/user_pledge.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/repositories/onboarding_repository.dart';
 
 void main() {
   const session = Session(
@@ -122,6 +120,47 @@ void main() {
   );
 
   blocTest<AuthBloc, AuthState>(
+    'routes a newly created PIN to onboarding for an incomplete profile',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(
+        session: const Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+      pinRepository: const _FakePinRepository(),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinSetupRequired,
+      session: Session(
+        userId: 'user-1',
+        displayName: 'Test User',
+        status: 'Anketa to‘liq emas',
+      ),
+    ),
+    act: (bloc) => bloc.add(const AuthPinCreated('1234')),
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.onboardingRequired,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
     'locks authenticated session on app resume when local PIN exists',
     build: () => _createBloc(
       repository: _FakeAuthRepository(session: session),
@@ -165,7 +204,7 @@ void main() {
   );
 
   blocTest<AuthBloc, AuthState>(
-    'routes incomplete account through candidate type and pledge',
+    'routes an incomplete account to onboarding after PIN unlock',
     build: () => _createBloc(
       repository: _FakeAuthRepository(
         session: const Session(
@@ -175,7 +214,6 @@ void main() {
         ),
       ),
       pinRepository: const _FakePinRepository(hasPin: true),
-      onboardingRepository: const _FakeOnboardingRepository(),
     ),
     seed: () => const AuthState(
       status: AuthStatus.pinLocked,
@@ -185,15 +223,7 @@ void main() {
         status: "Anketa to'liq emas",
       ),
     ),
-    act: (bloc) async {
-      bloc.add(const AuthPinUnlockRequested('1234'));
-      await Future<void>.delayed(Duration.zero);
-      bloc.add(const AuthCandidateTypeSelected(CandidateType.groom));
-      await Future<void>.delayed(Duration.zero);
-      bloc.add(
-        const AuthPledgeSubmitted(acceptedTerms: true, hasSeriousBadge: true),
-      );
-    },
+    act: (bloc) => bloc.add(const AuthPinUnlockRequested('1234')),
     expect: () => [
       const AuthState(
         status: AuthStatus.loading,
@@ -204,46 +234,11 @@ void main() {
         ),
       ),
       const AuthState(
-        status: AuthStatus.candidateTypeRequired,
+        status: AuthStatus.onboardingRequired,
         session: Session(
           userId: 'user-1',
           displayName: 'Test User',
           status: "Anketa to'liq emas",
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.loading,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.pledgeRequired,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.loading,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.authenticated,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
         ),
       ),
     ],
@@ -253,7 +248,6 @@ void main() {
 AuthBloc _createBloc({
   required _FakeAuthRepository repository,
   required _FakePinRepository pinRepository,
-  _FakeOnboardingRepository? onboardingRepository,
   Duration telegramPollingInterval = const Duration(seconds: 2),
 }) {
   return AuthBloc(
@@ -281,31 +275,13 @@ AuthBloc _createBloc({
     clearPin: ClearPinUseCase(pinRepository),
     signOut: SignOutUseCase(repository),
     deleteAccount: DeleteAccountUseCase(repository),
-    updateCandidateType: onboardingRepository == null
-        ? null
-        : UpdateCandidateTypeUseCase(onboardingRepository),
-    submitPledge: onboardingRepository == null
-        ? null
-        : SubmitPledgeUseCase(onboardingRepository),
+    clearAuthSession: ClearAuthSessionUseCase(
+      DefaultAuthSessionManager(_FakeTokenStore(hasToken: true)),
+    ),
+    clearPendingAuthSession: ClearPendingAuthSessionUseCase(
+      DefaultAuthSessionManager(_FakeTokenStore(hasToken: true)),
+    ),
     telegramPollingInterval: telegramPollingInterval,
-  );
-}
-
-final class _FakeOnboardingRepository implements OnboardingRepository {
-  const _FakeOnboardingRepository();
-
-  @override
-  Future<Either<Failure, void>> updateCandidateType(
-    String candidateType,
-  ) async => const Right<Failure, void>(null);
-
-  @override
-  Future<Either<Failure, UserPledge>> submitPledge({
-    required String userId,
-    required bool acceptedTerms,
-    required bool hasSeriousBadge,
-  }) async => const Right<Failure, UserPledge>(
-    UserPledge(id: 'pledge-1', acceptedTerms: true, hasSeriousBadge: true),
   );
 }
 

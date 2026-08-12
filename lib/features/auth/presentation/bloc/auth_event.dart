@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../onboarding/domain/entities/candidate_type.dart';
-
 sealed class AuthEvent extends Equatable {
   const AuthEvent();
 
@@ -78,26 +76,8 @@ final class AuthPinUnlockRequested extends AuthEvent {
   List<Object?> get props => [pin];
 }
 
-final class AuthCandidateTypeSelected extends AuthEvent {
-  const AuthCandidateTypeSelected(this.candidateType);
-
-  final CandidateType candidateType;
-
-  @override
-  List<Object?> get props => [candidateType];
-}
-
-final class AuthPledgeSubmitted extends AuthEvent {
-  const AuthPledgeSubmitted({
-    required this.acceptedTerms,
-    required this.hasSeriousBadge,
-  });
-
-  final bool acceptedTerms;
-  final bool hasSeriousBadge;
-
-  @override
-  List<Object?> get props => [acceptedTerms, hasSeriousBadge];
+final class AuthOnboardingCompleted extends AuthEvent {
+  const AuthOnboardingCompleted();
 }
 
 final class AuthSignOutRequested extends AuthEvent {

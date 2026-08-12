@@ -84,7 +84,6 @@ final class TemporaryAuthDataSource implements AuthDataSource {
       throw const AuthValidationException('Temporary OTP is 1234.');
     }
 
-    await _tokenStore.saveTokens(accessToken: _temporaryAccessToken);
     return AuthSessionModel.local(
       userId: _temporaryUserId,
       displayName: 'Raqamli Sovchi',
@@ -128,10 +127,10 @@ final class TemporaryAuthDataSource implements AuthDataSource {
   }
 
   @override
-  Future<void> deleteAccount() => _tokenStore.clear();
+  Future<void> deleteAccount() async {}
 
   @override
-  Future<void> signOut() => _tokenStore.clear();
+  Future<void> signOut() async {}
 }
 
 final class RemoteAuthDataSource implements AuthDataSource {
@@ -201,10 +200,6 @@ final class RemoteAuthDataSource implements AuthDataSource {
       );
     }
 
-    await _tokenStore.saveTokens(
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-    );
     _pendingPhoneNumber = null;
     _pendingPhoneSession = null;
     return session;
@@ -224,10 +219,6 @@ final class RemoteAuthDataSource implements AuthDataSource {
     if (session.accessToken.isEmpty) {
       throw const AuthContractException('Token response has no access token.');
     }
-    await _tokenStore.saveTokens(
-      accessToken: session.accessToken,
-      refreshToken: session.refreshToken,
-    );
     return session.withPhoneNumberFallback(phoneNumber);
   }
 
@@ -282,9 +273,8 @@ final class RemoteAuthDataSource implements AuthDataSource {
   @override
   Future<void> deleteAccount() async {
     await _client.delete<void>(_mePath);
-    await _tokenStore.clear();
   }
 
   @override
-  Future<void> signOut() => _tokenStore.clear();
+  Future<void> signOut() async {}
 }

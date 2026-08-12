@@ -100,6 +100,120 @@ abstract class AppLocalizations {
     Locale('uz'),
   ];
 
+  /// No description provided for @faceCaptureTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bir marta selfi olamiz'**
+  String get faceCaptureTitle;
+
+  /// No description provided for @faceCaptureSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shundan keyin profilingizga ishonch ortadi.'**
+  String get faceCaptureSubtitle;
+
+  /// No description provided for @selfieCameraLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'selfi kamera'**
+  String get selfieCameraLabel;
+
+  /// No description provided for @faceRuleOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingizni doira ichiga joylashtiring.'**
+  String get faceRuleOne;
+
+  /// No description provided for @faceRuleTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingiz yaxshi ko‘rinsin — shu yetarli.'**
+  String get faceRuleTwo;
+
+  /// No description provided for @faceRuleThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefonni ko‘z darajasida ushlang.'**
+  String get faceRuleThree;
+
+  /// No description provided for @mainPhotoSelectionHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy suratni tanlang'**
+  String get mainPhotoSelectionHint;
+
+  /// No description provided for @faceRetryHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Selfi mos kelmadi. Qayta urinib ko‘ring.'**
+  String get faceRetryHint;
+
+  /// No description provided for @faceCameraError.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kamera ishga tushmadi.'**
+  String get faceCameraError;
+
+  /// No description provided for @onboardingSuccessTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Anketangiz tayyor!'**
+  String get onboardingSuccessTitle;
+
+  /// No description provided for @onboardingSuccessSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.'**
+  String get onboardingSuccessSubtitle;
+
+  /// No description provided for @aiTestBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI MOSLIK TESTI'**
+  String get aiTestBadge;
+
+  /// No description provided for @aiTestTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'30 ta savolga javob berasizmi?'**
+  String get aiTestTitle;
+
+  /// No description provided for @aiTestDescription.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javoblaringiz asosida har bir nomzod bilan qanchalik mos kelishingizni hisoblaymiz. Taxminan 8 daqiqa.'**
+  String get aiTestDescription;
+
+  /// No description provided for @aiTestPointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI tahlili — 8 daqiqada tayyor'**
+  String get aiTestPointOne;
+
+  /// No description provided for @aiTestPointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mos juftlar avtomatik tanlanadi'**
+  String get aiTestPointTwo;
+
+  /// No description provided for @aiTestPointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javoblaringiz hech kimga ko‘rsatilmaydi'**
+  String get aiTestPointThree;
+
+  /// No description provided for @startAiTest.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ha, testni boshlayman'**
+  String get startAiTest;
+
+  /// No description provided for @viewCandidatesLater.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyinroq — avval nomzodlarni ko‘raman'**
+  String get viewCandidatesLater;
+
   /// Application title.
   ///
   /// In uz, this message translates to:
@@ -273,6 +387,264 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Anketani boshlash'**
   String get pledgeStart;
+
+  /// No description provided for @onboardingProgress.
+  ///
+  /// In uz, this message translates to:
+  /// **'{total} bosqichdan {current}-bosqich'**
+  String onboardingProgress(Object current, Object total);
+
+  /// No description provided for @birthDateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tug‘ilgan yilingiz'**
+  String get birthDateTitle;
+
+  /// No description provided for @birthDateHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoshingiz 18 dan 60 gacha bo‘lishi kerak.'**
+  String get birthDateHint;
+
+  /// No description provided for @birthDateSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoshingiz nomzodlarga ko‘rinadi, aniq sana emas.'**
+  String get birthDateSubtitle;
+
+  /// No description provided for @identityTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismingiz'**
+  String get identityTitle;
+
+  /// No description provided for @identitySubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Pasportdagidek yozing — nomzodlar shu ismni ko‘radi.'**
+  String get identitySubtitle;
+
+  /// No description provided for @firstNameLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ism'**
+  String get firstNameLabel;
+
+  /// No description provided for @lastNameLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Familiya'**
+  String get lastNameLabel;
+
+  /// No description provided for @educationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ma’lumotingiz qanday?'**
+  String get educationTitle;
+
+  /// No description provided for @heightTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz'**
+  String get heightTitle;
+
+  /// No description provided for @heightWeightTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz va vazningiz'**
+  String get heightWeightTitle;
+
+  /// No description provided for @heightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yi (sm)'**
+  String get heightLabel;
+
+  /// No description provided for @heightUnit.
+  ///
+  /// In uz, this message translates to:
+  /// **'sm'**
+  String get heightUnit;
+
+  /// No description provided for @weightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vazni (kg)'**
+  String get weightLabel;
+
+  /// No description provided for @weightUnit.
+  ///
+  /// In uz, this message translates to:
+  /// **'kg'**
+  String get weightUnit;
+
+  /// No description provided for @decreaseHeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yni kamaytirish'**
+  String get decreaseHeightLabel;
+
+  /// No description provided for @increaseHeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yni oshirish'**
+  String get increaseHeightLabel;
+
+  /// No description provided for @decreaseWeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaznni kamaytirish'**
+  String get decreaseWeightLabel;
+
+  /// No description provided for @increaseWeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaznni oshirish'**
+  String get increaseWeightLabel;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayerda yashaysiz?'**
+  String get locationTitle;
+
+  /// No description provided for @regionLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Viloyat'**
+  String get regionLabel;
+
+  /// No description provided for @districtLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman yoki shahar'**
+  String get districtLabel;
+
+  /// No description provided for @photoTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suratlaringizni qo‘shing'**
+  String get photoTitle;
+
+  /// No description provided for @photoHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'4 tagacha aniq surat qo‘shing va bittasini asosiy qiling.'**
+  String get photoHint;
+
+  /// No description provided for @photoPrivacyHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'4 tagacha surat qo‘shsangiz bo‘ladi. Suratlaringiz sukut bo‘yicha yopiq — kimga ochishni o‘zingiz hal qilasiz.'**
+  String get photoPrivacyHint;
+
+  /// No description provided for @photoSlotAddLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'+ surat qo‘shish'**
+  String get photoSlotAddLabel;
+
+  /// No description provided for @photoSlotFilledLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'surat {order} ✓'**
+  String photoSlotFilledLabel(int order);
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Surat qo‘shish'**
+  String get addPhoto;
+
+  /// No description provided for @setMainPhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy qilish'**
+  String get setMainPhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘chirish'**
+  String get removePhoto;
+
+  /// No description provided for @voiceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovozli tanishtiruv'**
+  String get voiceTitle;
+
+  /// No description provided for @voiceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'AAC/M4A formatda 30 soniyagacha yozing.'**
+  String get voiceHint;
+
+  /// No description provided for @voiceShortHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'10–15 soniya yetarli. Ovoz odam haqida suratdan ko‘ra ko‘proq narsani aytadi.'**
+  String get voiceShortHint;
+
+  /// No description provided for @startRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash'**
+  String get startRecording;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni to‘xtatish'**
+  String get stopRecording;
+
+  /// No description provided for @playRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuvni eshitish'**
+  String get playRecording;
+
+  /// No description provided for @skipLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘tkazib yuborish'**
+  String get skipLabel;
+
+  /// No description provided for @faceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingizni tasdiqlang'**
+  String get faceTitle;
+
+  /// No description provided for @faceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingiz to‘g‘ri qaragan va ko‘zlaringiz ochiq holda selfie oling.'**
+  String get faceHint;
+
+  /// No description provided for @verifyFace.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzni tasdiqlash'**
+  String get verifyFace;
+
+  /// No description provided for @finishOnboarding.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yakunlash va profilni ochish'**
+  String get finishOnboarding;
+
+  /// No description provided for @representativeFlowMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vakil oqimi alohida anketa bo‘lib, keyinroq ochiladi.'**
+  String get representativeFlowMessage;
+
+  /// No description provided for @backLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Orqaga'**
+  String get backLabel;
 
   /// No description provided for @temporaryOtpHint.
   ///

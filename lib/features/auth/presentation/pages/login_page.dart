@@ -40,6 +40,11 @@ final class _LoginPageState extends State<LoginPage> {
     return UzPhoneInputFormatter.localDigits(_phoneController.text).length;
   }
 
+  void _submitPhone(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    context.read<AuthBloc>().add(AuthPhoneSubmitted(_phoneNumber));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -84,6 +89,10 @@ final class _LoginPageState extends State<LoginPage> {
                       controller: _phoneController,
                       onChanged: (_) => setState(() {}),
                       keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: _phoneDigitsLength == 9
+                          ? (_) => _submitPhone(context)
+                          : null,
                       inputFormatters: const [UzPhoneInputFormatter()],
                       decoration: InputDecoration(
                         counterText: '',
@@ -140,9 +149,7 @@ final class _LoginPageState extends State<LoginPage> {
                       label: l10n.continueLabel,
                       isLoading: isLoading,
                       enabled: _phoneDigitsLength == 9,
-                      onPressed: () => context.read<AuthBloc>().add(
-                        AuthPhoneSubmitted(_phoneNumber),
-                      ),
+                      onPressed: () => _submitPhone(context),
                     ),
                     const SizedBox(height: AppSpacing.xl),
                     Row(

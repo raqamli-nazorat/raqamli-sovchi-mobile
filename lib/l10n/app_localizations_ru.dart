@@ -9,6 +9,65 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get faceCaptureTitle => 'Сделаем одно селфи';
+
+  @override
+  String get faceCaptureSubtitle => 'Так вашему профилю будут больше доверять.';
+
+  @override
+  String get selfieCameraLabel => 'камера селфи';
+
+  @override
+  String get faceRuleOne => 'Разместите лицо внутри круга.';
+
+  @override
+  String get faceRuleTwo => 'Убедитесь, что лицо хорошо видно.';
+
+  @override
+  String get faceRuleThree => 'Держите телефон на уровне глаз.';
+
+  @override
+  String get mainPhotoSelectionHint => 'Выберите главное фото';
+
+  @override
+  String get faceRetryHint => 'Селфи не совпало. Попробуйте ещё раз.';
+
+  @override
+  String get faceCameraError => 'Не удалось запустить камеру.';
+
+  @override
+  String get onboardingSuccessTitle => 'Ваша анкета готова!';
+
+  @override
+  String get onboardingSuccessSubtitle =>
+      'Всё сохранено. Теперь вы можете посмотреть подходящих кандидатов.';
+
+  @override
+  String get aiTestBadge => 'AI-ТЕСТ СОВМЕСТИМОСТИ';
+
+  @override
+  String get aiTestTitle => 'Ответите на 30 вопросов?';
+
+  @override
+  String get aiTestDescription =>
+      'По вашим ответам мы рассчитаем совместимость с каждым кандидатом. Это займёт около 8 минут.';
+
+  @override
+  String get aiTestPointOne => 'AI-анализ готов за 8 минут';
+
+  @override
+  String get aiTestPointTwo => 'Подходящие пары выбираются автоматически';
+
+  @override
+  String get aiTestPointThree => 'Ваши ответы никто не увидит';
+
+  @override
+  String get startAiTest => 'Да, начать тест';
+
+  @override
+  String get viewCandidatesLater => 'Позже — сначала посмотреть кандидатов';
+
+  @override
   String get appTitle => 'Цифровой сват';
 
   @override
@@ -103,6 +162,145 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get pledgeStart => 'Начать анкету';
+
+  @override
+  String onboardingProgress(Object current, Object total) {
+    return 'Шаг $current из $total';
+  }
+
+  @override
+  String get birthDateTitle => 'Ваш год рождения';
+
+  @override
+  String get birthDateHint => 'Возраст должен быть от 18 до 60 лет.';
+
+  @override
+  String get birthDateSubtitle =>
+      'Кандидаты увидят ваш возраст, но не точную дату рождения.';
+
+  @override
+  String get identityTitle => 'Ваше имя';
+
+  @override
+  String get identitySubtitle =>
+      'Напишите так, как указано в паспорте. Это имя увидят кандидаты.';
+
+  @override
+  String get firstNameLabel => 'Имя';
+
+  @override
+  String get lastNameLabel => 'Фамилия';
+
+  @override
+  String get educationTitle => 'Какое у вас образование?';
+
+  @override
+  String get heightTitle => 'Ваш рост';
+
+  @override
+  String get heightWeightTitle => 'Ваш рост и вес';
+
+  @override
+  String get heightLabel => 'Рост (см)';
+
+  @override
+  String get heightUnit => 'см';
+
+  @override
+  String get weightLabel => 'Вес (кг)';
+
+  @override
+  String get weightUnit => 'кг';
+
+  @override
+  String get decreaseHeightLabel => 'Уменьшить рост';
+
+  @override
+  String get increaseHeightLabel => 'Увеличить рост';
+
+  @override
+  String get decreaseWeightLabel => 'Уменьшить вес';
+
+  @override
+  String get increaseWeightLabel => 'Увеличить вес';
+
+  @override
+  String get locationTitle => 'Где вы живёте?';
+
+  @override
+  String get regionLabel => 'Регион';
+
+  @override
+  String get districtLabel => 'Район или город';
+
+  @override
+  String get photoTitle => 'Добавьте фотографии';
+
+  @override
+  String get photoHint =>
+      'Добавьте до четырёх чётких фотографий и выберите главную.';
+
+  @override
+  String get photoPrivacyHint =>
+      'Можно добавить до 4 фотографий. По умолчанию они скрыты — вы сами решаете, кому их открыть.';
+
+  @override
+  String get photoSlotAddLabel => '+ добавить фото';
+
+  @override
+  String photoSlotFilledLabel(int order) {
+    return 'фото $order ✓';
+  }
+
+  @override
+  String get addPhoto => 'Добавить фото';
+
+  @override
+  String get setMainPhoto => 'Сделать главным';
+
+  @override
+  String get removePhoto => 'Удалить';
+
+  @override
+  String get voiceTitle => 'Голосовое представление';
+
+  @override
+  String get voiceHint => 'Запишите до 30 секунд в формате AAC/M4A.';
+
+  @override
+  String get voiceShortHint =>
+      '10–15 секунд достаточно. Голос говорит о человеке больше, чем фотография.';
+
+  @override
+  String get startRecording => 'Начать запись';
+
+  @override
+  String get stopRecording => 'Остановить запись';
+
+  @override
+  String get playRecording => 'Прослушать запись';
+
+  @override
+  String get skipLabel => 'Пропустить';
+
+  @override
+  String get faceTitle => 'Подтвердите лицо';
+
+  @override
+  String get faceHint => 'Сделайте селфи прямо, с открытыми глазами.';
+
+  @override
+  String get verifyFace => 'Подтвердить лицо';
+
+  @override
+  String get finishOnboarding => 'Завершить и открыть профиль';
+
+  @override
+  String get representativeFlowMessage =>
+      'Для представителя предусмотрена отдельная анкета; она будет доступна позже.';
+
+  @override
+  String get backLabel => 'Назад';
 
   @override
   String get temporaryOtpHint => 'Временный адаптер: используйте код 1234';
