@@ -224,6 +224,7 @@ final class _ProfileOnboardingStepContentState
       step: widget.step,
       title: l10n.identityTitle,
       subtitle: l10n.identitySubtitle,
+      keyboardAware: true,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed:
@@ -702,6 +703,7 @@ final class _StepLayout extends StatelessWidget {
     this.step,
     this.bottom,
     this.dateWheel = false,
+    this.keyboardAware = false,
   });
 
   final String title;
@@ -710,6 +712,7 @@ final class _StepLayout extends StatelessWidget {
   final OnboardingStep? step;
   final Widget? bottom;
   final bool dateWheel;
+  final bool keyboardAware;
 
   @override
   Widget build(BuildContext context) {
@@ -743,7 +746,22 @@ final class _StepLayout extends StatelessWidget {
         ..._optionalWidget(bottom),
       ],
     );
-    return bottom == null ? SingleChildScrollView(child: content) : content;
+    if (bottom == null) {
+      return SingleChildScrollView(child: content);
+    }
+    if (!keyboardAware) {
+      return content;
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(child: content),
+          ),
+        );
+      },
+    );
   }
 }
 
