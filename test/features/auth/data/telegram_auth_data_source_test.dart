@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/core/network/api_client.dart';
 import 'package:raqamli_sovchi/core/platform/external_url_launcher.dart';
-import 'package:raqamli_sovchi/core/security/token_store.dart';
 import 'package:raqamli_sovchi/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:raqamli_sovchi/features/auth/data/data_sources/telegram_auth_data_source.dart';
 
@@ -23,7 +22,6 @@ void main() {
           'error': null,
           'success': true,
         }),
-        tokenStore: _FakeTokenStore(),
         urlLauncher: urlLauncher,
       );
 
@@ -45,7 +43,6 @@ void main() {
           'user': {'id': 'user-1'},
           'tokens': {'access': 'access-only'},
         }),
-        tokenStore: _FakeTokenStore(),
         urlLauncher: _FakeUrlLauncher(),
       );
 
@@ -57,9 +54,8 @@ void main() {
   );
 
   test(
-    'maps wrapped authenticated Telegram status and stores tokens',
+    'maps wrapped authenticated Telegram status without persisting tokens',
     () async {
-      final tokenStore = _FakeTokenStore();
       final dataSource = RemoteTelegramAuthDataSource(
         client: _FakeApiClient({
           'data': {
@@ -74,7 +70,6 @@ void main() {
           'error': null,
           'success': true,
         }),
-        tokenStore: tokenStore,
         urlLauncher: _FakeUrlLauncher(),
       );
 
@@ -82,8 +77,6 @@ void main() {
 
       expect(status.status, 'authenticated');
       expect(status.session?.userId, 'user-1');
-      expect(tokenStore.accessToken, 'access-token');
-      expect(tokenStore.refreshToken, 'refresh-token');
     },
   );
 }
@@ -143,29 +136,6 @@ final class _FakeApiClient implements ApiClient {
     Options? options,
     CancelToken? cancelToken,
   }) async => _response<T>();
-}
-
-final class _FakeTokenStore implements TokenStore {
-  String? accessToken;
-  String? refreshToken;
-
-  @override
-  Future<String?> readAccessToken() async => null;
-
-  @override
-  Future<String?> readRefreshToken() async => null;
-
-  @override
-  Future<void> saveTokens({
-    required String accessToken,
-    String? refreshToken,
-  }) async {
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
-  }
-
-  @override
-  Future<void> clear() async {}
 }
 
 final class _FakeUrlLauncher implements ExternalUrlLauncher {

@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 
-import '../security/token_store.dart';
+import '../security/auth_session_manager.dart';
 
 final class AuthInterceptor extends QueuedInterceptor {
-  AuthInterceptor(this._tokenStore);
+  AuthInterceptor(this._authSessionManager);
 
-  final TokenStore _tokenStore;
+  final AuthSessionManager _authSessionManager;
 
   @override
   Future<void> onRequest(
@@ -17,7 +17,7 @@ final class AuthInterceptor extends QueuedInterceptor {
       return;
     }
 
-    final token = await _tokenStore.readAccessToken();
+    final token = await _authSessionManager.readEffectiveAccessToken();
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }

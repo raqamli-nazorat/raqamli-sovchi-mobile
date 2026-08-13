@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_client.dart';
 import '../../../../core/platform/external_url_launcher.dart';
-import '../../../../core/security/token_store.dart';
 import '../models/telegram_auth_session_model.dart';
 import '../models/telegram_auth_status_model.dart';
 import 'auth_data_source.dart';
@@ -16,10 +15,8 @@ abstract interface class TelegramAuthDataSource {
 final class RemoteTelegramAuthDataSource implements TelegramAuthDataSource {
   RemoteTelegramAuthDataSource({
     required ApiClient client,
-    required TokenStore tokenStore,
     required ExternalUrlLauncher urlLauncher,
   }) : _client = client,
-       _tokenStore = tokenStore,
        _urlLauncher = urlLauncher;
 
   static const _createPath =
@@ -28,7 +25,6 @@ final class RemoteTelegramAuthDataSource implements TelegramAuthDataSource {
       '/api/v1/accounts/telegram-bot/auth-session/{sessionId}/status/';
 
   final ApiClient _client;
-  final TokenStore _tokenStore;
   final ExternalUrlLauncher _urlLauncher;
 
   @override
@@ -74,10 +70,6 @@ final class RemoteTelegramAuthDataSource implements TelegramAuthDataSource {
           'Telegram authenticated response has no complete token pair.',
         );
       }
-      await _tokenStore.saveTokens(
-        accessToken: session.accessToken,
-        refreshToken: session.refreshToken,
-      );
     }
     return status;
   }

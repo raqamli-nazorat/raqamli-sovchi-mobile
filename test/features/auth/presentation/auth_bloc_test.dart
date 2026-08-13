@@ -2,16 +2,21 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/core/errors/either.dart';
 import 'package:raqamli_sovchi/core/errors/failure.dart';
+import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
 import 'package:raqamli_sovchi/core/security/biometric_auth_service.dart';
 import 'package:raqamli_sovchi/core/security/token_store.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/authenticate_biometric.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/check_biometric_availability.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_auth_session.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_pending_auth_session.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/clear_pin.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/commit_pending_auth_session.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_pin.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/create_telegram_auth_session.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/delete_account.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/get_telegram_auth_session_status.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/has_pin.dart';
+import 'package:raqamli_sovchi/features/auth/application/use_cases/read_profile_onboarding_completion.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/request_phone_otp.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/restore_session.dart';
 import 'package:raqamli_sovchi/features/auth/application/use_cases/sign_in_with_google.dart';
@@ -29,11 +34,6 @@ import 'package:raqamli_sovchi/features/auth/domain/repositories/pin_repository.
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_event.dart';
 import 'package:raqamli_sovchi/features/auth/presentation/bloc/auth_state.dart';
-import 'package:raqamli_sovchi/features/onboarding/application/use_cases/submit_pledge.dart';
-import 'package:raqamli_sovchi/features/onboarding/application/use_cases/update_candidate_type.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/entities/candidate_type.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/entities/user_pledge.dart';
-import 'package:raqamli_sovchi/features/onboarding/domain/repositories/onboarding_repository.dart';
 
 void main() {
   const session = Session(
@@ -55,6 +55,41 @@ void main() {
         status: AuthStatus.pinSetupRequired,
         session: session,
         phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
+    'restores a committed token session and authenticates after PIN unlock',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+    ),
+    act: (bloc) async {
+      bloc.add(const AuthStarted());
+      await Future<void>.delayed(Duration.zero);
+      bloc.add(const AuthPinUnlockRequested('1234'));
+    },
+    expect: () => [
+      const AuthState(status: AuthStatus.loading),
+      const AuthState(
+        status: AuthStatus.pinLocked,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.loading,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
       ),
     ],
   );
@@ -122,6 +157,140 @@ void main() {
   );
 
   blocTest<AuthBloc, AuthState>(
+    'routes a newly created PIN to onboarding for an incomplete profile',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(
+        session: const Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+      pinRepository: const _FakePinRepository(),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinSetupRequired,
+      session: Session(
+        userId: 'user-1',
+        displayName: 'Test User',
+        status: 'Anketa to‘liq emas',
+      ),
+    ),
+    act: (bloc) => bloc.add(const AuthPinCreated('1234')),
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+      const AuthState(
+        status: AuthStatus.onboardingRequired,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: 'Anketa to‘liq emas',
+        ),
+      ),
+    ],
+  );
+
+  group('restored completed session PIN setup persistence', () {
+    late _FakeAuthSessionManager manager;
+
+    blocTest<AuthBloc, AuthState>(
+      'keeps profile completion true when creating a PIN after restore',
+      setUp: () {
+        manager = _FakeAuthSessionManager(profileOnboardingCompleted: null);
+      },
+      build: () => _createBloc(
+        repository: _FakeAuthRepository(session: session),
+        pinRepository: const _FakePinRepository(),
+        authSessionManager: manager,
+      ),
+      seed: () => const AuthState(
+        status: AuthStatus.pinSetupRequired,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      act: (bloc) => bloc.add(const AuthPinCreated('1234')),
+      expect: () => [
+        const AuthState(
+          status: AuthStatus.loading,
+          session: session,
+          phoneNumber: '+998901234567',
+          profileOnboardingCompleted: true,
+        ),
+        const AuthState(
+          status: AuthStatus.authenticated,
+          session: session,
+          phoneNumber: '+998901234567',
+          profileOnboardingCompleted: true,
+        ),
+      ],
+      verify: (_) {
+        expect(manager.profileOnboardingCompleted, isTrue);
+      },
+    );
+  });
+
+  group('pending onboarding session persistence', () {
+    late _FakeAuthSessionManager manager;
+
+    blocTest<AuthBloc, AuthState>(
+      'persists pending tokens as incomplete when PIN is created',
+      setUp: () {
+        manager = _FakeAuthSessionManager(hasPendingSession: true);
+      },
+      build: () => _createBloc(
+        repository: _FakeAuthRepository(
+          session: const Session(
+            userId: 'user-1',
+            displayName: 'Test User',
+            status: "Anketa to'liq emas",
+          ),
+        ),
+        pinRepository: const _FakePinRepository(),
+        authSessionManager: manager,
+      ),
+      seed: () => const AuthState(
+        status: AuthStatus.pinSetupRequired,
+        session: Session(
+          userId: 'user-1',
+          displayName: 'Test User',
+          status: "Anketa to'liq emas",
+        ),
+      ),
+      act: (bloc) => bloc.add(const AuthPinCreated('1234')),
+      expect: () => [
+        const AuthState(
+          status: AuthStatus.loading,
+          session: Session(
+            userId: 'user-1',
+            displayName: 'Test User',
+            status: "Anketa to'liq emas",
+          ),
+        ),
+        const AuthState(
+          status: AuthStatus.onboardingRequired,
+          session: Session(
+            userId: 'user-1',
+            displayName: 'Test User',
+            status: "Anketa to'liq emas",
+          ),
+        ),
+      ],
+      verify: (_) {
+        expect(manager.hasPendingSession, isFalse);
+        expect(manager.profileOnboardingCompleted, isFalse);
+      },
+    );
+  });
+
+  blocTest<AuthBloc, AuthState>(
     'locks authenticated session on app resume when local PIN exists',
     build: () => _createBloc(
       repository: _FakeAuthRepository(session: session),
@@ -165,7 +334,36 @@ void main() {
   );
 
   blocTest<AuthBloc, AuthState>(
-    'routes incomplete account through candidate type and pledge',
+    'routes a restored committed token session to home after PIN unlock',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinLocked,
+      session: session,
+      phoneNumber: '+998901234567',
+      profileOnboardingCompleted: true,
+    ),
+    act: (bloc) => bloc.add(const AuthPinUnlockRequested('1234')),
+    expect: () => [
+      const AuthState(
+        status: AuthStatus.loading,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+      const AuthState(
+        status: AuthStatus.authenticated,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: true,
+      ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
+    'routes an incomplete account to onboarding after PIN unlock',
     build: () => _createBloc(
       repository: _FakeAuthRepository(
         session: const Session(
@@ -175,7 +373,6 @@ void main() {
         ),
       ),
       pinRepository: const _FakePinRepository(hasPin: true),
-      onboardingRepository: const _FakeOnboardingRepository(),
     ),
     seed: () => const AuthState(
       status: AuthStatus.pinLocked,
@@ -185,15 +382,7 @@ void main() {
         status: "Anketa to'liq emas",
       ),
     ),
-    act: (bloc) async {
-      bloc.add(const AuthPinUnlockRequested('1234'));
-      await Future<void>.delayed(Duration.zero);
-      bloc.add(const AuthCandidateTypeSelected(CandidateType.groom));
-      await Future<void>.delayed(Duration.zero);
-      bloc.add(
-        const AuthPledgeSubmitted(acceptedTerms: true, hasSeriousBadge: true),
-      );
-    },
+    act: (bloc) => bloc.add(const AuthPinUnlockRequested('1234')),
     expect: () => [
       const AuthState(
         status: AuthStatus.loading,
@@ -204,47 +393,44 @@ void main() {
         ),
       ),
       const AuthState(
-        status: AuthStatus.candidateTypeRequired,
+        status: AuthStatus.onboardingRequired,
         session: Session(
           userId: 'user-1',
           displayName: 'Test User',
           status: "Anketa to'liq emas",
         ),
       ),
+    ],
+  );
+
+  blocTest<AuthBloc, AuthState>(
+    'resumes onboarding after PIN unlock when restored token was not completed',
+    build: () => _createBloc(
+      repository: _FakeAuthRepository(session: session),
+      pinRepository: const _FakePinRepository(hasPin: true),
+      authSessionManager: _FakeAuthSessionManager(
+        profileOnboardingCompleted: false,
+      ),
+    ),
+    seed: () => const AuthState(
+      status: AuthStatus.pinLocked,
+      session: session,
+      phoneNumber: '+998901234567',
+      profileOnboardingCompleted: false,
+    ),
+    act: (bloc) => bloc.add(const AuthPinUnlockRequested('1234')),
+    expect: () => [
       const AuthState(
         status: AuthStatus.loading,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-        ),
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: false,
       ),
       const AuthState(
-        status: AuthStatus.pledgeRequired,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.loading,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
-        ),
-      ),
-      const AuthState(
-        status: AuthStatus.authenticated,
-        session: Session(
-          userId: 'user-1',
-          displayName: 'Test User',
-          status: "Anketa to'liq emas",
-          candidateType: 'groom',
-        ),
+        status: AuthStatus.onboardingRequired,
+        session: session,
+        phoneNumber: '+998901234567',
+        profileOnboardingCompleted: false,
       ),
     ],
   );
@@ -253,9 +439,12 @@ void main() {
 AuthBloc _createBloc({
   required _FakeAuthRepository repository,
   required _FakePinRepository pinRepository,
-  _FakeOnboardingRepository? onboardingRepository,
+  _FakeAuthSessionManager? authSessionManager,
   Duration telegramPollingInterval = const Duration(seconds: 2),
 }) {
+  final sessionManager =
+      authSessionManager ??
+      _FakeAuthSessionManager(profileOnboardingCompleted: null);
   return AuthBloc(
     restoreSession: RestoreSessionUseCase(repository),
     requestPhoneOtp: RequestPhoneOtpUseCase(repository),
@@ -279,33 +468,15 @@ AuthBloc _createBloc({
     createPin: CreatePinUseCase(pinRepository),
     verifyPin: VerifyPinUseCase(pinRepository),
     clearPin: ClearPinUseCase(pinRepository),
+    commitPendingAuthSession: CommitPendingAuthSessionUseCase(sessionManager),
+    readProfileOnboardingCompletion: ReadProfileOnboardingCompletionUseCase(
+      sessionManager,
+    ),
     signOut: SignOutUseCase(repository),
     deleteAccount: DeleteAccountUseCase(repository),
-    updateCandidateType: onboardingRepository == null
-        ? null
-        : UpdateCandidateTypeUseCase(onboardingRepository),
-    submitPledge: onboardingRepository == null
-        ? null
-        : SubmitPledgeUseCase(onboardingRepository),
+    clearAuthSession: ClearAuthSessionUseCase(sessionManager),
+    clearPendingAuthSession: ClearPendingAuthSessionUseCase(sessionManager),
     telegramPollingInterval: telegramPollingInterval,
-  );
-}
-
-final class _FakeOnboardingRepository implements OnboardingRepository {
-  const _FakeOnboardingRepository();
-
-  @override
-  Future<Either<Failure, void>> updateCandidateType(
-    String candidateType,
-  ) async => const Right<Failure, void>(null);
-
-  @override
-  Future<Either<Failure, UserPledge>> submitPledge({
-    required String userId,
-    required bool acceptedTerms,
-    required bool hasSeriousBadge,
-  }) async => const Right<Failure, UserPledge>(
-    UserPledge(id: 'pledge-1', acceptedTerms: true, hasSeriousBadge: true),
   );
 }
 
@@ -441,4 +612,75 @@ final class _FakeTokenStore implements TokenStore {
 
   @override
   Future<void> clear() async {}
+}
+
+final class _FakeAuthSessionManager implements AuthSessionManager {
+  _FakeAuthSessionManager({
+    this.profileOnboardingCompleted,
+    bool hasPendingSession = false,
+  }) : _pendingSession = hasPendingSession
+           ? PendingAuthSession(
+               accessToken: 'pending-access',
+               refreshToken: 'pending-refresh',
+               userId: 'user-1',
+               createdAt: DateTime.utc(2026),
+             )
+           : null;
+
+  bool? profileOnboardingCompleted;
+  PendingAuthSession? _pendingSession;
+
+  @override
+  bool get hasPendingSession => _pendingSession != null;
+
+  @override
+  PendingAuthSession? get pendingSession => _pendingSession;
+
+  @override
+  Future<void> clearAll() async {
+    _pendingSession = null;
+    profileOnboardingCompleted = null;
+  }
+
+  @override
+  void clearPendingSession() {
+    _pendingSession = null;
+  }
+
+  @override
+  Future<void> commitPendingTokens({
+    bool profileOnboardingCompleted = true,
+  }) async {
+    _pendingSession = null;
+    this.profileOnboardingCompleted = profileOnboardingCompleted;
+  }
+
+  @override
+  Future<String?> readEffectiveAccessToken() async {
+    return _pendingSession?.accessToken ?? 'access';
+  }
+
+  @override
+  Future<bool?> readProfileOnboardingCompleted() async {
+    return profileOnboardingCompleted;
+  }
+
+  @override
+  Future<void> saveProfileOnboardingCompleted(bool completed) async {
+    profileOnboardingCompleted = completed;
+  }
+
+  @override
+  void stage({
+    required String accessToken,
+    required String? refreshToken,
+    required String userId,
+  }) {
+    _pendingSession = PendingAuthSession(
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+      userId: userId,
+      createdAt: DateTime.utc(2026),
+    );
+  }
 }

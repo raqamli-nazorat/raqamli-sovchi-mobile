@@ -6,6 +6,14 @@
 	<true/>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Hisobingizga tez va xavfsiz kirish uchun Face ID ishlatiladi.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Profilingizni tasdiqlash uchun kamera ishlatiladi.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ovozli tanishtiruv yozish uchun mikrofon ishlatiladi.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Yaqin hududdagi nomzodlarni ko‘rsatish uchun joylashuv ishlatiladi.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Profil suratingizni tanlash uchun foto kutubxonasi ishlatiladi.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

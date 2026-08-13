@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/features/auth/data/models/auth_session_model.dart';
+import 'package:raqamli_sovchi/features/auth/domain/entities/session.dart';
 
 void main() {
   test('maps wrapped phone auth response to named nested models', () {
@@ -63,5 +64,11 @@ void main() {
     expect(model.refreshToken, 'refresh-token');
     expect(model.userId, 'unknown');
     expect(model.displayName, 'User');
+  });
+
+  test('requires onboarding when profile info is missing', () {
+    const session = Session(userId: 'user-1', displayName: 'Test User');
+
+    expect(session.needsProfileOnboarding, isTrue);
   });
 }

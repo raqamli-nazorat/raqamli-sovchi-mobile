@@ -20,9 +20,21 @@ final class Session extends Equatable {
   final Object? profileInfo;
 
   bool get needsCandidateType =>
-      status?.trim().toLowerCase() == _incompleteProfileStatus &&
+      _normalizedStatus == _incompleteProfileStatus &&
       profileInfo == null &&
       (candidateType == null || candidateType!.isEmpty);
+
+  bool get needsProfileOnboarding =>
+      _normalizedStatus == _incompleteProfileStatus || profileInfo == null;
+
+  String get _normalizedStatus {
+    return (status ?? '')
+        .trim()
+        .toLowerCase()
+        .replaceAll('\u2018', "'")
+        .replaceAll('\u2019', "'")
+        .replaceAll('\u02bb', "'");
+  }
 
   Session copyWith({
     String? userId,

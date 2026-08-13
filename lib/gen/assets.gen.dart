@@ -60,6 +60,9 @@ class $AssetsAuthGen {
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/ic_ai.svg
+  SvgGenImage get icAi => const SvgGenImage('assets/icons/ic_ai.svg');
+
   /// File path: assets/icons/ic_arrow_left_01_round.svg
   SvgGenImage get icArrowLeft01Round =>
       const SvgGenImage('assets/icons/ic_arrow_left_01_round.svg');
@@ -93,6 +96,9 @@ class $AssetsIconsGen {
   SvgGenImage get icNotification =>
       const SvgGenImage('assets/icons/ic_notification.svg');
 
+  /// File path: assets/icons/ic_persons.svg
+  SvgGenImage get icPersons => const SvgGenImage('assets/icons/ic_persons.svg');
+
   /// File path: assets/icons/ic_preserved_btv.svg
   SvgGenImage get icPreservedBtv =>
       const SvgGenImage('assets/icons/ic_preserved_btv.svg');
@@ -115,6 +121,7 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    icAi,
     icArrowLeft01Round,
     icCandidatesBtv,
     icGlyph,
@@ -124,6 +131,7 @@ class $AssetsIconsGen {
     icLogo,
     icMessagesBtv,
     icNotification,
+    icPersons,
     icPreservedBtv,
     icProfileBtv,
     icServicesBtv,

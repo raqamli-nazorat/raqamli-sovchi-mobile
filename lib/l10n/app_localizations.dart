@@ -100,6 +100,198 @@ abstract class AppLocalizations {
     Locale('uz'),
   ];
 
+  /// No description provided for @faceCaptureTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bir marta selfi olamiz'**
+  String get faceCaptureTitle;
+
+  /// No description provided for @faceCaptureSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy suratingiz bilan solishtiramiz. Selfi hech kimga ko‘rinmaydi va tekshiruvdan keyin o‘chiriladi.'**
+  String get faceCaptureSubtitle;
+
+  /// No description provided for @selfieCameraLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'selfi kamera'**
+  String get selfieCameraLabel;
+
+  /// No description provided for @faceRuleOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingizni doira ichiga joylashtiring.'**
+  String get faceRuleOne;
+
+  /// No description provided for @faceRuleTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingiz yaxshi ko‘rinsin — shu yetarli.'**
+  String get faceRuleTwo;
+
+  /// No description provided for @faceRuleThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefonni ko‘z darajasida ushlang.'**
+  String get faceRuleThree;
+
+  /// No description provided for @takeSelfieLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Selfi olish'**
+  String get takeSelfieLabel;
+
+  /// No description provided for @aboutMeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘zingiz haqingizda'**
+  String get aboutMeTitle;
+
+  /// No description provided for @aboutMeSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. Qisqacha yozing — nomzodlar shuni o‘qiydi.'**
+  String get aboutMeSubtitle;
+
+  /// No description provided for @aboutMeHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘zingiz, kasbingiz va oilaviy qadriyatlaringiz haqida 2–3 gap...'**
+  String get aboutMeHint;
+
+  /// No description provided for @aboutMeCounter.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} / 300 belgi'**
+  String aboutMeCounter(int count);
+
+  /// No description provided for @mainPhotoSelectionHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy suratni tanlang'**
+  String get mainPhotoSelectionHint;
+
+  /// No description provided for @mainPhotoSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profilingizda birinchi shu surat ko‘rinadi va selfi bilan solishtiriladi.'**
+  String get mainPhotoSubtitle;
+
+  /// No description provided for @mainPhotoBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'ASOSIY'**
+  String get mainPhotoBadge;
+
+  /// No description provided for @faceRetryHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Selfi mos kelmadi. Qayta urinib ko‘ring.'**
+  String get faceRetryHint;
+
+  /// No description provided for @faceCameraError.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kamera ishga tushmadi.'**
+  String get faceCameraError;
+
+  /// No description provided for @onboardingSuccessTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profillingiz tayyor!'**
+  String get onboardingSuccessTitle;
+
+  /// No description provided for @onboardingSuccessSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.'**
+  String get onboardingSuccessSubtitle;
+
+  /// No description provided for @pledgeConfirmationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Niyatingizni tasdiqlang'**
+  String get pledgeConfirmationTitle;
+
+  /// No description provided for @pledgeConfirmationSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qadam majburiy. Tasdiqlagach profilingizda «Niyati jiddiy» belgisi paydo bo‘ladi.'**
+  String get pledgeConfirmationSubtitle;
+
+  /// No description provided for @pledgeConfirmationPointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ma’lumotlarim to‘g‘ri va o‘zimga tegishli.'**
+  String get pledgeConfirmationPointOne;
+
+  /// No description provided for @pledgeConfirmationPointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Niyatim jiddiy — oila qurish uchun keldim.'**
+  String get pledgeConfirmationPointTwo;
+
+  /// No description provided for @pledgeConfirmationPointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suhbatdoshga hurmat bilan munosabatda bo‘laman.'**
+  String get pledgeConfirmationPointThree;
+
+  /// No description provided for @pledgeConfirmationButton.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qasamni tasdiqlash'**
+  String get pledgeConfirmationButton;
+
+  /// No description provided for @aiTestBadge.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI MOSLIK TESTI'**
+  String get aiTestBadge;
+
+  /// No description provided for @aiTestTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'30 ta savolga javob berasizmi?'**
+  String get aiTestTitle;
+
+  /// No description provided for @aiTestDescription.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javoblaringiz asosida har bir nomzod bilan qanchalik mos kelishingizni hisoblaymiz. Taxminan 8 daqiqa.'**
+  String get aiTestDescription;
+
+  /// No description provided for @aiTestPointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'AI tahlili — 8 daqiqada tayyor'**
+  String get aiTestPointOne;
+
+  /// No description provided for @aiTestPointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mos juftlar avtomatik tanlanadi'**
+  String get aiTestPointTwo;
+
+  /// No description provided for @aiTestPointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Javoblaringiz hech kimga ko‘rsatilmaydi'**
+  String get aiTestPointThree;
+
+  /// No description provided for @startAiTest.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ha, testni boshlayman'**
+  String get startAiTest;
+
+  /// No description provided for @viewCandidatesLater.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyinroq — avval nomzodlarni ko‘raman'**
+  String get viewCandidatesLater;
+
   /// Application title.
   ///
   /// In uz, this message translates to:
@@ -273,6 +465,888 @@ abstract class AppLocalizations {
   /// In uz, this message translates to:
   /// **'Anketani boshlash'**
   String get pledgeStart;
+
+  /// No description provided for @onboardingProgress.
+  ///
+  /// In uz, this message translates to:
+  /// **'{total} bosqichdan {current}-bosqich'**
+  String onboardingProgress(Object current, Object total);
+
+  /// No description provided for @birthDateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tug‘ilgan yilingiz'**
+  String get birthDateTitle;
+
+  /// No description provided for @birthDateHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'18 yoshdan kichik foydalanuvchilar ro‘yxatdan o‘ta olmaydi.'**
+  String get birthDateHint;
+
+  /// No description provided for @birthDateSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yoshingiz nomzodlarga ko‘rinadi, aniq sana emas.'**
+  String get birthDateSubtitle;
+
+  /// No description provided for @identityTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismingiz va familiyangiz'**
+  String get identityTitle;
+
+  /// No description provided for @identitySubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Pasportdagidek yozing — nomzodlar shu ismni ko‘radi.'**
+  String get identitySubtitle;
+
+  /// No description provided for @firstNameLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ismingiz'**
+  String get firstNameLabel;
+
+  /// No description provided for @lastNameLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Familiyangiz'**
+  String get lastNameLabel;
+
+  /// No description provided for @patronymicLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Otasining ismi'**
+  String get patronymicLabel;
+
+  /// No description provided for @educationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ma’lumotingiz qanday?'**
+  String get educationTitle;
+
+  /// No description provided for @heightTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz'**
+  String get heightTitle;
+
+  /// No description provided for @heightWeightTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz va vazningiz'**
+  String get heightWeightTitle;
+
+  /// No description provided for @heightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yi (sm)'**
+  String get heightLabel;
+
+  /// No description provided for @heightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yingiz'**
+  String get heightInputLabel;
+
+  /// No description provided for @heightUnit.
+  ///
+  /// In uz, this message translates to:
+  /// **'sm'**
+  String get heightUnit;
+
+  /// No description provided for @weightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vazni (kg)'**
+  String get weightLabel;
+
+  /// No description provided for @weightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vazningiz'**
+  String get weightInputLabel;
+
+  /// No description provided for @weightUnit.
+  ///
+  /// In uz, this message translates to:
+  /// **'kg'**
+  String get weightUnit;
+
+  /// No description provided for @decreaseHeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yni kamaytirish'**
+  String get decreaseHeightLabel;
+
+  /// No description provided for @increaseHeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bo‘yni oshirish'**
+  String get increaseHeightLabel;
+
+  /// No description provided for @decreaseWeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaznni kamaytirish'**
+  String get decreaseWeightLabel;
+
+  /// No description provided for @increaseWeightLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vaznni oshirish'**
+  String get increaseWeightLabel;
+
+  /// No description provided for @locationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayerda yashaysiz?'**
+  String get locationTitle;
+
+  /// No description provided for @regionLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Viloyat'**
+  String get regionLabel;
+
+  /// No description provided for @districtLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman yoki shahar'**
+  String get districtLabel;
+
+  /// No description provided for @regionSheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Viloyatni tanlang'**
+  String get regionSheetTitle;
+
+  /// No description provided for @regionSheetCount.
+  ///
+  /// In uz, this message translates to:
+  /// **'{count} ta hudud'**
+  String regionSheetCount(Object count);
+
+  /// No description provided for @districtSheetTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman / shaharni tanlang'**
+  String get districtSheetTitle;
+
+  /// No description provided for @districtSheetSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'{region} · {count} ta tuman'**
+  String districtSheetSubtitle(Object count, Object region);
+
+  /// No description provided for @locationSearchPlaceholder.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tuman nomi bo‘yicha qidirish'**
+  String get locationSearchPlaceholder;
+
+  /// No description provided for @selectLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlash'**
+  String get selectLabel;
+
+  /// No description provided for @unselectedValue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tanlanmagan'**
+  String get unselectedValue;
+
+  /// No description provided for @selectRegionFirstValue.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval viloyatni tanlang'**
+  String get selectRegionFirstValue;
+
+  /// No description provided for @healthStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sog‘liqlik darajangiz'**
+  String get healthStatusTitle;
+
+  /// No description provided for @healthStatusSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ma’lumot faqat moslikni hisoblashda ishlatiladi.'**
+  String get healthStatusSubtitle;
+
+  /// No description provided for @healthHealthyLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sog‘lom'**
+  String get healthHealthyLabel;
+
+  /// No description provided for @healthDisabilityLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nogironligi bor'**
+  String get healthDisabilityLabel;
+
+  /// No description provided for @healthDisabilityHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi qadamda qisqacha izohlashingiz mumkin'**
+  String get healthDisabilityHint;
+
+  /// No description provided for @maritalStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Oilaviy holatingiz'**
+  String get maritalStatusTitle;
+
+  /// No description provided for @maritalStatusDivorcedHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'«Ajrashgan» tanlanganda farzandlar soni majburiy bo‘ladi.'**
+  String get maritalStatusDivorcedHint;
+
+  /// No description provided for @maritalStatusFirstMarriageDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Avval turmush qurmagan'**
+  String get maritalStatusFirstMarriageDetail;
+
+  /// No description provided for @maritalStatusDivorcedDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar soni so‘raladi'**
+  String get maritalStatusDivorcedDetail;
+
+  /// No description provided for @childrenCountLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlaringiz soni'**
+  String get childrenCountLabel;
+
+  /// No description provided for @decreaseChildrenLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar sonini kamaytirish'**
+  String get decreaseChildrenLabel;
+
+  /// No description provided for @increaseChildrenLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar sonini oshirish'**
+  String get increaseChildrenLabel;
+
+  /// No description provided for @childrenNotLivingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar men bilan yashamaydi'**
+  String get childrenNotLivingTitle;
+
+  /// No description provided for @childrenNotLivingDetail.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profilda «farzandi bor» deb ko‘rsatiladi, tafsilot yozilmaydi'**
+  String get childrenNotLivingDetail;
+
+  /// No description provided for @photoTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Suratlaringizni qo‘shing'**
+  String get photoTitle;
+
+  /// No description provided for @photoHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'5 tagacha surat. Ularni faqat siz ruxsat bergan odam ko‘radi.'**
+  String get photoHint;
+
+  /// No description provided for @photoPrivacyHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kamida 1 ta surat kerak. Yuz aniq ko‘rinishi shart.'**
+  String get photoPrivacyHint;
+
+  /// No description provided for @photoSlotAddLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'surat'**
+  String get photoSlotAddLabel;
+
+  /// No description provided for @photoSlotFilledLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'surat {order} ✓'**
+  String photoSlotFilledLabel(int order);
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Surat qo‘shish'**
+  String get addPhoto;
+
+  /// No description provided for @setMainPhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'Asosiy qilish'**
+  String get setMainPhoto;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘chirish'**
+  String get removePhoto;
+
+  /// No description provided for @voiceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ovozli tanishtiruv'**
+  String get voiceTitle;
+
+  /// No description provided for @voiceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'AAC/M4A formatda 30 soniyagacha yozing.'**
+  String get voiceHint;
+
+  /// No description provided for @voiceShortHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'10–15 soniya yetarli. Ovoz odam haqida suratdan ko‘ra ko‘proq narsani aytadi.'**
+  String get voiceShortHint;
+
+  /// No description provided for @startRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash'**
+  String get startRecording;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni to‘xtatish'**
+  String get stopRecording;
+
+  /// No description provided for @playRecording.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozuvni eshitish'**
+  String get playRecording;
+
+  /// No description provided for @voiceSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. 10–15 soniya yetarli — ovoz odam haqida ko‘proq narsani aytadi.'**
+  String get voiceSubtitle;
+
+  /// No description provided for @startRecordingHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yozishni boshlash uchun bosing'**
+  String get startRecordingHint;
+
+  /// No description provided for @recordedVoiceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Eshitib ko‘ring. Yoqmasa qayta yozing yoki o‘chiring — ovoz ixtiyoriy.'**
+  String get recordedVoiceHint;
+
+  /// No description provided for @reRecordVoice.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qayta yozish'**
+  String get reRecordVoice;
+
+  /// No description provided for @deleteVoice.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘chirish'**
+  String get deleteVoice;
+
+  /// No description provided for @locationPermissionTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuvingiz'**
+  String get locationPermissionTitle;
+
+  /// No description provided for @locationPermissionSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yaqin hududdagi nomzodlarni birinchi ko‘rsatish uchun joylashuv ruxsati kerak. Aniq manzil hech kimga ko‘rinmaydi.'**
+  String get locationPermissionSubtitle;
+
+  /// No description provided for @enableLocation.
+  ///
+  /// In uz, this message translates to:
+  /// **'Joylashuvni yoqish'**
+  String get enableLocation;
+
+  /// No description provided for @skipLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘tkazib yuborish'**
+  String get skipLabel;
+
+  /// No description provided for @faceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingizni tasdiqlang'**
+  String get faceTitle;
+
+  /// No description provided for @faceHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzingiz to‘g‘ri qaragan va ko‘zlaringiz ochiq holda selfie oling.'**
+  String get faceHint;
+
+  /// No description provided for @verifyFace.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yuzni tasdiqlash'**
+  String get verifyFace;
+
+  /// No description provided for @finishOnboarding.
+  ///
+  /// In uz, this message translates to:
+  /// **'Yakunlash va profilni ochish'**
+  String get finishOnboarding;
+
+  /// No description provided for @representativeFlowMessage.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vakil oqimi alohida anketa bo‘lib, keyinroq ochiladi.'**
+  String get representativeFlowMessage;
+
+  /// No description provided for @representativeIntroTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Siz vakil sifatida kirdingiz'**
+  String get representativeIntroTitle;
+
+  /// No description provided for @representativeIntroSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Vakil — nomzodning yaqin qarindoshi: amma, xola, amaki yoki tog‘a. Siz uning nomidan anketa to‘ldirasiz va kelgan takliflarni ko‘rib chiqasiz.'**
+  String get representativeIntroSubtitle;
+
+  /// No description provided for @representativeConsentRequiredTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning roziligi shart'**
+  String get representativeConsentRequiredTitle;
+
+  /// No description provided for @representativeConsentRequiredBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Anketa to‘ldirilgach nomzodga SMS yuboriladi. U tasdiqlamaguncha profil hech kimga ko‘rinmaydi.'**
+  String get representativeConsentRequiredBody;
+
+  /// No description provided for @representativeIntroFootnote.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyingi qadamlarda avval o‘zingiz haqingizda, so‘ng nomzod haqida ma’lumot so‘raymiz.'**
+  String get representativeIntroFootnote;
+
+  /// No description provided for @startLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Boshlash'**
+  String get startLabel;
+
+  /// No description provided for @representativeSelfSection.
+  ///
+  /// In uz, this message translates to:
+  /// **'1-QISM · SIZ HAQINGIZDA'**
+  String get representativeSelfSection;
+
+  /// No description provided for @representativeSelfTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘zingiz haqingizda'**
+  String get representativeSelfTitle;
+
+  /// No description provided for @representativeSelfSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod rozilik so‘rovida shu ismni ko‘radi.'**
+  String get representativeSelfSubtitle;
+
+  /// No description provided for @representativeRelationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodga kimsiz?'**
+  String get representativeRelationTitle;
+
+  /// No description provided for @representativeCandidateSection.
+  ///
+  /// In uz, this message translates to:
+  /// **'2-QISM · NOMZOD HAQIDA'**
+  String get representativeCandidateSection;
+
+  /// No description provided for @representativeCandidateTypeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod kim?'**
+  String get representativeCandidateTypeTitle;
+
+  /// No description provided for @representativeCandidateTypeSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shundan keyingi barcha savollar nomzod haqida bo‘ladi — o‘zingiz haqingizda emas.'**
+  String get representativeCandidateTypeSubtitle;
+
+  /// No description provided for @representativeBrideTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kelin'**
+  String get representativeBrideTitle;
+
+  /// No description provided for @representativeBrideSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ayol nomzod'**
+  String get representativeBrideSubtitle;
+
+  /// No description provided for @representativeGroomTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Kuyov'**
+  String get representativeGroomTitle;
+
+  /// No description provided for @representativeGroomSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Erkak nomzod'**
+  String get representativeGroomSubtitle;
+
+  /// No description provided for @representativeCandidateIdentityTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning ismi va familiyasi'**
+  String get representativeCandidateIdentityTitle;
+
+  /// No description provided for @representativeCandidateIdentitySubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu ma’lumotlarni nomzodning o‘zi tasdiqlaydi. Xato bo‘lsa, keyin tuzatish mumkin.'**
+  String get representativeCandidateIdentitySubtitle;
+
+  /// No description provided for @representativeBirthDateTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod tug‘ilgan yili'**
+  String get representativeBirthDateTitle;
+
+  /// No description provided for @representativeEducationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning ma’lumoti'**
+  String get representativeEducationTitle;
+
+  /// No description provided for @representativeHeightWeightTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning bo‘yi va vazni'**
+  String get representativeHeightWeightTitle;
+
+  /// No description provided for @representativeHeightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning bo‘yi'**
+  String get representativeHeightInputLabel;
+
+  /// No description provided for @representativeWeightInputLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning vazni'**
+  String get representativeWeightInputLabel;
+
+  /// No description provided for @representativeLocationTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod qayerda yashaydi?'**
+  String get representativeLocationTitle;
+
+  /// No description provided for @representativeHealthStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning sog‘liqlik darajasi'**
+  String get representativeHealthStatusTitle;
+
+  /// No description provided for @representativeMaritalStatusTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning oilaviy holati'**
+  String get representativeMaritalStatusTitle;
+
+  /// No description provided for @representativeChildrenCountLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning farzandlari soni'**
+  String get representativeChildrenCountLabel;
+
+  /// No description provided for @representativeChildrenNotLivingTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Farzandlar nomzod bilan yashamaydi'**
+  String get representativeChildrenNotLivingTitle;
+
+  /// No description provided for @representativePhotoTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning suratlari'**
+  String get representativePhotoTitle;
+
+  /// No description provided for @representativePhotoHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'5 tagacha surat. Ularni faqat nomzod ruxsat bergan odam ko‘radi.'**
+  String get representativePhotoHint;
+
+  /// No description provided for @representativeMainPhotoSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod profilida birinchi shu surat ko‘rinadi.'**
+  String get representativeMainPhotoSubtitle;
+
+  /// No description provided for @representativeAboutTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod haqida'**
+  String get representativeAboutTitle;
+
+  /// No description provided for @representativeAboutSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. Savollar nomzod haqida — o‘zingiz haqingizda emas.'**
+  String get representativeAboutSubtitle;
+
+  /// No description provided for @representativeAboutHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning kasbi, qiziqishlari va oilaviy qadriyatlari haqida 2–3 gap...'**
+  String get representativeAboutHint;
+
+  /// No description provided for @representativeVoiceTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning ovozli izohi'**
+  String get representativeVoiceTitle;
+
+  /// No description provided for @representativeVoiceSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. Nomzod keyin o‘zi qayta yozishi mumkin.'**
+  String get representativeVoiceSubtitle;
+
+  /// No description provided for @representativeLocationPermissionTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning joylashuvi'**
+  String get representativeLocationPermissionTitle;
+
+  /// No description provided for @representativeLocationPermissionSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Ixtiyoriy. Aniq manzil hech kimga ko‘rinmaydi.'**
+  String get representativeLocationPermissionSubtitle;
+
+  /// No description provided for @representativeConsentSection.
+  ///
+  /// In uz, this message translates to:
+  /// **'3-QISM · ROZILIK'**
+  String get representativeConsentSection;
+
+  /// No description provided for @representativeContactTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning telefon raqami'**
+  String get representativeContactTitle;
+
+  /// No description provided for @representativeContactSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Shu raqamga rozilik so‘rovi yuboriladi. Nomzod tasdiqlamaguncha anketa hech kimga ko‘rinmaydi.'**
+  String get representativeContactSubtitle;
+
+  /// No description provided for @representativeContactLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Telefon raqami / email'**
+  String get representativeContactLabel;
+
+  /// No description provided for @representativeContactWarningTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Raqam nomzodniki bo‘lishi shart'**
+  String get representativeContactWarningTitle;
+
+  /// No description provided for @representativeContactWarningBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'O‘z raqamingizni kiritsangiz, rozilik haqiqiy hisoblanmaydi va profil bloklanadi.'**
+  String get representativeContactWarningBody;
+
+  /// No description provided for @representativeSendConsent.
+  ///
+  /// In uz, this message translates to:
+  /// **'Rozilik so‘rovini yuborish'**
+  String get representativeSendConsent;
+
+  /// No description provided for @representativeCandidateNoApp.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod ilovadan foydalanmaydi'**
+  String get representativeCandidateNoApp;
+
+  /// No description provided for @representativeConsentSentTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'So‘rov yuborildi'**
+  String get representativeConsentSentTitle;
+
+  /// No description provided for @representativeConsentSentSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'{firstName} tasdiqlashi kutilmoqda. Tasdiqlangunga qadar anketa yashirin.'**
+  String representativeConsentSentSubtitle(String firstName);
+
+  /// No description provided for @representativeSmsSentTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodga SMS ketdi'**
+  String get representativeSmsSentTitle;
+
+  /// No description provided for @representativeSmsSentBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'{representativeName} sizning nomingizdan anketa to‘ldirdi. Rozimisiz?'**
+  String representativeSmsSentBody(String representativeName);
+
+  /// No description provided for @representativeConsentRevocation.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod rozilikni istalgan vaqtda qaytarib olishi mumkin — shunda anketa darhol yashiriladi.'**
+  String get representativeConsentRevocation;
+
+  /// No description provided for @understoodLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Tushunarli'**
+  String get understoodLabel;
+
+  /// No description provided for @resendRequestLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'So‘rovni qayta yuborish'**
+  String get resendRequestLabel;
+
+  /// No description provided for @representativePledgeTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Mas’uliyatni tasdiqlang'**
+  String get representativePledgeTitle;
+
+  /// No description provided for @representativePledgeSubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Bu qadam majburiy. Siz boshqa odam nomidan ma’lumot kiritayapsiz.'**
+  String get representativePledgeSubtitle;
+
+  /// No description provided for @representativePledgePointOne.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzod haqidagi ma’lumotlar to‘g‘ri va uning roziligi bilan kiritildi.'**
+  String get representativePledgePointOne;
+
+  /// No description provided for @representativePledgePointTwo.
+  ///
+  /// In uz, this message translates to:
+  /// **'Nomzodning shaxsiy suhbatlariga aralashmayman.'**
+  String get representativePledgePointTwo;
+
+  /// No description provided for @representativePledgePointThree.
+  ///
+  /// In uz, this message translates to:
+  /// **'Taklif va so‘rovlarni nomzod manfaatida ko‘rib chiqaman.'**
+  String get representativePledgePointThree;
+
+  /// No description provided for @representativeReadyTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Profillingiz tayyor!'**
+  String get representativeReadyTitle;
+
+  /// No description provided for @representativeReadySubtitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.'**
+  String get representativeReadySubtitle;
+
+  /// No description provided for @representativeSetCriteria.
+  ///
+  /// In uz, this message translates to:
+  /// **'Qidiruv mezonlarini sozlash'**
+  String get representativeSetCriteria;
+
+  /// No description provided for @laterLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Keyinroq'**
+  String get laterLabel;
+
+  /// No description provided for @candidateConsentEyebrow.
+  ///
+  /// In uz, this message translates to:
+  /// **'NOMZOD TELEFONIDA'**
+  String get candidateConsentEyebrow;
+
+  /// No description provided for @candidateConsentTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Sizning nomingizdan anketa to‘ldirildi'**
+  String get candidateConsentTitle;
+
+  /// No description provided for @candidateConsentBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'{representativeName} ({relation}) siz uchun anketa to‘ldirdi. Roziligingizsiz u hech kimga ko‘rinmaydi.'**
+  String candidateConsentBody(String representativeName, String relation);
+
+  /// No description provided for @candidateConsentApproveTitle.
+  ///
+  /// In uz, this message translates to:
+  /// **'Rozilik bersangiz'**
+  String get candidateConsentApproveTitle;
+
+  /// No description provided for @candidateConsentApproveBody.
+  ///
+  /// In uz, this message translates to:
+  /// **'Anketa faollashadi, takliflar kela boshlaydi. Keyin o‘zingiz tahrirlashingiz mumkin.'**
+  String get candidateConsentApproveBody;
+
+  /// No description provided for @candidateConsentRejectHint.
+  ///
+  /// In uz, this message translates to:
+  /// **'Rad etsangiz anketa o‘chiriladi va vakilga xabar beriladi.'**
+  String get candidateConsentRejectHint;
+
+  /// No description provided for @agreeLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Roziman'**
+  String get agreeLabel;
+
+  /// No description provided for @rejectLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Rad etaman'**
+  String get rejectLabel;
+
+  /// No description provided for @backLabel.
+  ///
+  /// In uz, this message translates to:
+  /// **'Orqaga'**
+  String get backLabel;
 
   /// No description provided for @temporaryOtpHint.
   ///

@@ -5,19 +5,24 @@ import 'package:get_it/get_it.dart';
 import '../../core/config/app_config.dart';
 import '../../core/network/api_client.dart';
 import '../../core/platform/external_url_launcher.dart';
+import '../../core/security/auth_session_manager.dart';
 import '../../core/security/biometric_auth_service.dart';
 import '../../core/security/screenshot_guard.dart';
 import '../../core/security/secure_storage.dart';
 import '../../core/security/token_store.dart';
 import '../../features/auth/application/use_cases/authenticate_biometric.dart';
 import '../../features/auth/application/use_cases/check_biometric_availability.dart';
+import '../../features/auth/application/use_cases/clear_auth_session.dart';
+import '../../features/auth/application/use_cases/clear_pending_auth_session.dart';
 import '../../features/auth/application/use_cases/clear_pin.dart';
+import '../../features/auth/application/use_cases/commit_pending_auth_session.dart';
 import '../../features/auth/application/use_cases/create_pin.dart';
 import '../../features/auth/application/use_cases/create_telegram_auth_session.dart';
 import '../../features/auth/application/use_cases/delete_account.dart';
 import '../../features/auth/application/use_cases/get_telegram_auth_session_status.dart';
 import '../../features/auth/application/use_cases/has_pin.dart';
 import '../../features/auth/application/use_cases/obtain_token.dart';
+import '../../features/auth/application/use_cases/read_profile_onboarding_completion.dart';
 import '../../features/auth/application/use_cases/request_phone_otp.dart';
 import '../../features/auth/application/use_cases/restore_session.dart';
 import '../../features/auth/application/use_cases/sign_in_with_google.dart';
@@ -35,11 +40,17 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/repositories/google_oauth_provider.dart';
 import '../../features/auth/domain/repositories/pin_repository.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../features/onboarding/application/use_cases/submit_pledge.dart';
-import '../../features/onboarding/application/use_cases/update_candidate_type.dart';
+import '../../features/onboarding/application/services/onboarding_location_service.dart';
+import '../../features/onboarding/application/services/onboarding_media_service.dart';
 import '../../features/onboarding/data/data_sources/onboarding_data_source.dart';
+import '../../features/onboarding/data/data_sources/onboarding_draft_data_source.dart';
+import '../../features/onboarding/data/repositories/onboarding_draft_repository_impl.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
+import '../../features/onboarding/data/services/onboarding_location_service_impl.dart';
+import '../../features/onboarding/data/services/onboarding_media_service_impl.dart';
+import '../../features/onboarding/domain/repositories/onboarding_draft_repository.dart';
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
+import '../../features/onboarding/presentation/bloc/profile_onboarding_bloc.dart';
 
 final GetIt serviceLocator = GetIt.instance;
 
@@ -52,6 +63,9 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton<TokenStore>(
       () => SecureTokenStore(serviceLocator()),
+    )
+    ..registerLazySingleton<AuthSessionManager>(
+      () => DefaultAuthSessionManager(serviceLocator(), serviceLocator()),
     )
     ..registerLazySingleton<ScreenshotGuard>(SecureScreenshotGuard.new)
     ..registerLazySingleton<ExternalUrlLauncher>(UrlLauncherService.new)
@@ -67,8 +81,10 @@ Future<void> configureDependencies() async {
       ),
     )
     ..registerLazySingleton<ApiClient>(
-      () =>
-          DioApiClient(tokenStore: serviceLocator(), client: serviceLocator()),
+      () => DioApiClient(
+        authSessionManager: serviceLocator(),
+        client: serviceLocator(),
+      ),
     )
     ..registerLazySingleton<AuthDataSource>(
       () => AppConfig.useTemporaryAuthAdapter
@@ -81,19 +97,16 @@ Future<void> configureDependencies() async {
     ..registerLazySingleton<TelegramAuthDataSource>(
       () => RemoteTelegramAuthDataSource(
         client: serviceLocator(),
-        tokenStore: serviceLocator(),
         urlLauncher: serviceLocator(),
       ),
     )
     ..registerLazySingleton<GoogleOAuthProvider>(GoogleSignInOAuthProvider.new)
     ..registerLazySingleton<GoogleAuthDataSource>(
-      () => RemoteGoogleAuthDataSource(
-        client: serviceLocator(),
-        tokenStore: serviceLocator(),
-      ),
+      () => RemoteGoogleAuthDataSource(client: serviceLocator()),
     )
     ..registerLazySingleton<AuthRepository>(
       () => AuthRepositoryImpl(
+        serviceLocator(),
         serviceLocator(),
         telegram: serviceLocator(),
         google: serviceLocator(),
@@ -104,6 +117,16 @@ Future<void> configureDependencies() async {
     )
     ..registerLazySingleton<OnboardingRepository>(
       () => OnboardingRepositoryImpl(serviceLocator()),
+    )
+    ..registerLazySingleton<OnboardingDraftDataSource>(
+      () => SecureOnboardingDraftDataSource(serviceLocator()),
+    )
+    ..registerLazySingleton<OnboardingDraftRepository>(
+      () => OnboardingDraftRepositoryImpl(serviceLocator()),
+    )
+    ..registerFactory<OnboardingMediaService>(DeviceOnboardingMediaService.new)
+    ..registerLazySingleton<OnboardingLocationService>(
+      DeviceOnboardingLocationService.new,
     )
     ..registerLazySingleton<PinDataSource>(
       () => SecurePinDataSource(serviceLocator()),
@@ -146,15 +169,30 @@ Future<void> configureDependencies() async {
       () => VerifyPinUseCase(serviceLocator()),
     )
     ..registerFactory<ClearPinUseCase>(() => ClearPinUseCase(serviceLocator()))
+    ..registerFactory<CommitPendingAuthSessionUseCase>(
+      () => CommitPendingAuthSessionUseCase(serviceLocator()),
+    )
+    ..registerFactory<ReadProfileOnboardingCompletionUseCase>(
+      () => ReadProfileOnboardingCompletionUseCase(serviceLocator()),
+    )
+    ..registerFactory<ClearAuthSessionUseCase>(
+      () => ClearAuthSessionUseCase(serviceLocator()),
+    )
+    ..registerFactory<ClearPendingAuthSessionUseCase>(
+      () => ClearPendingAuthSessionUseCase(serviceLocator()),
+    )
     ..registerFactory<SignOutUseCase>(() => SignOutUseCase(serviceLocator()))
     ..registerFactory<DeleteAccountUseCase>(
       () => DeleteAccountUseCase(serviceLocator()),
     )
-    ..registerFactory<UpdateCandidateTypeUseCase>(
-      () => UpdateCandidateTypeUseCase(serviceLocator()),
-    )
-    ..registerFactory<SubmitPledgeUseCase>(
-      () => SubmitPledgeUseCase(serviceLocator()),
+    ..registerFactory<ProfileOnboardingBloc>(
+      () => ProfileOnboardingBloc(
+        onboardingRepository: serviceLocator(),
+        draftRepository: serviceLocator(),
+        mediaService: serviceLocator(),
+        locationService: serviceLocator(),
+        commitPendingAuthSession: serviceLocator(),
+      ),
     )
     ..registerFactory<AuthBloc>(
       () => AuthBloc(
@@ -170,10 +208,12 @@ Future<void> configureDependencies() async {
         createPin: serviceLocator(),
         verifyPin: serviceLocator(),
         clearPin: serviceLocator(),
+        commitPendingAuthSession: serviceLocator(),
+        readProfileOnboardingCompletion: serviceLocator(),
         signOut: serviceLocator(),
         deleteAccount: serviceLocator(),
-        updateCandidateType: serviceLocator(),
-        submitPledge: serviceLocator(),
+        clearAuthSession: serviceLocator(),
+        clearPendingAuthSession: serviceLocator(),
       ),
     );
 }

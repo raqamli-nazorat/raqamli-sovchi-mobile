@@ -25,9 +25,14 @@ subprojects {
 
 gradle.projectsEvaluated {
     subprojects.forEach { subproject ->
-        subproject.tasks.withType<JavaCompile>().configureEach {
-            sourceCompatibility = JavaVersion.VERSION_17.toString()
-            targetCompatibility = JavaVersion.VERSION_17.toString()
+        val isAndroidProject =
+            subproject.plugins.hasPlugin("com.android.application") ||
+                subproject.plugins.hasPlugin("com.android.library")
+        if (!isAndroidProject) {
+            subproject.tasks.withType<JavaCompile>().configureEach {
+                sourceCompatibility = JavaVersion.VERSION_17.toString()
+                targetCompatibility = JavaVersion.VERSION_17.toString()
+            }
         }
         subproject.tasks.withType<KotlinCompile>().configureEach {
             compilerOptions {

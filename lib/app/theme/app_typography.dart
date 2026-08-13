@@ -39,4 +39,144 @@ abstract final class AppTypography {
     fontWeight: FontWeight.w600,
     color: AppColors.mutedText,
   );
+  static const onboardingBody = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 13,
+    height: 21 / 13,
+    color: AppColors.mutedText,
+  );
+  static const onboardingCardTitle = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 16,
+    height: 22 / 16,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.2,
+    color: AppColors.text,
+  );
+  static const onboardingCardBody = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 19 / 12,
+    color: AppColors.mutedText,
+  );
+  static const onboardingAction = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w600,
+  );
+  static const onboardingPledgeBody = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 13,
+    height: 21 / 13,
+    color: AppColors.bodyText,
+  );
+  static const onboardingWheel = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 17,
+    height: 28 / 17,
+    fontWeight: FontWeight.w500,
+  );
+  static const onboardingChip = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    height: 21 / 14,
+    color: AppColors.bodyText,
+  );
+  static const onboardingName = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 18,
+    height: 24 / 18,
+    color: AppColors.text,
+  );
+  static const onboardingProgress = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 16 / 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.mutedText,
+  );
+  static const onboardingSheetTitle = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 20,
+    height: 27 / 20,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.3,
+    color: AppColors.text,
+  );
+  static const onboardingSheetCaption = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 19 / 12,
+    color: AppColors.mutedText,
+  );
+  static const onboardingReferenceOption = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w500,
+    color: AppColors.bodyText,
+  );
+  static const onboardingReferenceSelected = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w600,
+    color: AppColors.text,
+  );
+  static const onboardingSearch = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    height: 21 / 14,
+    color: AppColors.placeholder,
+  );
+  static const onboardingNumeric = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 34,
+    height: 40 / 34,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.5,
+    color: AppColors.primary,
+  );
+  static const onboardingSelectorLabel = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 11,
+    height: 17 / 11,
+    color: AppColors.placeholder,
+  );
+  static const onboardingSelectorValue = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 15,
+    height: 20 / 15,
+    fontWeight: FontWeight.w500,
+    color: AppColors.text,
+  );
+  static const onboardingFieldLabel = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 10,
+    height: 14 / 10,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.8,
+    color: AppColors.placeholder,
+  );
+  static const onboardingFieldValue = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 14,
+    height: 19 / 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.text,
+  );
+  static const onboardingMeasurementValue = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 22,
+    height: 28 / 22,
+    fontWeight: FontWeight.w600,
+    color: AppColors.text,
+  );
+  static const onboardingMeasurementUnit = TextStyle(
+    fontFamily: 'Manrope',
+    fontSize: 12,
+    height: 19 / 12,
+    color: AppColors.mutedText,
+  );
 }
