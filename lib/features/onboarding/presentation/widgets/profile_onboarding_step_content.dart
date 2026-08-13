@@ -27,11 +27,13 @@ final class ProfileOnboardingStepContent extends StatefulWidget {
   const ProfileOnboardingStepContent({
     required this.step,
     required this.state,
+    this.representativeMode = false,
     super.key,
   });
 
   final OnboardingStep step;
   final ProfileOnboardingState state;
+  final bool representativeMode;
 
   @override
   State<ProfileOnboardingStepContent> createState() =>
@@ -84,6 +86,14 @@ final class _ProfileOnboardingStepContentState
       ),
       OnboardingStep.success => _success(l10n, bloc),
       OnboardingStep.profileReady => _profileReady(l10n, bloc),
+      OnboardingStep.representativeIntro ||
+      OnboardingStep.representativeIdentity ||
+      OnboardingStep.representativeRelation ||
+      OnboardingStep.representativeCandidateType ||
+      OnboardingStep.representativeContact ||
+      OnboardingStep.representativeConsentSent ||
+      OnboardingStep.representativePledge ||
+      OnboardingStep.representativeReady => const SizedBox.shrink(),
     };
     return Padding(
       padding:
@@ -191,7 +201,9 @@ final class _ProfileOnboardingStepContentState
         _selectedBirthDate ?? draft.birthDate ?? DateTime(now.year - 25, 1, 1);
     return _StepLayout(
       step: widget.step,
-      title: l10n.birthDateTitle,
+      title: widget.representativeMode
+          ? l10n.representativeBirthDateTitle
+          : l10n.birthDateTitle,
       subtitle: l10n.birthDateSubtitle,
       dateWheel: true,
       keyboardAware: true,
@@ -235,8 +247,12 @@ final class _ProfileOnboardingStepContentState
     }
     return _StepLayout(
       step: widget.step,
-      title: l10n.identityTitle,
-      subtitle: l10n.identitySubtitle,
+      title: widget.representativeMode
+          ? l10n.representativeCandidateIdentityTitle
+          : l10n.identityTitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativeCandidateIdentitySubtitle
+          : l10n.identitySubtitle,
       keyboardAware: true,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
@@ -297,7 +313,9 @@ final class _ProfileOnboardingStepContentState
         .toList(growable: false);
     return _StepLayout(
       step: widget.step,
-      title: l10n.educationTitle,
+      title: widget.representativeMode
+          ? l10n.representativeEducationTitle
+          : l10n.educationTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed: draft.educationLevelId?.isNotEmpty == true
@@ -330,14 +348,24 @@ final class _ProfileOnboardingStepContentState
     final height =
         _selectedHeight ??
         draft.heightCm ??
-        _defaultHeight(draft.candidateType);
+        _defaultHeight(
+          widget.representativeMode
+              ? draft.representedCandidateType
+              : draft.candidateType,
+        );
     final weight =
         _selectedWeight ??
         draft.weightKg ??
-        _defaultWeight(draft.candidateType);
+        _defaultWeight(
+          widget.representativeMode
+              ? draft.representedCandidateType
+              : draft.candidateType,
+        );
     return _StepLayout(
       step: widget.step,
-      title: l10n.heightWeightTitle,
+      title: widget.representativeMode
+          ? l10n.representativeHeightWeightTitle
+          : l10n.heightWeightTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed: () => bloc.add(HeightSaved(height, weightKg: weight)),
@@ -345,8 +373,12 @@ final class _ProfileOnboardingStepContentState
       child: OnboardingHeightWeightInput(
         height: height,
         weight: weight,
-        heightLabel: l10n.heightInputLabel,
-        weightLabel: l10n.weightInputLabel,
+        heightLabel: widget.representativeMode
+            ? l10n.representativeHeightInputLabel
+            : l10n.heightInputLabel,
+        weightLabel: widget.representativeMode
+            ? l10n.representativeWeightInputLabel
+            : l10n.weightInputLabel,
         heightUnit: l10n.heightUnit,
         weightUnit: l10n.weightUnit,
         decreaseHeightLabel: l10n.decreaseHeightLabel,
@@ -382,7 +414,9 @@ final class _ProfileOnboardingStepContentState
     final districtName = _selectedDistrictName(draft);
     return _StepLayout(
       step: widget.step,
-      title: l10n.locationTitle,
+      title: widget.representativeMode
+          ? l10n.representativeLocationTitle
+          : l10n.locationTitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
         onPressed: draft.regionId == null || draft.districtId == null
@@ -535,7 +569,9 @@ final class _ProfileOnboardingStepContentState
     final options = _orderedHealthStatuses(widget.state.healthStatuses);
     return _StepLayout(
       step: widget.step,
-      title: l10n.healthStatusTitle,
+      title: widget.representativeMode
+          ? l10n.representativeHealthStatusTitle
+          : l10n.healthStatusTitle,
       subtitle: l10n.healthStatusSubtitle,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
@@ -612,7 +648,9 @@ final class _ProfileOnboardingStepContentState
     final isDivorced = selected != null && _isDivorcedStatus(selected.name);
     return _StepLayout(
       step: widget.step,
-      title: l10n.maritalStatusTitle,
+      title: widget.representativeMode
+          ? l10n.representativeMaritalStatusTitle
+          : l10n.maritalStatusTitle,
       subtitle: isDivorced ? l10n.maritalStatusDivorcedHint : null,
       keyboardAware: true,
       bottom: _FigmaPrimaryButton(
@@ -647,7 +685,9 @@ final class _ProfileOnboardingStepContentState
             if (isDivorced) ...[
               const SizedBox(height: AppSpacing.xs),
               Text(
-                l10n.childrenCountLabel,
+                widget.representativeMode
+                    ? l10n.representativeChildrenCountLabel
+                    : l10n.childrenCountLabel,
                 style: AppTypography.onboardingChip.copyWith(
                   color: AppColors.bodyText,
                 ),
@@ -673,10 +713,14 @@ final class _ProfileOnboardingStepContentState
               ),
               const SizedBox(height: AppSpacing.lg + AppSpacing.xs),
               _ChildrenNotLivingCard(
-                title: l10n.childrenNotLivingTitle,
+                title: widget.representativeMode
+                    ? l10n.representativeChildrenNotLivingTitle
+                    : l10n.childrenNotLivingTitle,
                 detail: l10n.childrenNotLivingDetail,
                 value: draft.childrenNotLivingWithMe,
-                semanticLabel: l10n.childrenNotLivingTitle,
+                semanticLabel: widget.representativeMode
+                    ? l10n.representativeChildrenNotLivingTitle
+                    : l10n.childrenNotLivingTitle,
                 onChanged: (value) =>
                     bloc.add(ChildrenNotLivingWithMeChanged(value)),
               ),
@@ -715,8 +759,12 @@ final class _ProfileOnboardingStepContentState
     ProfileOnboardingBloc bloc,
   ) {
     return _StepLayout(
-      title: l10n.photoTitle,
-      subtitle: l10n.photoHint,
+      title: widget.representativeMode
+          ? l10n.representativePhotoTitle
+          : l10n.photoTitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativePhotoHint
+          : l10n.photoHint,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.continueLabel,
@@ -756,7 +804,9 @@ final class _ProfileOnboardingStepContentState
   ) {
     return _StepLayout(
       title: l10n.mainPhotoSelectionHint,
-      subtitle: l10n.mainPhotoSubtitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativeMainPhotoSubtitle
+          : l10n.mainPhotoSubtitle,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.confirmLabel,
@@ -791,8 +841,12 @@ final class _ProfileOnboardingStepContentState
     ProfileOnboardingBloc bloc,
   ) {
     return _StepLayout(
-      title: l10n.voiceTitle,
-      subtitle: l10n.voiceSubtitle,
+      title: widget.representativeMode
+          ? l10n.representativeVoiceTitle
+          : l10n.voiceTitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativeVoiceSubtitle
+          : l10n.voiceSubtitle,
       step: widget.step,
       bottom: Column(
         children: [
@@ -851,8 +905,12 @@ final class _ProfileOnboardingStepContentState
     ProfileOnboardingBloc bloc,
   ) {
     return _StepLayout(
-      title: l10n.locationPermissionTitle,
-      subtitle: l10n.locationPermissionSubtitle,
+      title: widget.representativeMode
+          ? l10n.representativeLocationPermissionTitle
+          : l10n.locationPermissionTitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativeLocationPermissionSubtitle
+          : l10n.locationPermissionSubtitle,
       step: widget.step,
       bottom: _FigmaPrimaryButton(
         label: l10n.enableLocation,
@@ -889,8 +947,12 @@ final class _ProfileOnboardingStepContentState
     }
     final count = _aboutMeController.text.length;
     return _StepLayout(
-      title: l10n.aboutMeTitle,
-      subtitle: l10n.aboutMeSubtitle,
+      title: widget.representativeMode
+          ? l10n.representativeAboutTitle
+          : l10n.aboutMeTitle,
+      subtitle: widget.representativeMode
+          ? l10n.representativeAboutSubtitle
+          : l10n.aboutMeSubtitle,
       step: widget.step,
       keyboardAware: true,
       bottom: Column(
@@ -922,7 +984,9 @@ final class _ProfileOnboardingStepContentState
         children: [
           _AboutMeTextArea(
             controller: _aboutMeController,
-            hint: l10n.aboutMeHint,
+            hint: widget.representativeMode
+                ? l10n.representativeAboutHint
+                : l10n.aboutMeHint,
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -1505,23 +1569,45 @@ final class _OnboardingWizardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = switch (step) {
-      OnboardingStep.identity => .08,
-      OnboardingStep.birthDate => .15,
-      OnboardingStep.education => .23,
-      OnboardingStep.height => .31,
-      OnboardingStep.location => .38,
-      OnboardingStep.healthStatus => .46,
-      OnboardingStep.maritalStatus => .54,
-      OnboardingStep.photos => .62,
-      OnboardingStep.mainPhoto => .69,
-      OnboardingStep.faceVerification => .77,
-      OnboardingStep.aboutMe => .85,
-      OnboardingStep.voiceIntro => .92,
-      OnboardingStep.locationPermission => .96,
-      OnboardingStep.success || OnboardingStep.profileReady => 1.0,
-      _ => 0.0,
-    };
+    final representativeMode =
+        context.read<ProfileOnboardingBloc>().state.draft?.candidateType ==
+        CandidateType.representative;
+    final progress = representativeMode
+        ? switch (step) {
+            OnboardingStep.identity => .24,
+            OnboardingStep.birthDate => .29,
+            OnboardingStep.education => .35,
+            OnboardingStep.height => .41,
+            OnboardingStep.location => .47,
+            OnboardingStep.healthStatus => .53,
+            OnboardingStep.maritalStatus => .59,
+            OnboardingStep.photos => .65,
+            OnboardingStep.mainPhoto => .71,
+            OnboardingStep.aboutMe => .76,
+            OnboardingStep.voiceIntro => .82,
+            OnboardingStep.locationPermission => .88,
+            OnboardingStep.representativeContact => .94,
+            OnboardingStep.representativePledge ||
+            OnboardingStep.representativeReady => 1.0,
+            _ => 0.0,
+          }
+        : switch (step) {
+            OnboardingStep.identity => .08,
+            OnboardingStep.birthDate => .15,
+            OnboardingStep.education => .23,
+            OnboardingStep.height => .31,
+            OnboardingStep.location => .38,
+            OnboardingStep.healthStatus => .46,
+            OnboardingStep.maritalStatus => .54,
+            OnboardingStep.photos => .62,
+            OnboardingStep.mainPhoto => .69,
+            OnboardingStep.faceVerification => .77,
+            OnboardingStep.aboutMe => .85,
+            OnboardingStep.voiceIntro => .92,
+            OnboardingStep.locationPermission => .96,
+            OnboardingStep.success || OnboardingStep.profileReady => 1.0,
+            _ => 0.0,
+          };
     final percent = (progress * 100).round();
     return SizedBox(
       height: 36,

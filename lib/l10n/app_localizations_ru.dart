@@ -460,6 +460,252 @@ class AppLocalizationsRu extends AppLocalizations {
       'Для представителя предусмотрена отдельная анкета; она будет доступна позже.';
 
   @override
+  String get representativeIntroTitle => 'Вы вошли как представитель';
+
+  @override
+  String get representativeIntroSubtitle =>
+      'Представитель — близкий родственник кандидата. Вы заполняете анкету и рассматриваете предложения от его имени.';
+
+  @override
+  String get representativeConsentRequiredTitle =>
+      'Требуется согласие кандидата';
+
+  @override
+  String get representativeConsentRequiredBody =>
+      'После заполнения анкеты кандидату отправляется SMS. До подтверждения профиль будет скрыт.';
+
+  @override
+  String get representativeIntroFootnote =>
+      'Сначала мы спросим о вас, затем о кандидате.';
+
+  @override
+  String get startLabel => 'Начать';
+
+  @override
+  String get representativeSelfSection => 'ЧАСТЬ 1 · О ВАС';
+
+  @override
+  String get representativeSelfTitle => 'О вас';
+
+  @override
+  String get representativeSelfSubtitle =>
+      'Кандидат увидит это имя в запросе согласия.';
+
+  @override
+  String get representativeRelationTitle => 'Кем вы приходитесь кандидату?';
+
+  @override
+  String get representativeCandidateSection => 'ЧАСТЬ 2 · О КАНДИДАТЕ';
+
+  @override
+  String get representativeCandidateTypeTitle => 'Кто кандидат?';
+
+  @override
+  String get representativeCandidateTypeSubtitle =>
+      'Все следующие вопросы относятся к кандидату, а не к вам.';
+
+  @override
+  String get representativeBrideTitle => 'Невеста';
+
+  @override
+  String get representativeBrideSubtitle => 'Кандидат-женщина';
+
+  @override
+  String get representativeGroomTitle => 'Жених';
+
+  @override
+  String get representativeGroomSubtitle => 'Кандидат-мужчина';
+
+  @override
+  String get representativeCandidateIdentityTitle => 'Имя и фамилия кандидата';
+
+  @override
+  String get representativeCandidateIdentitySubtitle =>
+      'Кандидат подтвердит эти данные и сможет исправить их позже.';
+
+  @override
+  String get representativeBirthDateTitle => 'Год рождения кандидата';
+
+  @override
+  String get representativeEducationTitle => 'Образование кандидата';
+
+  @override
+  String get representativeHeightWeightTitle => 'Рост и вес кандидата';
+
+  @override
+  String get representativeHeightInputLabel => 'Рост кандидата';
+
+  @override
+  String get representativeWeightInputLabel => 'Вес кандидата';
+
+  @override
+  String get representativeLocationTitle => 'Где живёт кандидат?';
+
+  @override
+  String get representativeHealthStatusTitle => 'Состояние здоровья кандидата';
+
+  @override
+  String get representativeMaritalStatusTitle => 'Семейное положение кандидата';
+
+  @override
+  String get representativeChildrenCountLabel => 'Количество детей кандидата';
+
+  @override
+  String get representativeChildrenNotLivingTitle =>
+      'Дети не живут с кандидатом';
+
+  @override
+  String get representativePhotoTitle => 'Фотографии кандидата';
+
+  @override
+  String get representativePhotoHint =>
+      'До 5 фотографий. Их увидят только люди, одобренные кандидатом.';
+
+  @override
+  String get representativeMainPhotoSubtitle =>
+      'Эта фотография будет первой в профиле кандидата.';
+
+  @override
+  String get representativeAboutTitle => 'О кандидате';
+
+  @override
+  String get representativeAboutSubtitle =>
+      'Необязательно. Пишите о кандидате, а не о себе.';
+
+  @override
+  String get representativeAboutHint =>
+      'Напишите 2–3 предложения о работе, интересах и семейных ценностях кандидата...';
+
+  @override
+  String get representativeVoiceTitle => 'Голосовое представление кандидата';
+
+  @override
+  String get representativeVoiceSubtitle =>
+      'Необязательно. Кандидат сможет перезаписать его позже.';
+
+  @override
+  String get representativeLocationPermissionTitle =>
+      'Местоположение кандидата';
+
+  @override
+  String get representativeLocationPermissionSubtitle =>
+      'Необязательно. Точный адрес никому не показывается.';
+
+  @override
+  String get representativeConsentSection => 'ЧАСТЬ 3 · СОГЛАСИЕ';
+
+  @override
+  String get representativeContactTitle => 'Телефон кандидата';
+
+  @override
+  String get representativeContactSubtitle =>
+      'На этот контакт будет отправлен запрос согласия. До подтверждения анкета скрыта.';
+
+  @override
+  String get representativeContactLabel => 'Телефон / email';
+
+  @override
+  String get representativeContactWarningTitle =>
+      'Контакт должен принадлежать кандидату';
+
+  @override
+  String get representativeContactWarningBody =>
+      'Если указать свой контакт, согласие будет недействительным, а профиль может быть заблокирован.';
+
+  @override
+  String get representativeSendConsent => 'Отправить запрос согласия';
+
+  @override
+  String get representativeCandidateNoApp =>
+      'Кандидат не пользуется приложением';
+
+  @override
+  String get representativeConsentSentTitle => 'Запрос отправлен';
+
+  @override
+  String representativeConsentSentSubtitle(String firstName) {
+    return 'Ожидаем подтверждения от $firstName. До этого анкета скрыта.';
+  }
+
+  @override
+  String get representativeSmsSentTitle => 'Кандидату отправлено SMS';
+
+  @override
+  String representativeSmsSentBody(String representativeName) {
+    return '$representativeName заполнил(а) анкету от вашего имени. Вы согласны?';
+  }
+
+  @override
+  String get representativeConsentRevocation =>
+      'Кандидат может отозвать согласие в любое время — анкета сразу будет скрыта.';
+
+  @override
+  String get understoodLabel => 'Понятно';
+
+  @override
+  String get resendRequestLabel => 'Отправить повторно';
+
+  @override
+  String get representativePledgeTitle => 'Подтвердите ответственность';
+
+  @override
+  String get representativePledgeSubtitle =>
+      'Этот шаг обязателен: вы вводите данные от имени другого человека.';
+
+  @override
+  String get representativePledgePointOne =>
+      'Данные кандидата верны и внесены с его согласия.';
+
+  @override
+  String get representativePledgePointTwo =>
+      'Я не буду вмешиваться в личные разговоры кандидата.';
+
+  @override
+  String get representativePledgePointThree =>
+      'Я буду рассматривать предложения в интересах кандидата.';
+
+  @override
+  String get representativeReadyTitle => 'Ваш профиль готов!';
+
+  @override
+  String get representativeReadySubtitle =>
+      'Всё сохранено. Теперь можно смотреть подходящих кандидатов.';
+
+  @override
+  String get representativeSetCriteria => 'Настроить критерии поиска';
+
+  @override
+  String get laterLabel => 'Позже';
+
+  @override
+  String get candidateConsentEyebrow => 'НА ТЕЛЕФОНЕ КАНДИДАТА';
+
+  @override
+  String get candidateConsentTitle => 'От вашего имени заполнили анкету';
+
+  @override
+  String candidateConsentBody(String representativeName, String relation) {
+    return '$representativeName ($relation) заполнил(а) анкету для вас. Без вашего согласия она скрыта.';
+  }
+
+  @override
+  String get candidateConsentApproveTitle => 'Если вы согласитесь';
+
+  @override
+  String get candidateConsentApproveBody =>
+      'Анкета станет активной и начнёт получать предложения. Позже её можно редактировать.';
+
+  @override
+  String get candidateConsentRejectHint =>
+      'При отказе анкета будет удалена, а представитель получит уведомление.';
+
+  @override
+  String get agreeLabel => 'Согласен(на)';
+
+  @override
+  String get rejectLabel => 'Отказать';
+
+  @override
   String get backLabel => 'Назад';
 
   @override

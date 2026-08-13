@@ -10,6 +10,14 @@ abstract interface class OnboardingRepository {
 
   Future<Either<Failure, ProfileBootstrap>> getMyProfile();
 
+  Future<Either<Failure, RepresentativeInfo>> createRepresentativeInfo(
+    RepresentativeInfoRequest request,
+  );
+
+  Future<Either<Failure, RepresentativeInfo>> sendRepresentativeConsent(
+    RepresentativeInfoRequest request,
+  );
+
   Future<Either<Failure, ProfilePhoto>> uploadPhoto({
     required String profileId,
     required String localFilePath,
@@ -60,4 +68,6 @@ abstract interface class OnboardingRepository {
   Future<Either<Failure, ReferencePage<MaritalStatus>>> getMaritalStatuses(
     int page,
   );
+
+  Future<Either<Failure, ReferencePage<Kinship>>> getKinships(int page);
 }

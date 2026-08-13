@@ -14,6 +14,7 @@ import 'package:raqamli_sovchi/features/onboarding/domain/repositories/onboardin
 import 'package:raqamli_sovchi/features/onboarding/presentation/bloc/profile_onboarding_bloc.dart';
 import 'package:raqamli_sovchi/features/onboarding/presentation/bloc/profile_onboarding_state.dart';
 import 'package:raqamli_sovchi/features/onboarding/presentation/widgets/profile_onboarding_step_content.dart';
+import 'package:raqamli_sovchi/features/onboarding/presentation/widgets/representative_onboarding_step_content.dart';
 import 'package:raqamli_sovchi/l10n/app_localizations.dart';
 
 final class _MockOnboardingRepository extends Mock
@@ -545,6 +546,74 @@ void main() {
     expect(find.text('Keyinroq — avval nomzodlarni ko‘raman'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('representative identity fits a keyboard-height viewport', (
+    tester,
+  ) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.representativeIdentity,
+      size: const Size(390, 420),
+      representative: true,
+      state: ProfileOnboardingState(
+        status: ProfileOnboardingStatus.editing,
+        draft: ProfileOnboardingDraft(
+          ownerUserId: 'user-1',
+          candidateType: CandidateType.representative,
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
+
+    expect(find.byType(TextField), findsNWidgets(2));
+    expect(find.text('O‘zingiz haqingizda'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('representative bride uses candidate measurement defaults', (
+    tester,
+  ) async {
+    final bloc = _createBloc();
+    addTearDown(bloc.close);
+
+    await _pumpStep(
+      tester,
+      bloc: bloc,
+      step: OnboardingStep.height,
+      size: const Size(390, 844),
+      representative: true,
+      state: ProfileOnboardingState(
+        status: ProfileOnboardingStatus.editing,
+        draft: ProfileOnboardingDraft(
+          ownerUserId: 'user-1',
+          candidateType: CandidateType.representative,
+          representedCandidateType: CandidateType.bride,
+          updatedAt: DateTime.utc(2026),
+        ),
+      ),
+    );
+
+    final fields = tester.widgetList<TextField>(find.byType(TextField));
+    expect(fields.elementAt(0).controller?.text, '165');
+    expect(fields.elementAt(1).controller?.text, '63');
+    expect(find.text('Nomzodning bo‘yi va vazni'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  test('representative sequence omits face verification', () {
+    expect(
+      representativeOnboardingSteps,
+      isNot(contains(OnboardingStep.faceVerification)),
+    );
+    expect(
+      representativeOnboardingSteps.indexOf(OnboardingStep.aboutMe),
+      representativeOnboardingSteps.indexOf(OnboardingStep.mainPhoto) + 1,
+    );
+  });
 }
 
 ProfileOnboardingBloc _createBloc({
@@ -571,6 +640,7 @@ Future<void> _pumpStep(
   required OnboardingStep step,
   required Size size,
   ProfileOnboardingState? state,
+  bool representative = false,
 }) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
@@ -586,18 +656,32 @@ Future<void> _pumpStep(
         value: bloc,
         child: Scaffold(
           body: SafeArea(
-            child: ProfileOnboardingStepContent(
-              step: step,
-              state:
-                  state ??
-                  ProfileOnboardingState(
-                    status: ProfileOnboardingStatus.editing,
-                    draft: ProfileOnboardingDraft(
-                      ownerUserId: 'user-1',
-                      updatedAt: DateTime.utc(2026),
-                    ),
+            child: representative
+                ? RepresentativeOnboardingStepContent(
+                    step: step,
+                    state:
+                        state ??
+                        ProfileOnboardingState(
+                          status: ProfileOnboardingStatus.editing,
+                          draft: ProfileOnboardingDraft(
+                            ownerUserId: 'user-1',
+                            candidateType: CandidateType.representative,
+                            updatedAt: DateTime.utc(2026),
+                          ),
+                        ),
+                  )
+                : ProfileOnboardingStepContent(
+                    step: step,
+                    state:
+                        state ??
+                        ProfileOnboardingState(
+                          status: ProfileOnboardingStatus.editing,
+                          draft: ProfileOnboardingDraft(
+                            ownerUserId: 'user-1',
+                            updatedAt: DateTime.utc(2026),
+                          ),
+                        ),
                   ),
-            ),
           ),
         ),
       ),

@@ -21,6 +21,25 @@ final class ProfileOnboardingDraftModel {
         candidateType: CandidateType.values
             .where((type) => type.apiValue == candidateValue)
             .firstOrNull,
+        representativeFirstName: json['representativeFirstName']?.toString(),
+        representativeLastName: json['representativeLastName']?.toString(),
+        kinshipId: json['kinshipId']?.toString(),
+        representedCandidateType: CandidateType.values
+            .where(
+              (type) =>
+                  type.apiValue == json['representedCandidateType']?.toString(),
+            )
+            .firstOrNull,
+        representativeInfoId: json['representativeInfoId']?.toString(),
+        candidateContact: json['candidateContact']?.toString(),
+        candidateUsesApp: json['candidateUsesApp'] == true,
+        consentRequestSent: json['consentRequestSent'] == true,
+        representativeAccuracyAccepted:
+            json['representativeAccuracyAccepted'] == true,
+        representativePrivacyAccepted:
+            json['representativePrivacyAccepted'] == true,
+        representativeInterestAccepted:
+            json['representativeInterestAccepted'] == true,
         pledgeAcceptedTerms: json['pledgeAcceptedTerms'] == true,
         birthDate: DateTime.tryParse((json['birthDate'] ?? '').toString()),
         firstName: json['firstName']?.toString(),
@@ -65,6 +84,17 @@ final class ProfileOnboardingDraftModel {
       'ownerUserId': draft.ownerUserId,
       'currentStep': draft.currentStep.name,
       'candidateType': draft.candidateType?.apiValue,
+      'representativeFirstName': draft.representativeFirstName,
+      'representativeLastName': draft.representativeLastName,
+      'kinshipId': draft.kinshipId,
+      'representedCandidateType': draft.representedCandidateType?.apiValue,
+      'representativeInfoId': draft.representativeInfoId,
+      'candidateContact': draft.candidateContact,
+      'candidateUsesApp': draft.candidateUsesApp,
+      'consentRequestSent': draft.consentRequestSent,
+      'representativeAccuracyAccepted': draft.representativeAccuracyAccepted,
+      'representativePrivacyAccepted': draft.representativePrivacyAccepted,
+      'representativeInterestAccepted': draft.representativeInterestAccepted,
       'pledgeAcceptedTerms': draft.pledgeAcceptedTerms,
       'birthDate': draft.birthDate?.toUtc().toIso8601String(),
       'firstName': draft.firstName,

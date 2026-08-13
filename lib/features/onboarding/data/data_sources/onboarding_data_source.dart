@@ -10,6 +10,14 @@ abstract interface class OnboardingDataSource {
 
   Future<ProfileBootstrapModel> getMyProfile();
 
+  Future<RepresentativeInfoModel> createRepresentativeInfo(
+    RepresentativeInfoRequest request,
+  );
+
+  Future<RepresentativeInfoModel> sendRepresentativeConsent(
+    RepresentativeInfoRequest request,
+  );
+
   Future<ProfilePhotoModel> uploadPhoto({
     required String profileId,
     required String localFilePath,
@@ -52,6 +60,8 @@ abstract interface class OnboardingDataSource {
   Future<ReferencePageModel<HealthStatusModel>> getHealthStatuses(int page);
 
   Future<ReferencePageModel<MaritalStatusModel>> getMaritalStatuses(int page);
+
+  Future<ReferencePageModel<KinshipModel>> getKinships(int page);
 }
 
 final class RemoteOnboardingDataSource implements OnboardingDataSource {
@@ -62,11 +72,15 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
   static const _photosPath = '/api/v1/accounts/photos/';
   static const _faceVerificationPath = '/api/v1/accounts/face-verify/';
   static const _pledgesPath = '/api/v1/accounts/pledges/';
+  static const _representativesPath = '/api/v1/accounts/representatives/';
+  static const _representativeConsentPath =
+      '/api/v1/accounts/representatives/send-consent-request/';
   static const _educationLevelsPath = '/api/v1/references/education-levels/';
   static const _regionsPath = '/api/v1/locations/region/';
   static const _districtsPath = '/api/v1/locations/district/';
   static const _healthStatusesPath = '/api/v1/references/health-statuses/';
   static const _maritalStatusesPath = '/api/v1/references/marital-statuses/';
+  static const _kinshipsPath = '/api/v1/references/kinships/';
 
   final ApiClient _client;
 
@@ -103,6 +117,28 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
   Future<ProfileBootstrapModel> getMyProfile() async {
     final response = await _client.get<Map<String, dynamic>>(_profileMePath);
     return ProfileBootstrapModel.fromJson(_payload(response.data));
+  }
+
+  @override
+  Future<RepresentativeInfoModel> createRepresentativeInfo(
+    RepresentativeInfoRequest request,
+  ) async {
+    final response = await _client.post<Map<String, dynamic>>(
+      _representativesPath,
+      data: _representativePayload(request),
+    );
+    return RepresentativeInfoModel.fromJson(_payload(response.data));
+  }
+
+  @override
+  Future<RepresentativeInfoModel> sendRepresentativeConsent(
+    RepresentativeInfoRequest request,
+  ) async {
+    final response = await _client.post<Map<String, dynamic>>(
+      _representativeConsentPath,
+      data: _representativePayload(request),
+    );
+    return RepresentativeInfoModel.fromJson(_payload(response.data));
   }
 
   @override
@@ -295,6 +331,32 @@ final class RemoteOnboardingDataSource implements OnboardingDataSource {
       hasNextPage: responsePage.hasNextPage,
     );
   }
+
+  @override
+  Future<ReferencePageModel<KinshipModel>> getKinships(int page) async {
+    final response = await _client.get<Map<String, dynamic>>(
+      _kinshipsPath,
+      queryParameters: {'page': page},
+    );
+    final responsePage = _referencePage(response.data, page);
+    return ReferencePageModel(
+      items: responsePage.items
+          .map(KinshipModel.fromJson)
+          .toList(growable: false),
+      page: page,
+      hasNextPage: responsePage.hasNextPage,
+    );
+  }
+}
+
+Map<String, dynamic> _representativePayload(RepresentativeInfoRequest request) {
+  return {
+    'profile': request.profileId,
+    'candidate_role': request.candidateType.apiValue,
+    'kinship': request.kinshipId,
+    if (request.candidateContact?.trim().isNotEmpty ?? false)
+      'candidate_contact': request.candidateContact!.trim(),
+  };
 }
 
 final class _RawReferencePage {

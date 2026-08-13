@@ -460,6 +460,254 @@ class AppLocalizationsEn extends AppLocalizations {
       'The representative flow has its own questionnaire and will be available separately.';
 
   @override
+  String get representativeIntroTitle => 'You entered as a representative';
+
+  @override
+  String get representativeIntroSubtitle =>
+      'A representative is a close relative of the candidate. You complete the profile and review incoming proposals on their behalf.';
+
+  @override
+  String get representativeConsentRequiredTitle =>
+      'The candidate’s consent is required';
+
+  @override
+  String get representativeConsentRequiredBody =>
+      'An SMS is sent after the profile is completed. The profile remains hidden until the candidate confirms.';
+
+  @override
+  String get representativeIntroFootnote =>
+      'We will first ask about you, then about the candidate.';
+
+  @override
+  String get startLabel => 'Start';
+
+  @override
+  String get representativeSelfSection => 'PART 1 · ABOUT YOU';
+
+  @override
+  String get representativeSelfTitle => 'About you';
+
+  @override
+  String get representativeSelfSubtitle =>
+      'The candidate will see this name in the consent request.';
+
+  @override
+  String get representativeRelationTitle =>
+      'How are you related to the candidate?';
+
+  @override
+  String get representativeCandidateSection => 'PART 2 · ABOUT THE CANDIDATE';
+
+  @override
+  String get representativeCandidateTypeTitle => 'Who is the candidate?';
+
+  @override
+  String get representativeCandidateTypeSubtitle =>
+      'All following questions are about the candidate, not about you.';
+
+  @override
+  String get representativeBrideTitle => 'Bride';
+
+  @override
+  String get representativeBrideSubtitle => 'Female candidate';
+
+  @override
+  String get representativeGroomTitle => 'Groom';
+
+  @override
+  String get representativeGroomSubtitle => 'Male candidate';
+
+  @override
+  String get representativeCandidateIdentityTitle =>
+      'Candidate’s first and last name';
+
+  @override
+  String get representativeCandidateIdentitySubtitle =>
+      'The candidate will confirm this information and can correct it later.';
+
+  @override
+  String get representativeBirthDateTitle => 'Candidate’s birth year';
+
+  @override
+  String get representativeEducationTitle => 'Candidate’s education';
+
+  @override
+  String get representativeHeightWeightTitle => 'Candidate’s height and weight';
+
+  @override
+  String get representativeHeightInputLabel => 'Candidate’s height';
+
+  @override
+  String get representativeWeightInputLabel => 'Candidate’s weight';
+
+  @override
+  String get representativeLocationTitle => 'Where does the candidate live?';
+
+  @override
+  String get representativeHealthStatusTitle => 'Candidate’s health status';
+
+  @override
+  String get representativeMaritalStatusTitle => 'Candidate’s marital status';
+
+  @override
+  String get representativeChildrenCountLabel =>
+      'Candidate’s number of children';
+
+  @override
+  String get representativeChildrenNotLivingTitle =>
+      'The children do not live with the candidate';
+
+  @override
+  String get representativePhotoTitle => 'Candidate’s photos';
+
+  @override
+  String get representativePhotoHint =>
+      'Up to 5 photos. Only people approved by the candidate can see them.';
+
+  @override
+  String get representativeMainPhotoSubtitle =>
+      'This photo appears first on the candidate’s profile.';
+
+  @override
+  String get representativeAboutTitle => 'About the candidate';
+
+  @override
+  String get representativeAboutSubtitle =>
+      'Optional. Answer about the candidate, not about yourself.';
+
+  @override
+  String get representativeAboutHint =>
+      'Write 2–3 sentences about the candidate’s work, interests, and family values...';
+
+  @override
+  String get representativeVoiceTitle => 'Candidate’s voice introduction';
+
+  @override
+  String get representativeVoiceSubtitle =>
+      'Optional. The candidate can record it again later.';
+
+  @override
+  String get representativeLocationPermissionTitle => 'Candidate’s location';
+
+  @override
+  String get representativeLocationPermissionSubtitle =>
+      'Optional. The exact address is never shown.';
+
+  @override
+  String get representativeConsentSection => 'PART 3 · CONSENT';
+
+  @override
+  String get representativeContactTitle => 'Candidate’s phone number';
+
+  @override
+  String get representativeContactSubtitle =>
+      'A consent request will be sent here. The profile remains hidden until confirmed.';
+
+  @override
+  String get representativeContactLabel => 'Phone number / email';
+
+  @override
+  String get representativeContactWarningTitle =>
+      'This must belong to the candidate';
+
+  @override
+  String get representativeContactWarningBody =>
+      'Using your own contact invalidates consent and may block the profile.';
+
+  @override
+  String get representativeSendConsent => 'Send consent request';
+
+  @override
+  String get representativeCandidateNoApp =>
+      'The candidate does not use the app';
+
+  @override
+  String get representativeConsentSentTitle => 'Request sent';
+
+  @override
+  String representativeConsentSentSubtitle(String firstName) {
+    return 'Waiting for $firstName to confirm. The profile stays hidden until then.';
+  }
+
+  @override
+  String get representativeSmsSentTitle => 'SMS sent to the candidate';
+
+  @override
+  String representativeSmsSentBody(String representativeName) {
+    return '$representativeName completed a profile on your behalf. Do you consent?';
+  }
+
+  @override
+  String get representativeConsentRevocation =>
+      'The candidate can withdraw consent at any time and the profile will be hidden immediately.';
+
+  @override
+  String get understoodLabel => 'Understood';
+
+  @override
+  String get resendRequestLabel => 'Send again';
+
+  @override
+  String get representativePledgeTitle => 'Confirm your responsibility';
+
+  @override
+  String get representativePledgeSubtitle =>
+      'This step is required because you are entering information for another person.';
+
+  @override
+  String get representativePledgePointOne =>
+      'The candidate’s information is accurate and entered with their consent.';
+
+  @override
+  String get representativePledgePointTwo =>
+      'I will not interfere with the candidate’s private conversations.';
+
+  @override
+  String get representativePledgePointThree =>
+      'I will review proposals in the candidate’s best interest.';
+
+  @override
+  String get representativeReadyTitle => 'Your profile is ready!';
+
+  @override
+  String get representativeReadySubtitle =>
+      'Everything is saved. You can now view suitable candidates.';
+
+  @override
+  String get representativeSetCriteria => 'Set search criteria';
+
+  @override
+  String get laterLabel => 'Later';
+
+  @override
+  String get candidateConsentEyebrow => 'ON THE CANDIDATE’S PHONE';
+
+  @override
+  String get candidateConsentTitle => 'A profile was completed for you';
+
+  @override
+  String candidateConsentBody(String representativeName, String relation) {
+    return '$representativeName ($relation) completed a profile for you. It remains hidden without your consent.';
+  }
+
+  @override
+  String get candidateConsentApproveTitle => 'If you consent';
+
+  @override
+  String get candidateConsentApproveBody =>
+      'The profile becomes active and can receive proposals. You can edit it later.';
+
+  @override
+  String get candidateConsentRejectHint =>
+      'If you reject it, the profile is deleted and the representative is notified.';
+
+  @override
+  String get agreeLabel => 'I agree';
+
+  @override
+  String get rejectLabel => 'Reject';
+
+  @override
   String get backLabel => 'Back';
 
   @override

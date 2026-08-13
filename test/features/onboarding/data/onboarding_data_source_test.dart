@@ -73,6 +73,78 @@ void main() {
     ]);
   });
 
+  test('uses represented candidate type for representative gender', () async {
+    final client = _RecordingApiClient(responseData: {'id': 'profile-1'});
+    final dataSource = RemoteOnboardingDataSource(client);
+
+    await dataSource.createProfile(
+      const ProfileBootstrapRequest(
+        firstName: 'Safarali',
+        lastName: 'Muxtorov',
+        candidateType: CandidateType.representative,
+        representedCandidateType: CandidateType.groom,
+        birthYear: 1995,
+        heightCm: 175,
+        regionId: 'region-1',
+        districtId: 'district-1',
+        educationLevelId: 'education-1',
+        maritalStatusId: 'marital-1',
+        hasChildren: false,
+        childrenCount: 0,
+      ),
+    );
+
+    expect((client.postData! as Map<String, dynamic>)['gender'], 'male');
+    expect(
+      (client.postData! as Map<String, dynamic>)['candidate_type'],
+      'representative',
+    );
+  });
+
+  test('loads representative kinships from references', () async {
+    final client = _RecordingApiClient(
+      responseData: {
+        'count': 1,
+        'results': [
+          {'id': 'kinship-1', 'name': 'Xola'},
+        ],
+      },
+    );
+    final dataSource = RemoteOnboardingDataSource(client);
+
+    final result = await dataSource.getKinships(1);
+
+    expect(client.getPath, '/api/v1/references/kinships/');
+    expect(result.items.single.name, 'Xola');
+  });
+
+  test('sends representative consent with candidate contact', () async {
+    final client = _RecordingApiClient(
+      responseData: {'id': 'representative-1', 'is_approved': false},
+    );
+    final dataSource = RemoteOnboardingDataSource(client);
+
+    await dataSource.sendRepresentativeConsent(
+      const RepresentativeInfoRequest(
+        profileId: 'profile-1',
+        candidateType: CandidateType.bride,
+        kinshipId: 'kinship-1',
+        candidateContact: '+998901234567',
+      ),
+    );
+
+    expect(
+      client.postPath,
+      '/api/v1/accounts/representatives/send-consent-request/',
+    );
+    expect(client.postData, {
+      'profile': 'profile-1',
+      'candidate_role': 'bride',
+      'kinship': 'kinship-1',
+      'candidate_contact': '+998901234567',
+    });
+  });
+
   test('posts pledge with user id and consent flags', () async {
     final client = _RecordingApiClient();
     final dataSource = RemoteOnboardingDataSource(client);

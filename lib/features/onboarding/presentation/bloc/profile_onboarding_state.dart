@@ -11,7 +11,6 @@ enum ProfileOnboardingStatus {
   submitting,
   completed,
   cancelled,
-  representativeFlow,
 }
 
 enum ReferenceStatus { idle, loading, loaded, empty, failure }
@@ -25,11 +24,13 @@ final class ProfileOnboardingState extends Equatable {
     this.districts = const [],
     this.healthStatuses = const [],
     this.maritalStatuses = const [],
+    this.kinships = const [],
     this.educationStatus = ReferenceStatus.idle,
     this.regionStatus = ReferenceStatus.idle,
     this.districtStatus = ReferenceStatus.idle,
     this.healthStatusStatus = ReferenceStatus.idle,
     this.maritalStatusStatus = ReferenceStatus.idle,
+    this.kinshipStatus = ReferenceStatus.idle,
     this.isVoiceRecording = false,
     this.isVoicePlaying = false,
     this.isLocationLoading = false,
@@ -43,11 +44,13 @@ final class ProfileOnboardingState extends Equatable {
   final List<District> districts;
   final List<HealthStatus> healthStatuses;
   final List<MaritalStatus> maritalStatuses;
+  final List<Kinship> kinships;
   final ReferenceStatus educationStatus;
   final ReferenceStatus regionStatus;
   final ReferenceStatus districtStatus;
   final ReferenceStatus healthStatusStatus;
   final ReferenceStatus maritalStatusStatus;
+  final ReferenceStatus kinshipStatus;
   final bool isVoiceRecording;
   final bool isVoicePlaying;
   final bool isLocationLoading;
@@ -65,11 +68,13 @@ final class ProfileOnboardingState extends Equatable {
     List<District>? districts,
     List<HealthStatus>? healthStatuses,
     List<MaritalStatus>? maritalStatuses,
+    List<Kinship>? kinships,
     ReferenceStatus? educationStatus,
     ReferenceStatus? regionStatus,
     ReferenceStatus? districtStatus,
     ReferenceStatus? healthStatusStatus,
     ReferenceStatus? maritalStatusStatus,
+    ReferenceStatus? kinshipStatus,
     bool? isVoiceRecording,
     bool? isVoicePlaying,
     bool? isLocationLoading,
@@ -84,11 +89,13 @@ final class ProfileOnboardingState extends Equatable {
       districts: districts ?? this.districts,
       healthStatuses: healthStatuses ?? this.healthStatuses,
       maritalStatuses: maritalStatuses ?? this.maritalStatuses,
+      kinships: kinships ?? this.kinships,
       educationStatus: educationStatus ?? this.educationStatus,
       regionStatus: regionStatus ?? this.regionStatus,
       districtStatus: districtStatus ?? this.districtStatus,
       healthStatusStatus: healthStatusStatus ?? this.healthStatusStatus,
       maritalStatusStatus: maritalStatusStatus ?? this.maritalStatusStatus,
+      kinshipStatus: kinshipStatus ?? this.kinshipStatus,
       isVoiceRecording: isVoiceRecording ?? this.isVoiceRecording,
       isVoicePlaying: isVoicePlaying ?? this.isVoicePlaying,
       isLocationLoading: isLocationLoading ?? this.isLocationLoading,
@@ -105,11 +112,13 @@ final class ProfileOnboardingState extends Equatable {
     districts,
     healthStatuses,
     maritalStatuses,
+    kinships,
     educationStatus,
     regionStatus,
     districtStatus,
     healthStatusStatus,
     maritalStatusStatus,
+    kinshipStatus,
     isVoiceRecording,
     isVoicePlaying,
     isLocationLoading,

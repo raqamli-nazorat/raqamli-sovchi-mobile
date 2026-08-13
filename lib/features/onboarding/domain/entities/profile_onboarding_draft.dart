@@ -20,7 +20,59 @@ enum OnboardingStep {
   locationPermission,
   success,
   profileReady,
+  representativeIntro,
+  representativeIdentity,
+  representativeRelation,
+  representativeCandidateType,
+  representativeContact,
+  representativeConsentSent,
+  representativePledge,
+  representativeReady,
 }
+
+const standardOnboardingSteps = <OnboardingStep>[
+  OnboardingStep.candidateType,
+  OnboardingStep.pledge,
+  OnboardingStep.identity,
+  OnboardingStep.birthDate,
+  OnboardingStep.education,
+  OnboardingStep.height,
+  OnboardingStep.location,
+  OnboardingStep.healthStatus,
+  OnboardingStep.maritalStatus,
+  OnboardingStep.photos,
+  OnboardingStep.mainPhoto,
+  OnboardingStep.faceVerification,
+  OnboardingStep.aboutMe,
+  OnboardingStep.voiceIntro,
+  OnboardingStep.locationPermission,
+  OnboardingStep.success,
+  OnboardingStep.profileReady,
+];
+
+const representativeOnboardingSteps = <OnboardingStep>[
+  OnboardingStep.candidateType,
+  OnboardingStep.representativeIntro,
+  OnboardingStep.representativeIdentity,
+  OnboardingStep.representativeRelation,
+  OnboardingStep.representativeCandidateType,
+  OnboardingStep.identity,
+  OnboardingStep.birthDate,
+  OnboardingStep.education,
+  OnboardingStep.height,
+  OnboardingStep.location,
+  OnboardingStep.healthStatus,
+  OnboardingStep.maritalStatus,
+  OnboardingStep.photos,
+  OnboardingStep.mainPhoto,
+  OnboardingStep.aboutMe,
+  OnboardingStep.voiceIntro,
+  OnboardingStep.locationPermission,
+  OnboardingStep.representativeContact,
+  OnboardingStep.representativeConsentSent,
+  OnboardingStep.representativePledge,
+  OnboardingStep.representativeReady,
+];
 
 enum PhotoUploadStatus { pending, uploading, uploaded, failed }
 
@@ -117,6 +169,17 @@ final class ProfileOnboardingDraft extends Equatable {
     required this.updatedAt,
     this.currentStep = OnboardingStep.candidateType,
     this.candidateType,
+    this.representativeFirstName,
+    this.representativeLastName,
+    this.kinshipId,
+    this.representedCandidateType,
+    this.representativeInfoId,
+    this.candidateContact,
+    this.candidateUsesApp = false,
+    this.consentRequestSent = false,
+    this.representativeAccuracyAccepted = false,
+    this.representativePrivacyAccepted = false,
+    this.representativeInterestAccepted = false,
     this.pledgeAcceptedTerms = false,
     this.birthDate,
     this.firstName,
@@ -145,6 +208,17 @@ final class ProfileOnboardingDraft extends Equatable {
   final String ownerUserId;
   final OnboardingStep currentStep;
   final CandidateType? candidateType;
+  final String? representativeFirstName;
+  final String? representativeLastName;
+  final String? kinshipId;
+  final CandidateType? representedCandidateType;
+  final String? representativeInfoId;
+  final String? candidateContact;
+  final bool candidateUsesApp;
+  final bool consentRequestSent;
+  final bool representativeAccuracyAccepted;
+  final bool representativePrivacyAccepted;
+  final bool representativeInterestAccepted;
   final bool pledgeAcceptedTerms;
   final DateTime? birthDate;
   final String? firstName;
@@ -172,7 +246,13 @@ final class ProfileOnboardingDraft extends Equatable {
 
   bool get hasQuestionnaire =>
       candidateType != null &&
-      pledgeAcceptedTerms &&
+      (candidateType != CandidateType.representative ||
+          ((representativeFirstName?.trim().isNotEmpty ?? false) &&
+              (representativeLastName?.trim().isNotEmpty ?? false) &&
+              (kinshipId?.isNotEmpty ?? false) &&
+              (representedCandidateType == CandidateType.groom ||
+                  representedCandidateType == CandidateType.bride))) &&
+      (candidateType == CandidateType.representative || pledgeAcceptedTerms) &&
       birthDate != null &&
       (firstName?.trim().isNotEmpty ?? false) &&
       (lastName?.trim().isNotEmpty ?? false) &&
@@ -190,9 +270,25 @@ final class ProfileOnboardingDraft extends Equatable {
 
   bool get hasMainPhoto => mainPhotoServerId?.isNotEmpty ?? false;
 
+  bool get hasAcceptedRepresentativeResponsibility =>
+      representativeAccuracyAccepted &&
+      representativePrivacyAccepted &&
+      representativeInterestAccepted;
+
   ProfileOnboardingDraft copyWith({
     OnboardingStep? currentStep,
     CandidateType? candidateType,
+    String? representativeFirstName,
+    String? representativeLastName,
+    String? kinshipId,
+    CandidateType? representedCandidateType,
+    String? representativeInfoId,
+    String? candidateContact,
+    bool? candidateUsesApp,
+    bool? consentRequestSent,
+    bool? representativeAccuracyAccepted,
+    bool? representativePrivacyAccepted,
+    bool? representativeInterestAccepted,
     bool? pledgeAcceptedTerms,
     DateTime? birthDate,
     String? firstName,
@@ -221,11 +317,31 @@ final class ProfileOnboardingDraft extends Equatable {
     bool clearVoiceIntro = false,
     bool clearAboutMe = false,
     bool clearLocation = false,
+    bool clearCandidateContact = false,
   }) {
     return ProfileOnboardingDraft(
       ownerUserId: ownerUserId,
       currentStep: currentStep ?? this.currentStep,
       candidateType: candidateType ?? this.candidateType,
+      representativeFirstName:
+          representativeFirstName ?? this.representativeFirstName,
+      representativeLastName:
+          representativeLastName ?? this.representativeLastName,
+      kinshipId: kinshipId ?? this.kinshipId,
+      representedCandidateType:
+          representedCandidateType ?? this.representedCandidateType,
+      representativeInfoId: representativeInfoId ?? this.representativeInfoId,
+      candidateContact: clearCandidateContact
+          ? null
+          : candidateContact ?? this.candidateContact,
+      candidateUsesApp: candidateUsesApp ?? this.candidateUsesApp,
+      consentRequestSent: consentRequestSent ?? this.consentRequestSent,
+      representativeAccuracyAccepted:
+          representativeAccuracyAccepted ?? this.representativeAccuracyAccepted,
+      representativePrivacyAccepted:
+          representativePrivacyAccepted ?? this.representativePrivacyAccepted,
+      representativeInterestAccepted:
+          representativeInterestAccepted ?? this.representativeInterestAccepted,
       pledgeAcceptedTerms: pledgeAcceptedTerms ?? this.pledgeAcceptedTerms,
       birthDate: birthDate ?? this.birthDate,
       firstName: firstName ?? this.firstName,
@@ -264,6 +380,17 @@ final class ProfileOnboardingDraft extends Equatable {
     ownerUserId,
     currentStep,
     candidateType,
+    representativeFirstName,
+    representativeLastName,
+    kinshipId,
+    representedCandidateType,
+    representativeInfoId,
+    candidateContact,
+    candidateUsesApp,
+    consentRequestSent,
+    representativeAccuracyAccepted,
+    representativePrivacyAccepted,
+    representativeInterestAccepted,
     pledgeAcceptedTerms,
     birthDate,
     firstName,

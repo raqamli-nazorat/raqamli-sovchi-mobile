@@ -18,6 +18,7 @@ final class ProfileBootstrapRequest extends Equatable {
     required this.childrenCount,
     this.weightKg,
     this.healthStatusId,
+    this.representedCandidateType,
   });
 
   final String firstName;
@@ -34,8 +35,14 @@ final class ProfileBootstrapRequest extends Equatable {
   final bool hasChildren;
   final int childrenCount;
   final String? healthStatusId;
+  final CandidateType? representedCandidateType;
 
-  String get gender => candidateType == CandidateType.groom ? 'male' : 'female';
+  String get gender {
+    final effectiveType = candidateType == CandidateType.representative
+        ? representedCandidateType
+        : candidateType;
+    return effectiveType == CandidateType.groom ? 'male' : 'female';
+  }
 
   @override
   List<Object?> get props => [
@@ -53,7 +60,40 @@ final class ProfileBootstrapRequest extends Equatable {
     childrenCount,
     weightKg,
     healthStatusId,
+    representedCandidateType,
   ];
+}
+
+final class RepresentativeInfoRequest extends Equatable {
+  const RepresentativeInfoRequest({
+    required this.profileId,
+    required this.candidateType,
+    required this.kinshipId,
+    this.candidateContact,
+  });
+
+  final String profileId;
+  final CandidateType candidateType;
+  final String kinshipId;
+  final String? candidateContact;
+
+  @override
+  List<Object?> get props => [
+    profileId,
+    candidateType,
+    kinshipId,
+    candidateContact,
+  ];
+}
+
+final class RepresentativeInfo extends Equatable {
+  const RepresentativeInfo({required this.id, required this.isApproved});
+
+  final String id;
+  final bool isApproved;
+
+  @override
+  List<Object?> get props => [id, isApproved];
 }
 
 final class ProfileBootstrap extends Equatable {

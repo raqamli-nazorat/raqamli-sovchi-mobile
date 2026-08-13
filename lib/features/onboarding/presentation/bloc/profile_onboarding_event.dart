@@ -31,6 +31,60 @@ final class CandidateTypeContinuePressed extends ProfileOnboardingEvent {
   const CandidateTypeContinuePressed();
 }
 
+final class RepresentativeIntroContinuePressed extends ProfileOnboardingEvent {
+  const RepresentativeIntroContinuePressed();
+}
+
+final class RepresentativeIdentitySaved extends ProfileOnboardingEvent {
+  const RepresentativeIdentitySaved({
+    required this.firstName,
+    required this.lastName,
+  });
+
+  final String firstName;
+  final String lastName;
+
+  @override
+  List<Object?> get props => [firstName, lastName];
+}
+
+final class KinshipsRequested extends ProfileOnboardingEvent {
+  const KinshipsRequested({this.loadNextPage = false});
+
+  final bool loadNextPage;
+
+  @override
+  List<Object?> get props => [loadNextPage];
+}
+
+final class RepresentativeRelationSaved extends ProfileOnboardingEvent {
+  const RepresentativeRelationSaved(this.kinshipId);
+
+  final String kinshipId;
+
+  @override
+  List<Object?> get props => [kinshipId];
+}
+
+final class RepresentativeRelationContinuePressed
+    extends ProfileOnboardingEvent {
+  const RepresentativeRelationContinuePressed();
+}
+
+final class RepresentedCandidateTypeSaved extends ProfileOnboardingEvent {
+  const RepresentedCandidateTypeSaved(this.candidateType);
+
+  final CandidateType candidateType;
+
+  @override
+  List<Object?> get props => [candidateType];
+}
+
+final class RepresentedCandidateTypeContinuePressed
+    extends ProfileOnboardingEvent {
+  const RepresentedCandidateTypeContinuePressed();
+}
+
 final class PledgeAcceptanceChanged extends ProfileOnboardingEvent {
   const PledgeAcceptanceChanged(this.accepted);
 
@@ -280,6 +334,41 @@ final class VoicePlaybackRequested extends ProfileOnboardingEvent {
 
 final class LocationPermissionRequested extends ProfileOnboardingEvent {
   const LocationPermissionRequested();
+}
+
+final class RepresentativeContactSubmitted extends ProfileOnboardingEvent {
+  const RepresentativeContactSubmitted(this.contact);
+
+  final String contact;
+
+  @override
+  List<Object?> get props => [contact];
+}
+
+final class RepresentativeCandidateDoesNotUseApp
+    extends ProfileOnboardingEvent {
+  const RepresentativeCandidateDoesNotUseApp();
+}
+
+final class RepresentativeConsentAcknowledged extends ProfileOnboardingEvent {
+  const RepresentativeConsentAcknowledged();
+}
+
+final class RepresentativeResponsibilityChanged extends ProfileOnboardingEvent {
+  const RepresentativeResponsibilityChanged({
+    required this.index,
+    required this.accepted,
+  });
+
+  final int index;
+  final bool accepted;
+
+  @override
+  List<Object?> get props => [index, accepted];
+}
+
+final class RepresentativePledgeContinuePressed extends ProfileOnboardingEvent {
+  const RepresentativePledgeContinuePressed();
 }
 
 final class FaceVerificationRequested extends ProfileOnboardingEvent {

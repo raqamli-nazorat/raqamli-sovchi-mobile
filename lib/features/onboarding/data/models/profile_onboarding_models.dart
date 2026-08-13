@@ -55,3 +55,21 @@ final class FaceVerificationResultModel {
     return FaceVerificationResult(verified: verified, message: message);
   }
 }
+
+final class RepresentativeInfoModel {
+  const RepresentativeInfoModel({required this.id, required this.isApproved});
+
+  factory RepresentativeInfoModel.fromJson(Map<String, dynamic> json) {
+    return RepresentativeInfoModel(
+      id: (json['id'] ?? '').toString(),
+      isApproved: json['is_approved'] == true,
+    );
+  }
+
+  final String id;
+  final bool isApproved;
+
+  RepresentativeInfo toEntity() {
+    return RepresentativeInfo(id: id, isApproved: isApproved);
+  }
+}

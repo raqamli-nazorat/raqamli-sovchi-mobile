@@ -54,4 +54,33 @@ void main() {
     expect(restored.latitude, 41.3111);
     expect(restored.longitude, 69.2797);
   });
+
+  test('representative draft JSON preserves separate people and consent', () {
+    final draft = ProfileOnboardingDraft(
+      ownerUserId: 'user-1',
+      candidateType: CandidateType.representative,
+      representedCandidateType: CandidateType.groom,
+      representativeFirstName: 'Zulfiya',
+      representativeLastName: 'Muxtorova',
+      kinshipId: 'kinship-1',
+      representativeInfoId: 'representative-1',
+      candidateContact: '+998901234567',
+      candidateUsesApp: true,
+      consentRequestSent: true,
+      representativeAccuracyAccepted: true,
+      representativePrivacyAccepted: true,
+      representativeInterestAccepted: true,
+      firstName: 'Safarali',
+      lastName: 'Muxtorov',
+      currentStep: OnboardingStep.representativePledge,
+      updatedAt: DateTime.utc(2026, 8, 13),
+    );
+
+    final restored = ProfileOnboardingDraftModel.fromJson(
+      ProfileOnboardingDraftModel(draft).toJson(),
+    ).draft;
+
+    expect(restored, draft);
+    expect(restored.hasAcceptedRepresentativeResponsibility, isTrue);
+  });
 }

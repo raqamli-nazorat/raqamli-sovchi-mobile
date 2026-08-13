@@ -24,6 +24,26 @@ final class OnboardingRepositoryImpl implements OnboardingRepository {
   }
 
   @override
+  Future<Either<Failure, RepresentativeInfo>> createRepresentativeInfo(
+    RepresentativeInfoRequest request,
+  ) {
+    return _call(
+      () async =>
+          (await _dataSource.createRepresentativeInfo(request)).toEntity(),
+    );
+  }
+
+  @override
+  Future<Either<Failure, RepresentativeInfo>> sendRepresentativeConsent(
+    RepresentativeInfoRequest request,
+  ) {
+    return _call(
+      () async =>
+          (await _dataSource.sendRepresentativeConsent(request)).toEntity(),
+    );
+  }
+
+  @override
   Future<Either<Failure, ProfilePhoto>> uploadPhoto({
     required String profileId,
     required String localFilePath,
@@ -179,6 +199,20 @@ final class OnboardingRepositoryImpl implements OnboardingRepository {
   ) {
     return _call(() async {
       final result = await _dataSource.getMaritalStatuses(page);
+      return ReferencePage(
+        items: result.items
+            .map((item) => item.toEntity())
+            .toList(growable: false),
+        page: result.page,
+        hasNextPage: result.hasNextPage,
+      );
+    });
+  }
+
+  @override
+  Future<Either<Failure, ReferencePage<Kinship>>> getKinships(int page) {
+    return _call(() async {
+      final result = await _dataSource.getKinships(page);
       return ReferencePage(
         items: result.items
             .map((item) => item.toEntity())

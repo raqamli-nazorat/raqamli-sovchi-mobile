@@ -459,6 +459,251 @@ class AppLocalizationsUz extends AppLocalizations {
       'Vakil oqimi alohida anketa bo‘lib, keyinroq ochiladi.';
 
   @override
+  String get representativeIntroTitle => 'Siz vakil sifatida kirdingiz';
+
+  @override
+  String get representativeIntroSubtitle =>
+      'Vakil — nomzodning yaqin qarindoshi: amma, xola, amaki yoki tog‘a. Siz uning nomidan anketa to‘ldirasiz va kelgan takliflarni ko‘rib chiqasiz.';
+
+  @override
+  String get representativeConsentRequiredTitle => 'Nomzodning roziligi shart';
+
+  @override
+  String get representativeConsentRequiredBody =>
+      'Anketa to‘ldirilgach nomzodga SMS yuboriladi. U tasdiqlamaguncha profil hech kimga ko‘rinmaydi.';
+
+  @override
+  String get representativeIntroFootnote =>
+      'Keyingi qadamlarda avval o‘zingiz haqingizda, so‘ng nomzod haqida ma’lumot so‘raymiz.';
+
+  @override
+  String get startLabel => 'Boshlash';
+
+  @override
+  String get representativeSelfSection => '1-QISM · SIZ HAQINGIZDA';
+
+  @override
+  String get representativeSelfTitle => 'O‘zingiz haqingizda';
+
+  @override
+  String get representativeSelfSubtitle =>
+      'Nomzod rozilik so‘rovida shu ismni ko‘radi.';
+
+  @override
+  String get representativeRelationTitle => 'Nomzodga kimsiz?';
+
+  @override
+  String get representativeCandidateSection => '2-QISM · NOMZOD HAQIDA';
+
+  @override
+  String get representativeCandidateTypeTitle => 'Nomzod kim?';
+
+  @override
+  String get representativeCandidateTypeSubtitle =>
+      'Shundan keyingi barcha savollar nomzod haqida bo‘ladi — o‘zingiz haqingizda emas.';
+
+  @override
+  String get representativeBrideTitle => 'Kelin';
+
+  @override
+  String get representativeBrideSubtitle => 'Ayol nomzod';
+
+  @override
+  String get representativeGroomTitle => 'Kuyov';
+
+  @override
+  String get representativeGroomSubtitle => 'Erkak nomzod';
+
+  @override
+  String get representativeCandidateIdentityTitle =>
+      'Nomzodning ismi va familiyasi';
+
+  @override
+  String get representativeCandidateIdentitySubtitle =>
+      'Bu ma’lumotlarni nomzodning o‘zi tasdiqlaydi. Xato bo‘lsa, keyin tuzatish mumkin.';
+
+  @override
+  String get representativeBirthDateTitle => 'Nomzod tug‘ilgan yili';
+
+  @override
+  String get representativeEducationTitle => 'Nomzodning ma’lumoti';
+
+  @override
+  String get representativeHeightWeightTitle => 'Nomzodning bo‘yi va vazni';
+
+  @override
+  String get representativeHeightInputLabel => 'Nomzodning bo‘yi';
+
+  @override
+  String get representativeWeightInputLabel => 'Nomzodning vazni';
+
+  @override
+  String get representativeLocationTitle => 'Nomzod qayerda yashaydi?';
+
+  @override
+  String get representativeHealthStatusTitle =>
+      'Nomzodning sog‘liqlik darajasi';
+
+  @override
+  String get representativeMaritalStatusTitle => 'Nomzodning oilaviy holati';
+
+  @override
+  String get representativeChildrenCountLabel => 'Nomzodning farzandlari soni';
+
+  @override
+  String get representativeChildrenNotLivingTitle =>
+      'Farzandlar nomzod bilan yashamaydi';
+
+  @override
+  String get representativePhotoTitle => 'Nomzodning suratlari';
+
+  @override
+  String get representativePhotoHint =>
+      '5 tagacha surat. Ularni faqat nomzod ruxsat bergan odam ko‘radi.';
+
+  @override
+  String get representativeMainPhotoSubtitle =>
+      'Nomzod profilida birinchi shu surat ko‘rinadi.';
+
+  @override
+  String get representativeAboutTitle => 'Nomzod haqida';
+
+  @override
+  String get representativeAboutSubtitle =>
+      'Ixtiyoriy. Savollar nomzod haqida — o‘zingiz haqingizda emas.';
+
+  @override
+  String get representativeAboutHint =>
+      'Nomzodning kasbi, qiziqishlari va oilaviy qadriyatlari haqida 2–3 gap...';
+
+  @override
+  String get representativeVoiceTitle => 'Nomzodning ovozli izohi';
+
+  @override
+  String get representativeVoiceSubtitle =>
+      'Ixtiyoriy. Nomzod keyin o‘zi qayta yozishi mumkin.';
+
+  @override
+  String get representativeLocationPermissionTitle => 'Nomzodning joylashuvi';
+
+  @override
+  String get representativeLocationPermissionSubtitle =>
+      'Ixtiyoriy. Aniq manzil hech kimga ko‘rinmaydi.';
+
+  @override
+  String get representativeConsentSection => '3-QISM · ROZILIK';
+
+  @override
+  String get representativeContactTitle => 'Nomzodning telefon raqami';
+
+  @override
+  String get representativeContactSubtitle =>
+      'Shu raqamga rozilik so‘rovi yuboriladi. Nomzod tasdiqlamaguncha anketa hech kimga ko‘rinmaydi.';
+
+  @override
+  String get representativeContactLabel => 'Telefon raqami / email';
+
+  @override
+  String get representativeContactWarningTitle =>
+      'Raqam nomzodniki bo‘lishi shart';
+
+  @override
+  String get representativeContactWarningBody =>
+      'O‘z raqamingizni kiritsangiz, rozilik haqiqiy hisoblanmaydi va profil bloklanadi.';
+
+  @override
+  String get representativeSendConsent => 'Rozilik so‘rovini yuborish';
+
+  @override
+  String get representativeCandidateNoApp => 'Nomzod ilovadan foydalanmaydi';
+
+  @override
+  String get representativeConsentSentTitle => 'So‘rov yuborildi';
+
+  @override
+  String representativeConsentSentSubtitle(String firstName) {
+    return '$firstName tasdiqlashi kutilmoqda. Tasdiqlangunga qadar anketa yashirin.';
+  }
+
+  @override
+  String get representativeSmsSentTitle => 'Nomzodga SMS ketdi';
+
+  @override
+  String representativeSmsSentBody(String representativeName) {
+    return '$representativeName sizning nomingizdan anketa to‘ldirdi. Rozimisiz?';
+  }
+
+  @override
+  String get representativeConsentRevocation =>
+      'Nomzod rozilikni istalgan vaqtda qaytarib olishi mumkin — shunda anketa darhol yashiriladi.';
+
+  @override
+  String get understoodLabel => 'Tushunarli';
+
+  @override
+  String get resendRequestLabel => 'So‘rovni qayta yuborish';
+
+  @override
+  String get representativePledgeTitle => 'Mas’uliyatni tasdiqlang';
+
+  @override
+  String get representativePledgeSubtitle =>
+      'Bu qadam majburiy. Siz boshqa odam nomidan ma’lumot kiritayapsiz.';
+
+  @override
+  String get representativePledgePointOne =>
+      'Nomzod haqidagi ma’lumotlar to‘g‘ri va uning roziligi bilan kiritildi.';
+
+  @override
+  String get representativePledgePointTwo =>
+      'Nomzodning shaxsiy suhbatlariga aralashmayman.';
+
+  @override
+  String get representativePledgePointThree =>
+      'Taklif va so‘rovlarni nomzod manfaatida ko‘rib chiqaman.';
+
+  @override
+  String get representativeReadyTitle => 'Profillingiz tayyor!';
+
+  @override
+  String get representativeReadySubtitle =>
+      'Hammasi saqlandi. Endi sizga mos nomzodlarni ko‘rishingiz mumkin.';
+
+  @override
+  String get representativeSetCriteria => 'Qidiruv mezonlarini sozlash';
+
+  @override
+  String get laterLabel => 'Keyinroq';
+
+  @override
+  String get candidateConsentEyebrow => 'NOMZOD TELEFONIDA';
+
+  @override
+  String get candidateConsentTitle => 'Sizning nomingizdan anketa to‘ldirildi';
+
+  @override
+  String candidateConsentBody(String representativeName, String relation) {
+    return '$representativeName ($relation) siz uchun anketa to‘ldirdi. Roziligingizsiz u hech kimga ko‘rinmaydi.';
+  }
+
+  @override
+  String get candidateConsentApproveTitle => 'Rozilik bersangiz';
+
+  @override
+  String get candidateConsentApproveBody =>
+      'Anketa faollashadi, takliflar kela boshlaydi. Keyin o‘zingiz tahrirlashingiz mumkin.';
+
+  @override
+  String get candidateConsentRejectHint =>
+      'Rad etsangiz anketa o‘chiriladi va vakilga xabar beriladi.';
+
+  @override
+  String get agreeLabel => 'Roziman';
+
+  @override
+  String get rejectLabel => 'Rad etaman';
+
+  @override
   String get backLabel => 'Orqaga';
 
   @override

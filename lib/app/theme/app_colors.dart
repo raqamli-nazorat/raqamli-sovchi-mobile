@@ -14,4 +14,9 @@ abstract final class AppColors {
   static const mutedSurface = Color(0xFFF5F5F5);
   static const subtleSurface = Color(0xFFFAFAFA);
   static const bodyText = Color(0xFF404040);
+  static const warningSurface = Color(0xFFFFF8E7);
+  static const warningText = Color(0xFFB33A00);
+  static const successSurface = Color(0xFFECFDF5);
+  static const successText = Color(0xFF047857);
+  static const representativeSecondaryAction = Color(0xFFF0EBFF);
 }

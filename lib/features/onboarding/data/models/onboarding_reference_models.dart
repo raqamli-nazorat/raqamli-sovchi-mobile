@@ -85,6 +85,22 @@ final class MaritalStatusModel {
   MaritalStatus toEntity() => MaritalStatus(id: id, name: name);
 }
 
+final class KinshipModel {
+  const KinshipModel({required this.id, required this.name});
+
+  factory KinshipModel.fromJson(Map<String, dynamic> json) {
+    return KinshipModel(
+      id: (json['id'] ?? '').toString(),
+      name: (json['name'] ?? '').toString(),
+    );
+  }
+
+  final String id;
+  final String name;
+
+  Kinship toEntity() => Kinship(id: id, name: name);
+}
+
 final class ReferencePageModel<T> {
   const ReferencePageModel({
     required this.items,

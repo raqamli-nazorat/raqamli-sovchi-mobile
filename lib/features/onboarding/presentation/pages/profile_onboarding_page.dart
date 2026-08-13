@@ -3,16 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/di/service_locator.dart';
 import '../../../../app/theme/app_spacing.dart';
-import '../../../../core/ui/widgets/app_button.dart';
 import '../../../../core/ui/widgets/app_error_view.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
+import '../../domain/entities/candidate_type.dart';
 import '../../domain/entities/profile_onboarding_draft.dart';
 import '../bloc/profile_onboarding_bloc.dart';
 import '../bloc/profile_onboarding_event.dart';
 import '../bloc/profile_onboarding_state.dart';
 import '../widgets/profile_onboarding_step_content.dart';
+import '../widgets/representative_onboarding_step_content.dart';
 
 final class ProfileOnboardingPage extends StatelessWidget {
   const ProfileOnboardingPage({super.key});
@@ -42,12 +43,18 @@ final class _ProfileOnboardingView extends StatefulWidget {
 }
 
 final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
-  static const _steps = OnboardingStep.values;
   final PageController _pageController = PageController();
   bool _facePageLaunchRequested = false;
 
-  void _syncCurrentStep(OnboardingStep step) {
-    final page = _steps.indexOf(step);
+  List<OnboardingStep> _stepsForDraft(ProfileOnboardingDraft draft) {
+    return draft.candidateType == CandidateType.representative
+        ? representativeOnboardingSteps
+        : standardOnboardingSteps;
+  }
+
+  void _syncCurrentStep(ProfileOnboardingDraft draft) {
+    final page = _stepsForDraft(draft).indexOf(draft.currentStep);
+    if (page < 0) return;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || !_pageController.hasClients) return;
       if (_pageController.page?.round() == page) return;
@@ -70,9 +77,10 @@ final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
     final l10n = AppLocalizations.of(context);
     return BlocConsumer<ProfileOnboardingBloc, ProfileOnboardingState>(
       listener: (context, state) {
-        final step = state.draft?.currentStep;
-        if (step != null) {
-          _syncCurrentStep(step);
+        final draft = state.draft;
+        final step = draft?.currentStep;
+        if (step != null && draft != null) {
+          _syncCurrentStep(draft);
           if (step == OnboardingStep.faceVerification &&
               !_facePageLaunchRequested) {
             _facePageLaunchRequested = true;
@@ -104,6 +112,12 @@ final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
               const MaritalStatusesRequested(),
             );
           }
+          if (step == OnboardingStep.representativeRelation &&
+              state.kinshipStatus == ReferenceStatus.idle) {
+            context.read<ProfileOnboardingBloc>().add(
+              const KinshipsRequested(),
+            );
+          }
         }
         if (state.status == ProfileOnboardingStatus.completed) {
           context.read<AuthBloc>().add(const AuthOnboardingCompleted());
@@ -121,30 +135,9 @@ final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
             body: Center(child: CircularProgressIndicator()),
           );
         }
-        if (state.status == ProfileOnboardingStatus.representativeFlow) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Padding(
-              padding: const EdgeInsets.all(AppSpacing.xl),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    l10n.representativeFlowMessage,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: AppSpacing.lg),
-                  AppButton(
-                    label: l10n.backLabel,
-                    onPressed: () => context.read<ProfileOnboardingBloc>().add(
-                      const ProfileOnboardingCancelled(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
+        final steps = _stepsForDraft(draft);
+        final representativeMode =
+            draft.candidateType == CandidateType.representative;
 
         return Scaffold(
           body: SafeArea(
@@ -163,12 +156,19 @@ final class _ProfileOnboardingViewState extends State<_ProfileOnboardingView> {
                   child: PageView.builder(
                     controller: _pageController,
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _steps.length,
-                    itemBuilder: (context, index) =>
-                        ProfileOnboardingStepContent(
-                          step: _steps[index],
-                          state: state,
-                        ),
+                    itemCount: steps.length,
+                    itemBuilder: (context, index) {
+                      final step = steps[index];
+                      return representativeMode
+                          ? RepresentativeOnboardingStepContent(
+                              step: step,
+                              state: state,
+                            )
+                          : ProfileOnboardingStepContent(
+                              step: step,
+                              state: state,
+                            );
+                    },
                   ),
                 ),
               ],

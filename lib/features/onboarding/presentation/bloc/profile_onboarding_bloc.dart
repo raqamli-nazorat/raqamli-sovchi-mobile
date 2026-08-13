@@ -34,6 +34,19 @@ final class ProfileOnboardingBloc
     on<ProfileOnboardingStarted>(_onStarted);
     on<CandidateTypeSaved>(_onCandidateTypeSaved);
     on<CandidateTypeContinuePressed>(_onCandidateTypeContinuePressed);
+    on<RepresentativeIntroContinuePressed>(
+      _onRepresentativeIntroContinuePressed,
+    );
+    on<RepresentativeIdentitySaved>(_onRepresentativeIdentitySaved);
+    on<KinshipsRequested>(_onKinshipsRequested);
+    on<RepresentativeRelationSaved>(_onRepresentativeRelationSaved);
+    on<RepresentativeRelationContinuePressed>(
+      _onRepresentativeRelationContinuePressed,
+    );
+    on<RepresentedCandidateTypeSaved>(_onRepresentedCandidateTypeSaved);
+    on<RepresentedCandidateTypeContinuePressed>(
+      _onRepresentedCandidateTypeContinuePressed,
+    );
     on<PledgeAcceptanceChanged>(_onPledgeAcceptanceChanged);
     on<PledgeContinuePressed>(_onPledgeContinuePressed);
     on<BirthDateSaved>(_onBirthDateSaved);
@@ -71,6 +84,17 @@ final class ProfileOnboardingBloc
     on<VoiceIntroDeleted>(_onVoiceIntroDeleted);
     on<VoicePlaybackRequested>(_onVoicePlaybackRequested);
     on<LocationPermissionRequested>(_onLocationPermissionRequested);
+    on<RepresentativeContactSubmitted>(_onRepresentativeContactSubmitted);
+    on<RepresentativeCandidateDoesNotUseApp>(
+      _onRepresentativeCandidateDoesNotUseApp,
+    );
+    on<RepresentativeConsentAcknowledged>(_onRepresentativeConsentAcknowledged);
+    on<RepresentativeResponsibilityChanged>(
+      _onRepresentativeResponsibilityChanged,
+    );
+    on<RepresentativePledgeContinuePressed>(
+      _onRepresentativePledgeContinuePressed,
+    );
     on<FaceVerificationPageOpened>(_onFaceVerificationPageOpened);
     on<FaceVerificationRequested>(_onFaceVerificationRequested);
     on<FaceSelfieCaptured>(_onFaceSelfieCaptured);
@@ -93,6 +117,7 @@ final class ProfileOnboardingBloc
   int _districtPage = 0;
   int _healthStatusPage = 0;
   int _maritalStatusPage = 0;
+  int _kinshipPage = 0;
   String? _districtRegionRequest;
   String _districtSearch = '';
   bool _faceVerificationInFlight = false;
@@ -117,9 +142,7 @@ final class ProfileOnboardingBloc
       ),
       (draft) async => emit(
         ProfileOnboardingState(
-          status: draft?.candidateType == CandidateType.representative
-              ? ProfileOnboardingStatus.representativeFlow
-              : ProfileOnboardingStatus.editing,
+          status: ProfileOnboardingStatus.editing,
           draft:
               draft ??
               ProfileOnboardingDraft(
@@ -148,10 +171,122 @@ final class ProfileOnboardingBloc
     final draft = state.draft;
     if (draft?.candidateType == null) return;
     if (draft!.candidateType == CandidateType.representative) {
-      emit(state.copyWith(status: ProfileOnboardingStatus.representativeFlow));
+      await _save(
+        draft.copyWith(currentStep: OnboardingStep.representativeIntro),
+        emit,
+      );
       return;
     }
     await _save(draft.copyWith(currentStep: OnboardingStep.pledge), emit);
+  }
+
+  Future<void> _onRepresentativeIntroContinuePressed(
+    RepresentativeIntroContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.candidateType != CandidateType.representative) return;
+    await _save(
+      draft!.copyWith(currentStep: OnboardingStep.representativeIdentity),
+      emit,
+    );
+  }
+
+  Future<void> _onRepresentativeIdentitySaved(
+    RepresentativeIdentitySaved event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null ||
+        event.firstName.trim().isEmpty ||
+        event.lastName.trim().isEmpty) {
+      emit(state.copyWith(failure: const Failure.validation()));
+      return;
+    }
+    await _save(
+      draft.copyWith(
+        representativeFirstName: event.firstName.trim(),
+        representativeLastName: event.lastName.trim(),
+        currentStep: OnboardingStep.representativeRelation,
+      ),
+      emit,
+    );
+  }
+
+  Future<void> _onKinshipsRequested(
+    KinshipsRequested event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final page = event.loadNextPage ? _kinshipPage + 1 : 1;
+    emit(state.copyWith(kinshipStatus: ReferenceStatus.loading));
+    final result = await _onboardingRepository.getKinships(page);
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          kinshipStatus: ReferenceStatus.failure,
+          failure: failure,
+        ),
+      ),
+      (response) {
+        _kinshipPage = page;
+        final items = event.loadNextPage
+            ? [...state.kinships, ...response.items]
+            : response.items;
+        emit(
+          state.copyWith(
+            kinships: items,
+            kinshipStatus: items.isEmpty
+                ? ReferenceStatus.empty
+                : ReferenceStatus.loaded,
+            clearFailure: true,
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _onRepresentativeRelationSaved(
+    RepresentativeRelationSaved event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || event.kinshipId.isEmpty) return;
+    await _save(draft.copyWith(kinshipId: event.kinshipId), emit);
+  }
+
+  Future<void> _onRepresentativeRelationContinuePressed(
+    RepresentativeRelationContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.kinshipId?.isEmpty ?? true) return;
+    await _save(
+      draft!.copyWith(currentStep: OnboardingStep.representativeCandidateType),
+      emit,
+    );
+  }
+
+  Future<void> _onRepresentedCandidateTypeSaved(
+    RepresentedCandidateTypeSaved event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || event.candidateType == CandidateType.representative) {
+      return;
+    }
+    await _save(
+      draft.copyWith(representedCandidateType: event.candidateType),
+      emit,
+    );
+  }
+
+  Future<void> _onRepresentedCandidateTypeContinuePressed(
+    RepresentedCandidateTypeContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.representedCandidateType == null) return;
+    await _save(draft!.copyWith(currentStep: OnboardingStep.identity), emit);
   }
 
   Future<void> _onPledgeAcceptanceChanged(
@@ -196,8 +331,17 @@ final class ProfileOnboardingBloc
     Emitter<ProfileOnboardingState> emit,
   ) async {
     final draft = state.draft;
-    if (draft == null || draft.currentStep.index == 0) return;
-    final previousStep = OnboardingStep.values[draft.currentStep.index - 1];
+    if (draft == null) return;
+    final steps = draft.candidateType == CandidateType.representative
+        ? representativeOnboardingSteps
+        : standardOnboardingSteps;
+    var index = steps.indexOf(draft.currentStep);
+    if (index <= 0) return;
+    if (draft.currentStep == OnboardingStep.representativePledge &&
+        !draft.candidateUsesApp) {
+      index = steps.indexOf(OnboardingStep.representativeContact) + 1;
+    }
+    final previousStep = steps[index - 1];
     await _save(draft.copyWith(currentStep: previousStep), emit);
   }
 
@@ -647,6 +791,7 @@ final class ProfileOnboardingBloc
       hasChildren: draft.childrenCount > 0 || draft.childrenNotLivingWithMe,
       childrenCount: draft.childrenNotLivingWithMe ? 0 : draft.childrenCount,
       healthStatusId: draft.healthStatusId,
+      representedCandidateType: draft.representedCandidateType,
     );
     final result = await _onboardingRepository.createProfile(request);
     await result.fold<Future<void>>(
@@ -987,7 +1132,11 @@ final class ProfileOnboardingBloc
       return;
     }
     await _save(
-      draft.copyWith(currentStep: OnboardingStep.faceVerification),
+      draft.copyWith(
+        currentStep: draft.candidateType == CandidateType.representative
+            ? OnboardingStep.aboutMe
+            : OnboardingStep.faceVerification,
+      ),
       emit,
     );
   }
@@ -1126,7 +1275,9 @@ final class ProfileOnboardingBloc
         draft.copyWith(
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
-          currentStep: OnboardingStep.success,
+          currentStep: draft.candidateType == CandidateType.representative
+              ? OnboardingStep.representativeContact
+              : OnboardingStep.success,
         ),
         emit,
       );
@@ -1153,6 +1304,162 @@ final class ProfileOnboardingBloc
         ),
       );
     }
+  }
+
+  Future<void> _onRepresentativeContactSubmitted(
+    RepresentativeContactSubmitted event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    final contact = _normalizeRepresentativeContact(event.contact);
+    if (draft == null || !_isValidRepresentativeContact(contact)) {
+      emit(state.copyWith(failure: const Failure.validation()));
+      return;
+    }
+    final request = _representativeRequest(draft, candidateContact: contact);
+    if (request == null) {
+      emit(state.copyWith(failure: const Failure.validation()));
+      return;
+    }
+    emit(
+      state.copyWith(
+        status: ProfileOnboardingStatus.submitting,
+        clearFailure: true,
+      ),
+    );
+    final result = await _onboardingRepository.sendRepresentativeConsent(
+      request,
+    );
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          failure: failure,
+        ),
+      ),
+      (info) => _save(
+        draft.copyWith(
+          representativeInfoId: info.id,
+          candidateContact: contact,
+          candidateUsesApp: true,
+          consentRequestSent: true,
+          currentStep: OnboardingStep.representativeConsentSent,
+        ),
+        emit,
+      ),
+    );
+  }
+
+  Future<void> _onRepresentativeCandidateDoesNotUseApp(
+    RepresentativeCandidateDoesNotUseApp event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null) return;
+    final request = _representativeRequest(draft);
+    if (request == null) {
+      emit(state.copyWith(failure: const Failure.validation()));
+      return;
+    }
+    emit(
+      state.copyWith(
+        status: ProfileOnboardingStatus.submitting,
+        clearFailure: true,
+      ),
+    );
+    final result = await _onboardingRepository.createRepresentativeInfo(
+      request,
+    );
+    await result.fold<Future<void>>(
+      (failure) async => emit(
+        state.copyWith(
+          status: ProfileOnboardingStatus.editing,
+          failure: failure,
+        ),
+      ),
+      (info) => _save(
+        draft.copyWith(
+          representativeInfoId: info.id,
+          candidateUsesApp: false,
+          consentRequestSent: false,
+          clearCandidateContact: true,
+          currentStep: OnboardingStep.representativePledge,
+        ),
+        emit,
+      ),
+    );
+  }
+
+  Future<void> _onRepresentativeConsentAcknowledged(
+    RepresentativeConsentAcknowledged event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft?.consentRequestSent != true) return;
+    await _save(
+      draft!.copyWith(currentStep: OnboardingStep.representativePledge),
+      emit,
+    );
+  }
+
+  Future<void> _onRepresentativeResponsibilityChanged(
+    RepresentativeResponsibilityChanged event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || event.index < 0 || event.index > 2) return;
+    await _save(switch (event.index) {
+      0 => draft.copyWith(representativeAccuracyAccepted: event.accepted),
+      1 => draft.copyWith(representativePrivacyAccepted: event.accepted),
+      _ => draft.copyWith(representativeInterestAccepted: event.accepted),
+    }, emit);
+  }
+
+  Future<void> _onRepresentativePledgeContinuePressed(
+    RepresentativePledgeContinuePressed event,
+    Emitter<ProfileOnboardingState> emit,
+  ) async {
+    final draft = state.draft;
+    if (draft == null || !draft.hasAcceptedRepresentativeResponsibility) {
+      return;
+    }
+    await _save(draft.copyWith(pledgeAcceptedTerms: true), emit);
+    add(const ProfileOnboardingFinalizationRequested());
+  }
+
+  bool _isValidRepresentativeContact(String value) {
+    final phone = RegExp(r'^\+998\d{9}$');
+    final email = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+    return phone.hasMatch(value) || email.hasMatch(value);
+  }
+
+  String _normalizeRepresentativeContact(String value) {
+    final trimmed = value.trim();
+    if (trimmed.contains('@')) return trimmed;
+    return trimmed.replaceAll(RegExp(r'[\s()\-]'), '');
+  }
+
+  RepresentativeInfoRequest? _representativeRequest(
+    ProfileOnboardingDraft draft, {
+    String? candidateContact,
+  }) {
+    final profileId = draft.profileServerId;
+    final candidateType = draft.representedCandidateType;
+    final kinshipId = draft.kinshipId;
+    if (profileId == null ||
+        profileId.isEmpty ||
+        candidateType == null ||
+        candidateType == CandidateType.representative ||
+        kinshipId == null ||
+        kinshipId.isEmpty) {
+      return null;
+    }
+    return RepresentativeInfoRequest(
+      profileId: profileId,
+      candidateType: candidateType,
+      kinshipId: kinshipId,
+      candidateContact: candidateContact,
+    );
   }
 
   Future<void> _onFaceVerificationRequested(
@@ -1285,7 +1592,15 @@ final class ProfileOnboardingBloc
         draft.profileServerId == null ||
         !draft.hasUploadedPhotos ||
         !draft.hasMainPhoto ||
-        draft.faceVerificationStatus != FaceVerificationStatus.matched ||
+        (draft.candidateType != CandidateType.representative &&
+            draft.faceVerificationStatus != FaceVerificationStatus.matched) ||
+        (draft.candidateType == CandidateType.representative &&
+            !draft.hasAcceptedRepresentativeResponsibility) ||
+        (draft.candidateType == CandidateType.representative &&
+            (draft.representativeInfoId?.isEmpty ?? true)) ||
+        (draft.candidateType == CandidateType.representative &&
+            draft.candidateUsesApp &&
+            !draft.consentRequestSent) ||
         !draft.pledgeAcceptedTerms) {
       emit(state.copyWith(failure: const Failure.validation()));
       return;
@@ -1352,7 +1667,9 @@ final class ProfileOnboardingBloc
     }
     await _cleanupDraftMedia(draft);
     final profileReadyDraft = draft.copyWith(
-      currentStep: OnboardingStep.profileReady,
+      currentStep: draft.candidateType == CandidateType.representative
+          ? OnboardingStep.representativeReady
+          : OnboardingStep.profileReady,
     );
     final draftSave = await _draftRepository.save(profileReadyDraft);
     draftSave.fold(

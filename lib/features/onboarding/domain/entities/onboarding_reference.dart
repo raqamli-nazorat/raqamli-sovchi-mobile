@@ -51,6 +51,16 @@ final class MaritalStatus extends Equatable {
   List<Object?> get props => [id, name];
 }
 
+final class Kinship extends Equatable {
+  const Kinship({required this.id, required this.name});
+
+  final String id;
+  final String name;
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
 final class ReferencePage<T> extends Equatable {
   const ReferencePage({
     required this.items,
