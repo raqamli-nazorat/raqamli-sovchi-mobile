@@ -7,12 +7,14 @@ final class CommitPendingAuthSessionUseCase {
 
   final AuthSessionManager _sessionManager;
 
-  Future<Either<Failure, void>> call() async {
+  Future<Either<Failure, void>> call({
+    bool profileOnboardingCompleted = true,
+  }) async {
     try {
-      await _sessionManager.commitPendingTokens();
+      await _sessionManager.commitPendingTokens(
+        profileOnboardingCompleted: profileOnboardingCompleted,
+      );
       return const Right<Failure, void>(null);
-    } on StateError {
-      return const Left<Failure, void>(Failure.validation());
     } catch (_) {
       return const Left<Failure, void>(Failure.unknown());
     }

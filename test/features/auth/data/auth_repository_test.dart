@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:raqamli_sovchi/core/network/api_client.dart';
 import 'package:raqamli_sovchi/core/security/auth_session_manager.dart';
+import 'package:raqamli_sovchi/core/security/secure_storage.dart';
 import 'package:raqamli_sovchi/core/security/token_store.dart';
 import 'package:raqamli_sovchi/features/auth/data/data_sources/auth_data_source.dart';
 import 'package:raqamli_sovchi/features/auth/data/repositories/auth_repository_impl.dart';
@@ -10,7 +11,7 @@ void main() {
   test('temporary repository maps OTP session to domain session', () async {
     final repository = AuthRepositoryImpl(
       TemporaryAuthDataSource(_MemoryTokenStore()),
-      DefaultAuthSessionManager(_MemoryTokenStore()),
+      DefaultAuthSessionManager(_MemoryTokenStore(), _MemorySecureStorage()),
     );
 
     await repository.requestPhoneOtp('+998901234567');
@@ -94,6 +95,23 @@ void main() {
       expect(apiClient.getPath, isNull);
     },
   );
+}
+
+final class _MemorySecureStorage implements SecureStorage {
+  final Map<String, String> _values = <String, String>{};
+
+  @override
+  Future<void> delete({required String key}) async {
+    _values.remove(key);
+  }
+
+  @override
+  Future<String?> read({required String key}) async => _values[key];
+
+  @override
+  Future<void> write({required String key, required String value}) async {
+    _values[key] = value;
+  }
 }
 
 final class _MemoryTokenStore implements TokenStore {

@@ -22,6 +22,7 @@ import '../../features/auth/application/use_cases/delete_account.dart';
 import '../../features/auth/application/use_cases/get_telegram_auth_session_status.dart';
 import '../../features/auth/application/use_cases/has_pin.dart';
 import '../../features/auth/application/use_cases/obtain_token.dart';
+import '../../features/auth/application/use_cases/read_profile_onboarding_completion.dart';
 import '../../features/auth/application/use_cases/request_phone_otp.dart';
 import '../../features/auth/application/use_cases/restore_session.dart';
 import '../../features/auth/application/use_cases/sign_in_with_google.dart';
@@ -64,7 +65,7 @@ Future<void> configureDependencies() async {
       () => SecureTokenStore(serviceLocator()),
     )
     ..registerLazySingleton<AuthSessionManager>(
-      () => DefaultAuthSessionManager(serviceLocator()),
+      () => DefaultAuthSessionManager(serviceLocator(), serviceLocator()),
     )
     ..registerLazySingleton<ScreenshotGuard>(SecureScreenshotGuard.new)
     ..registerLazySingleton<ExternalUrlLauncher>(UrlLauncherService.new)
@@ -171,6 +172,9 @@ Future<void> configureDependencies() async {
     ..registerFactory<CommitPendingAuthSessionUseCase>(
       () => CommitPendingAuthSessionUseCase(serviceLocator()),
     )
+    ..registerFactory<ReadProfileOnboardingCompletionUseCase>(
+      () => ReadProfileOnboardingCompletionUseCase(serviceLocator()),
+    )
     ..registerFactory<ClearAuthSessionUseCase>(
       () => ClearAuthSessionUseCase(serviceLocator()),
     )
@@ -204,6 +208,8 @@ Future<void> configureDependencies() async {
         createPin: serviceLocator(),
         verifyPin: serviceLocator(),
         clearPin: serviceLocator(),
+        commitPendingAuthSession: serviceLocator(),
+        readProfileOnboardingCompletion: serviceLocator(),
         signOut: serviceLocator(),
         deleteAccount: serviceLocator(),
         clearAuthSession: serviceLocator(),

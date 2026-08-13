@@ -10,11 +10,13 @@ import '../../application/use_cases/check_biometric_availability.dart';
 import '../../application/use_cases/clear_auth_session.dart';
 import '../../application/use_cases/clear_pending_auth_session.dart';
 import '../../application/use_cases/clear_pin.dart';
+import '../../application/use_cases/commit_pending_auth_session.dart';
 import '../../application/use_cases/create_pin.dart';
 import '../../application/use_cases/create_telegram_auth_session.dart';
 import '../../application/use_cases/delete_account.dart';
 import '../../application/use_cases/get_telegram_auth_session_status.dart';
 import '../../application/use_cases/has_pin.dart';
+import '../../application/use_cases/read_profile_onboarding_completion.dart';
 import '../../application/use_cases/request_phone_otp.dart';
 import '../../application/use_cases/restore_session.dart';
 import '../../application/use_cases/sign_in_with_google.dart';
@@ -39,6 +41,9 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required CreatePinUseCase createPin,
     required VerifyPinUseCase verifyPin,
     required ClearPinUseCase clearPin,
+    required CommitPendingAuthSessionUseCase commitPendingAuthSession,
+    required ReadProfileOnboardingCompletionUseCase
+    readProfileOnboardingCompletion,
     required SignOutUseCase signOut,
     required DeleteAccountUseCase deleteAccount,
     required ClearAuthSessionUseCase clearAuthSession,
@@ -56,6 +61,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _createPin = createPin,
        _verifyPin = verifyPin,
        _clearPin = clearPin,
+       _commitPendingAuthSession = commitPendingAuthSession,
+       _readProfileOnboardingCompletion = readProfileOnboardingCompletion,
        _signOut = signOut,
        _deleteAccount = deleteAccount,
        _clearAuthSession = clearAuthSession,
@@ -90,6 +97,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final CreatePinUseCase _createPin;
   final VerifyPinUseCase _verifyPin;
   final ClearPinUseCase _clearPin;
+  final CommitPendingAuthSessionUseCase _commitPendingAuthSession;
+  final ReadProfileOnboardingCompletionUseCase _readProfileOnboardingCompletion;
   final SignOutUseCase _signOut;
   final DeleteAccountUseCase _deleteAccount;
   final ClearAuthSessionUseCase _clearAuthSession;
@@ -357,6 +366,25 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (_) async {
         _debugAuthEvent('pin-created.saved');
+        final profileOnboardingCompleted =
+            state.profileOnboardingCompleted ||
+            !state.session!.needsProfileOnboarding;
+        final commit = await _commitPendingAuthSession(
+          profileOnboardingCompleted: profileOnboardingCompleted,
+        );
+        final commitFailure = commit.fold<Failure?>(
+          (failure) => failure,
+          (_) => null,
+        );
+        if (commitFailure != null) {
+          emit(
+            state.copyWith(
+              status: AuthStatus.pinSetupRequired,
+              failure: commitFailure,
+            ),
+          );
+          return;
+        }
         await _emitPostPinGate(state.session!, emit, source: 'pin-created');
       },
     );
@@ -496,7 +524,7 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit, {
     required String source,
   }) async {
-    final profileOnboardingCompleted = _isProfileOnboardingCompleted(
+    final profileOnboardingCompleted = await _isProfileOnboardingCompleted(
       source,
       session,
     );
@@ -533,9 +561,8 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required String source,
   }) async {
     final profileOnboardingCompleted =
-        state.profileOnboardingCompleted || !session.needsProfileOnboarding;
-    final needsOnboarding =
-        !profileOnboardingCompleted && session.needsProfileOnboarding;
+        await _isPostPinProfileOnboardingCompleted(session);
+    final needsOnboarding = !profileOnboardingCompleted;
     _debugAuthGate(
       source,
       session,
@@ -562,10 +589,32 @@ final class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
   }
 
-  bool _isProfileOnboardingCompleted(String source, Session session) {
-    return state.profileOnboardingCompleted ||
-        source == 'restore' ||
-        !session.needsProfileOnboarding;
+  Future<bool> _isProfileOnboardingCompleted(
+    String source,
+    Session session,
+  ) async {
+    if (state.profileOnboardingCompleted || !session.needsProfileOnboarding) {
+      return true;
+    }
+
+    final stored = await _readStoredProfileOnboardingCompletion();
+    if (stored != null) return stored;
+
+    return source == 'restore';
+  }
+
+  Future<bool> _isPostPinProfileOnboardingCompleted(Session session) async {
+    if (state.profileOnboardingCompleted) return true;
+
+    final stored = await _readStoredProfileOnboardingCompletion();
+    if (stored != null) return stored;
+
+    return !session.needsProfileOnboarding;
+  }
+
+  Future<bool?> _readStoredProfileOnboardingCompletion() async {
+    final result = await _readProfileOnboardingCompletion();
+    return result.fold((_) => null, (completed) => completed);
   }
 
   static const _validationFailure = Failure.validation();

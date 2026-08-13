@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import 'secure_storage.dart';
 import 'token_store.dart';
 
 /// Auth tokens received during onboarding but not yet committed to disk.
@@ -36,7 +37,11 @@ abstract interface class AuthSessionManager {
     required String userId,
   });
 
-  Future<void> commitPendingTokens();
+  Future<void> commitPendingTokens({bool profileOnboardingCompleted = true});
+
+  Future<bool?> readProfileOnboardingCompleted();
+
+  Future<void> saveProfileOnboardingCompleted(bool completed);
 
   void clearPendingSession();
 
@@ -44,9 +49,13 @@ abstract interface class AuthSessionManager {
 }
 
 final class DefaultAuthSessionManager implements AuthSessionManager {
-  DefaultAuthSessionManager(this._tokenStore);
+  DefaultAuthSessionManager(this._tokenStore, this._storage);
+
+  static const _profileOnboardingCompletedKey =
+      'auth.profile_onboarding_completed';
 
   final TokenStore _tokenStore;
+  final SecureStorage _storage;
   PendingAuthSession? _pendingSession;
 
   @override
@@ -75,23 +84,40 @@ final class DefaultAuthSessionManager implements AuthSessionManager {
   }
 
   @override
-  Future<void> commitPendingTokens() async {
+  Future<void> commitPendingTokens({
+    bool profileOnboardingCompleted = true,
+  }) async {
     final pending = _pendingSession;
-    if (pending == null) {
-      throw StateError('No pending authentication session to commit.');
+    if (pending != null) {
+      try {
+        await _tokenStore.saveTokens(
+          accessToken: pending.accessToken,
+          refreshToken: pending.refreshToken,
+        );
+      } catch (_) {
+        await _tokenStore.clear();
+        rethrow;
+      }
+
+      _pendingSession = null;
     }
 
-    try {
-      await _tokenStore.saveTokens(
-        accessToken: pending.accessToken,
-        refreshToken: pending.refreshToken,
-      );
-    } catch (_) {
-      await _tokenStore.clear();
-      rethrow;
-    }
+    await saveProfileOnboardingCompleted(profileOnboardingCompleted);
+  }
 
-    _pendingSession = null;
+  @override
+  Future<bool?> readProfileOnboardingCompleted() async {
+    final value = await _storage.read(key: _profileOnboardingCompletedKey);
+    if (value == null || value.isEmpty) return null;
+    return value == 'true';
+  }
+
+  @override
+  Future<void> saveProfileOnboardingCompleted(bool completed) {
+    return _storage.write(
+      key: _profileOnboardingCompletedKey,
+      value: completed.toString(),
+    );
   }
 
   @override
@@ -103,5 +129,6 @@ final class DefaultAuthSessionManager implements AuthSessionManager {
   Future<void> clearAll() async {
     _pendingSession = null;
     await _tokenStore.clear();
+    await _storage.delete(key: _profileOnboardingCompletedKey);
   }
 }
